@@ -36,11 +36,12 @@ vistas/respuesta.php             Vista: devuelve la respuesta en JSON
 Ejemplo:
 
 ```
-curl -X POST http://localhost:8003/api.php/camiones -H "Content-Type: application/json" -d "{\"matricula\":\"SBA 1234\",\"estado\":\"Operativo\",\"disponibilidad\":\"Disponible\"}"
+curl -X POST http://localhost/sigeru-api-gestion/api.php/camiones -H "Content-Type: application/json" -d "{\"matricula\":\"SBA 1234\",\"estado\":\"Operativo\",\"disponibilidad\":\"Disponible\"}"
 ```
 
-## Cómo ejecutarla
+## Cómo ejecutarla (XAMPP)
 
-```
-php -S localhost:8003
-```
+1. Copiar la carpeta `sigeru-api-gestion` dentro de `C:\xampp\htdocs\`.
+2. Prender **Apache** en el panel de XAMPP.
+3. La API queda en http://localhost/sigeru-api-gestion/api.php
+

@@ -3,7 +3,7 @@
 
 // Paginas que tienen permitido usar esta API (frontend)
 $origenesPermitidos = [
-    "http://localhost:8001"
+    "http://localhost"
 ];
 
 // CORS: como el frontend esta en otra direccion, hay que permitirle usar la API
