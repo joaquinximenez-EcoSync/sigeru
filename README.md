@@ -20,10 +20,12 @@ js/vistas/mensajes.js      Vista: muestra mensajes en pantalla
 js/controladores/registro.js  Controlador: valida y maneja el formulario
 ```
 
-## Cómo ejecutarla
+## Cómo ejecutarla (XAMPP)
 
-```
-php -S localhost:8000
-```
+1. Copiar la carpeta `sigeru-landing` dentro de `C:\xampp\htdocs\`.
+2. Prender **Apache** en el panel de XAMPP.
+3. Abrir http://localhost/sigeru-landing/
 
-Abrir http://localhost:8000. Necesita la API de Usuarios corriendo en el puerto 8002.
+Necesita la API de Usuarios en `htdocs/sigeru-api-usuarios`.
+Las direcciones se configuran en `js/config.js`.
+
