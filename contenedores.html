@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contenedores | SiGeRU</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="panel">
+    <aside class="sidebar">
+        <div class="logo">SiGeRU</div>
+        <a href="panel.html">🏠 Inicio</a>
+        <a href="contenedores.html">🗑️ Contenedores</a>
+        <a href="camiones.html" data-roles="Administrador,Operario,Recolector">🚛 Camiones</a>
+        <a href="usuarios.html" data-roles="Administrador">👥 Usuarios</a>
+        <div class="usuario">
+            <div>
+                <strong id="nombreUsuario"></strong>
+                <span id="rolUsuario"></span>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="salir()">Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <main class="contenido">
+        <div class="encabezado">
+            <h1>Contenedores</h1>
+            <button class="btn btn-primary" onclick="nuevoContenedor()" data-roles="Administrador,Operario">+ Nuevo contenedor</button>
+        </div>
+
+        <div id="mensaje" class="mensaje"></div>
+
+        <!-- Modal con el formulario de alta (empieza oculto) -->
+        <dialog id="formModal">
+            <h3>Nuevo contenedor</h3>
+            <form id="formContenedor">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="calle">Calle *</label>
+                        <input id="calle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="zona">Zona *</label>
+                        <input id="zona" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_residuo">Tipo de residuo *</label>
+                        <select id="id_residuo" required>
+                            <option value="">Elegir...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="capacidad">Capacidad (litros)</label>
+                        <input id="capacidad" type="number" min="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="estado">Estado</label>
+                    <select id="estado">
+                        <option>Funcional</option>
+                        <option>Roto</option>
+                        <option>Desbordado</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+            </form>
+        </dialog>
+
+        <input id="buscador" class="buscador" placeholder="Buscar por calle, zona, estado o residuo..." oninput="buscar()">
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Calle</th>
+                        <th>Zona</th>
+                        <th>Tipo de residuo</th>
+                        <th>Capacidad</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaContenedores"></tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/modelos/servidor.js"></script>
+<script src="js/modelos/usuarios.js"></script>
+<script src="js/modelos/gestion.js"></script>
+<script src="js/vistas/comun.js"></script>
+<script src="js/vistas/tablas.js"></script>
+<script src="js/controladores/sesion.js"></script>
+<script src="js/controladores/contenedores.js"></script>
+</body>
+</html>
