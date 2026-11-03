@@ -1,0 +1,26 @@
+// Modelo: funcion general para hablar con las APIs
+
+// Hace un pedido a una API y devuelve la respuesta en JSON.
+// Si la API devuelve un error, lanza el mensaje de error.
+async function pedirAlServidor(url, metodo = "GET", datos = null) {
+    // credentials: "include" hace que se mande la cookie de la sesion
+    const opciones = { method: metodo, credentials: "include" };
+
+    if (datos != null) {
+        opciones.headers = { "Content-Type": "application/json" };
+        opciones.body = JSON.stringify(datos);
+    }
+
+    let respuesta;
+    try {
+        respuesta = await fetch(url, opciones);
+    } catch (error) {
+        throw new Error("No se pudo conectar con el servidor");
+    }
+
+    const json = await respuesta.json();
+    if (!respuesta.ok) {
+        throw new Error(json.error);
+    }
+    return json;
+}
