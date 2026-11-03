@@ -33,12 +33,14 @@ js/vistas/                      Funciones que muestran datos en pantalla (comun,
 js/controladores/               Lógica de cada página
 ```
 
-## Cómo ejecutarlo
+## Cómo ejecutarlo (XAMPP)
 
-```
-php -S localhost:8001
-```
+1. Copiar la carpeta `sigeru-frontend` dentro de `C:\xampp\htdocs\`.
+2. Prender **Apache** en el panel de XAMPP.
+3. Abrir http://localhost/sigeru-frontend/
 
-Abrir http://localhost:8001. Necesita la API de Usuarios (puerto 8002) y la API de Gestión (puerto 8003).
+Necesita la API de Usuarios y la API de Gestión en `htdocs/sigeru-api-usuarios` y `htdocs/sigeru-api-gestion`.
+Las direcciones se configuran en `js/config.js`.
 
 Usuario de prueba: **admin@sigeru.uy** / **admin123**
+
