@@ -34,13 +34,14 @@ vistas/respuesta.php          Vista: devuelve la respuesta en JSON
 Ejemplo:
 
 ```
-curl -X POST http://localhost:8002/api.php/login -H "Content-Type: application/json" -d "{\"email\":\"admin@sigeru.uy\",\"contrasena\":\"admin123\"}"
+curl -X POST http://localhost/sigeru-api-usuarios/api.php/login -H "Content-Type: application/json" -d "{\"email\":\"admin@sigeru.uy\",\"contrasena\":\"admin123\"}"
 ```
 
-## Cómo ejecutarla
+## Cómo ejecutarla (XAMPP)
 
-```
-php -S localhost:8002
-```
+1. Copiar la carpeta `sigeru-api-usuarios` dentro de `C:\xampp\htdocs\`.
+2. Prender **Apache** en el panel de XAMPP.
+3. La API queda en http://localhost/sigeru-api-usuarios/api.php
 
 Usuario de prueba: **admin@sigeru.uy** / **admin123**
+

@@ -3,8 +3,7 @@
 
 // Paginas que tienen permitido usar esta API (landing y frontend)
 $origenesPermitidos = [
-    "http://localhost:8000",
-    "http://localhost:8001"
+    "http://localhost"
 ];
 
 // Roles que existen en el sistema
