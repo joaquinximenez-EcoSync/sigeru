@@ -65,7 +65,7 @@ function mostrarTablaCamiones(lista) {
     tabla.innerHTML = filas;
 }
 
-// Llena el select del formulario de contenedores con los tipos de residuo
+// Carga los tipos de residuo en la lista desplegable del formulario de contenedores
 function llenarSelectResiduos(tipos) {
     const select = document.getElementById("id_residuo");
     for (const tipo of tipos) {

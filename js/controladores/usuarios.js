@@ -54,7 +54,7 @@ document.getElementById("formUsuario").addEventListener("submit", async function
         mostrarMensaje(respuesta.mensaje, false);
         cargarUsuarios();
     } catch (error) {
-        // El mensaje de la pagina queda detras del modal, por eso usamos alert
+        // Si hay un error con la ventana abierta, el mensaje no se ve, por eso usamos alert
         alert(error.message);
     }
 });

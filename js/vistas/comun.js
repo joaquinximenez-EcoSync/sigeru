@@ -26,7 +26,7 @@ function mostrarDatosUsuario(usuario) {
     document.getElementById("nombreUsuario").textContent = usuario.nombre;
     document.getElementById("rolUsuario").textContent = usuario.rol;
 
-    // Los elementos con data-roles solo se ven si el rol esta en la lista
+    // Las partes de la pagina que tienen data-roles solo se muestran si el rol del usuario esta en esa lista
     const elementos = document.querySelectorAll("[data-roles]");
     for (const elemento of elementos) {
         const roles = elemento.dataset.roles.split(",");
@@ -45,19 +45,19 @@ function mostrarDatosUsuario(usuario) {
     }
 }
 
-// Muestra el modal (cuadro de dialogo)
+// Abre la ventana emergente (modal)
 function abrirModal() {
     const modal = document.getElementById("formModal");
     modal.showModal();
 }
 
-// Oculta el modal
+// Cierra la ventana emergente (modal)
 function cerrarModal() {
     const modal = document.getElementById("formModal");
     modal.close();
 }
 
-// Devuelve la clase CSS segun el estado: verde (bien), amarillo (alerta) o rojo (mal)
+// Elige el color de la etiqueta segun el estado: verde (bien), amarillo (alerta) o rojo (mal)
 function colorEstado(estado) {
     if (estado == "Funcional" || estado == "Operativo" || estado == "Disponible") return "";
     if (estado == "En mantenimiento" || estado == "En ruta") return "alerta";

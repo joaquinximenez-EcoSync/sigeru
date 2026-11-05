@@ -56,7 +56,7 @@ document.getElementById("formContenedor").addEventListener("submit", async funct
         mostrarMensaje(respuesta.mensaje, false);
         cargarContenedores();
     } catch (error) {
-        // El mensaje de la pagina queda detras del modal, por eso usamos alert
+        // Si hay un error con la ventana abierta, el mensaje no se ve, por eso usamos alert
         alert(error.message);
     }
 });
