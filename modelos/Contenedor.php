@@ -4,7 +4,7 @@
 
 class Contenedor
 {
-    // Tipos de residuo (RNE01: cada contenedor guarda un solo tipo)
+    // Tipos de residuo (regla RNE01 del MER: cada contenedor guarda un solo tipo)
     private $tiposResiduo = [
         ["id_residuo" => 1, "nombre" => "Orgánico"],
         ["id_residuo" => 2, "nombre" => "Reciclable"],
@@ -43,7 +43,7 @@ class Contenedor
         return $this->tiposResiduo;
     }
 
-    // Devuelve el nombre de un tipo de residuo, o null si no existe
+    // Devuelve el nombre de un tipo de residuo, o nada (null) si no existe
     public function nombreResiduo($idResiduo)
     {
         foreach ($this->tiposResiduo as $tipo) {

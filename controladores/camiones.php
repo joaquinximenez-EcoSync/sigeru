@@ -4,13 +4,13 @@
 $estadosCamion = ["Operativo", "En mantenimiento", "Fuera de servicio"];
 $disponibilidades = ["Disponible", "En ruta", "No disponible"];
 
-// GET camiones
+// Devuelve la lista de todos los camiones (GET camiones)
 function listarCamiones() {
     $camion = new Camion();
     responder($camion->obtenerTodos());
 }
 
-// GET camiones?id=1
+// Busca un camion por su numero de id (GET camiones?id=1)
 function obtenerCamion($id) {
     $camion = new Camion();
     $encontrado = $camion->obtenerPorId($id);
@@ -21,7 +21,7 @@ function obtenerCamion($id) {
     responder($encontrado);
 }
 
-// POST camiones
+// Registra un camion nuevo (POST camiones)
 function registrarCamion($datos) {
     global $estadosCamion, $disponibilidades;
     $camion = new Camion();

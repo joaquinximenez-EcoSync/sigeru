@@ -3,13 +3,13 @@
 
 $estadosContenedor = ["Funcional", "Roto", "Desbordado"];
 
-// GET contenedores
+// Devuelve la lista de todos los contenedores (GET contenedores)
 function listarContenedores() {
     $contenedor = new Contenedor();
     responder($contenedor->obtenerTodos());
 }
 
-// GET contenedores?id=1
+// Busca un contenedor por su numero de id (GET contenedores?id=1)
 function obtenerContenedor($id) {
     $contenedor = new Contenedor();
     $encontrado = $contenedor->obtenerPorId($id);
@@ -20,13 +20,13 @@ function obtenerContenedor($id) {
     responder($encontrado);
 }
 
-// GET tipos_residuo
+// Devuelve la lista de tipos de residuo (GET tipos_residuo)
 function listarTiposResiduo() {
     $contenedor = new Contenedor();
     responder($contenedor->obtenerTiposResiduo());
 }
 
-// POST contenedores
+// Registra un contenedor nuevo (POST contenedores)
 function registrarContenedor($datos) {
     global $estadosContenedor;
     $contenedor = new Contenedor();
