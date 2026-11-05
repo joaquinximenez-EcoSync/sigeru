@@ -37,7 +37,7 @@ function mostrarTablaContenedores(lista) {
             <td>${limpiarTexto(c.calle)}</td>
             <td>${limpiarTexto(c.zona)}</td>
             <td>${limpiarTexto(c.residuo)}</td>
-            <td>${c.capacidad ? limpiarTexto(c.capacidad) + " L" : ""}</td>
+            <td>${c.capacidad ? Number(c.capacidad) + " L" : ""}</td>
             <td><span class="etiqueta ${colorEstado(c.estado)}">${limpiarTexto(c.estado)}</span></td>
         </tr>`;
     }
@@ -57,7 +57,7 @@ function mostrarTablaCamiones(lista) {
         filas += `<tr>
             <td>${c.id}</td>
             <td>${limpiarTexto(c.matricula)}</td>
-            <td>${c.capacidad_carga ? limpiarTexto(c.capacidad_carga) + " kg" : ""}</td>
+            <td>${c.capacidad_carga ? Number(c.capacidad_carga) + " kg" : ""}</td>
             <td><span class="etiqueta ${colorEstado(c.estado)}">${limpiarTexto(c.estado)}</span></td>
             <td><span class="etiqueta ${colorEstado(c.disponibilidad)}">${limpiarTexto(c.disponibilidad)}</span></td>
         </tr>`;

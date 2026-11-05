@@ -36,7 +36,7 @@ js/controladores/               Lógica de cada página
 ## Cómo ejecutarlo (XAMPP)
 
 1. Copiar la carpeta `sigeru-frontend` dentro de `C:\xampp\htdocs\`.
-2. Prender **Apache** en el panel de XAMPP.
+2. Prender **Apache** y **MySQL** en el panel de XAMPP (la base de datos tiene que estar creada).
 3. Abrir http://localhost/sigeru-frontend/
 
 Necesita la API de Usuarios y la API de Gestión en `htdocs/sigeru-api-usuarios` y `htdocs/sigeru-api-gestion`.
