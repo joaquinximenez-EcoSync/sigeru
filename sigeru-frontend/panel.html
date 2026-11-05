@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel | SiGeRU</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="panel">
+    <aside class="sidebar">
+        <div class="logo">SiGeRU</div>
+        <a href="panel.html" class="activo">🏠 Inicio</a>
+        <a href="contenedores.html">🗑️ Contenedores</a>
+        <a href="camiones.html" class="no-vecino">🚛 Camiones</a>
+        <a href="usuarios.html" class="solo-admin">👥 Usuarios</a>
+        <div class="usuario">
+            <div>
+                <strong id="nombreUsuario"></strong>
+                <span id="rolUsuario"></span>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="salir()">Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <main class="contenido">
+        <h1>Hola, <span id="saludo"></span> 👋</h1>
+        <p class="subtitulo">Este es el resumen del sistema.</p>
+
+        <div id="mensaje" class="mensaje"></div>
+
+        <div class="dashboard-grid">
+            <div class="stat">
+                <strong id="totalContenedores">-</strong>
+                <span>Contenedores</span>
+            </div>
+            <div class="stat">
+                <strong id="contenedoresProblema">-</strong>
+                <span>Contenedores rotos o desbordados</span>
+            </div>
+            <div class="stat no-vecino">
+                <strong id="totalCamiones">-</strong>
+                <span>Camiones</span>
+            </div>
+            <div class="stat solo-admin">
+                <strong id="totalUsuarios">-</strong>
+                <span>Usuarios</span>
+            </div>
+        </div>
+
+        <div class="cards">
+            <a class="card card-enlace" href="contenedores.html">
+                <h3>🗑️ Contenedores</h3>
+                <p>Consulta la ubicación, el estado y el tipo de residuo de los contenedores.</p>
+            </a>
+            <a class="card card-enlace no-vecino" href="camiones.html">
+                <h3>🚛 Camiones</h3>
+                <p>Revisa la flota y su disponibilidad.</p>
+            </a>
+            <a class="card card-enlace solo-admin" href="usuarios.html">
+                <h3>👥 Usuarios</h3>
+                <p>Consulta y registra usuarios de todos los roles.</p>
+            </a>
+        </div>
+    </main>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/modelos/servidor.js"></script>
+<script src="js/modelos/usuarios.js"></script>
+<script src="js/modelos/gestion.js"></script>
+<script src="js/vistas/comun.js"></script>
+<script src="js/vistas/tablas.js"></script>
+<script src="js/controladores/sesion.js"></script>
+<script src="js/controladores/panel.js"></script>
+</body>
+</html>

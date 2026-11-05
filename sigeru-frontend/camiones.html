@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camiones | SiGeRU</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="panel">
+    <aside class="sidebar">
+        <div class="logo">SiGeRU</div>
+        <a href="panel.html">🏠 Inicio</a>
+        <a href="contenedores.html">🗑️ Contenedores</a>
+        <a href="camiones.html" class="activo no-vecino">🚛 Camiones</a>
+        <a href="usuarios.html" class="solo-admin">👥 Usuarios</a>
+        <div class="usuario">
+            <div>
+                <strong id="nombreUsuario"></strong>
+                <span id="rolUsuario"></span>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="salir()">Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <main class="contenido">
+        <div class="encabezado">
+            <h1>Camiones</h1>
+            <button class="btn btn-primary solo-gestion" onclick="nuevoCamion()">+ Nuevo camión</button>
+        </div>
+
+        <div id="mensaje" class="mensaje"></div>
+
+        <!-- Ventana emergente (modal) con el formulario para agregar. Empieza oculta -->
+        <dialog id="formModal">
+            <h3>Nuevo camión</h3>
+            <form id="formCamion">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="matricula">Matrícula *</label>
+                        <input id="matricula" placeholder="SBA 1234" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="capacidad_carga">Capacidad de carga (kg)</label>
+                        <input id="capacidad_carga" type="number" min="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="estado">Estado</label>
+                        <select id="estado">
+                            <option>Operativo</option>
+                            <option>En mantenimiento</option>
+                            <option>Fuera de servicio</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="disponibilidad">Disponibilidad</label>
+                        <select id="disponibilidad">
+                            <option>Disponible</option>
+                            <option>En ruta</option>
+                            <option>No disponible</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+            </form>
+        </dialog>
+
+        <input id="buscador" class="buscador" placeholder="Buscar por matrícula o estado..." oninput="buscar()">
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Matrícula</th>
+                        <th>Capacidad</th>
+                        <th>Estado</th>
+                        <th>Disponibilidad</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaCamiones"></tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/modelos/servidor.js"></script>
+<script src="js/modelos/usuarios.js"></script>
+<script src="js/modelos/gestion.js"></script>
+<script src="js/vistas/comun.js"></script>
+<script src="js/vistas/tablas.js"></script>
+<script src="js/controladores/sesion.js"></script>
+<script src="js/controladores/camiones.js"></script>
+</body>
+</html>
