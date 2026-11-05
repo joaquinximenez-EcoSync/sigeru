@@ -1,6 +1,7 @@
 // Controlador de la pagina de camiones
 
 let listaCamiones = [];
+let idEditando = null; // null cuando se esta agregando uno nuevo
 
 async function iniciar() {
     const haySesion = await revisarSesion();
@@ -12,7 +13,7 @@ async function iniciar() {
 async function cargarCamiones() {
     try {
         listaCamiones = await obtenerCamiones();
-        mostrarTablaCamiones(listaCamiones);
+        mostrarTablaCamiones(listaCamiones, puedeEditar());
     } catch (error) {
         mostrarMensaje(error.message, true);
     }
@@ -29,12 +30,41 @@ function buscar() {
             filtrados.push(c);
         }
     }
-    mostrarTablaCamiones(filtrados);
+    mostrarTablaCamiones(filtrados, puedeEditar());
 }
 
 function nuevoCamion() {
+    idEditando = null;
     document.getElementById("formCamion").reset();
+    document.getElementById("tituloModal").textContent = "Nuevo camión";
     abrirModal();
+}
+
+// Abre el formulario con los datos del camion elegido
+function editarCamion(id) {
+    const c = buscarPorId(listaCamiones, id);
+    idEditando = id;
+
+    document.getElementById("matricula").value = c.matricula;
+    document.getElementById("capacidad_carga").value = c.capacidad_carga ? Number(c.capacidad_carga) : "";
+    document.getElementById("estado").value = c.estado;
+    document.getElementById("disponibilidad").value = c.disponibilidad;
+
+    document.getElementById("tituloModal").textContent = "Modificar camión #" + id;
+    abrirModal();
+}
+
+async function borrarCamionElegido(id) {
+    if (!confirm("¿Seguro que quieres borrar el camión #" + id + "?")) {
+        return;
+    }
+    try {
+        const respuesta = await borrarCamion(id);
+        mostrarMensaje(respuesta.mensaje, false);
+        cargarCamiones();
+    } catch (error) {
+        mostrarMensaje(error.message, true);
+    }
 }
 
 document.getElementById("formCamion").addEventListener("submit", async function (evento) {
@@ -48,7 +78,12 @@ document.getElementById("formCamion").addEventListener("submit", async function 
     };
 
     try {
-        const respuesta = await crearCamion(datos);
+        let respuesta;
+        if (idEditando == null) {
+            respuesta = await crearCamion(datos);
+        } else {
+            respuesta = await modificarCamion(idEditando, datos);
+        }
         cerrarModal();
         mostrarMensaje(respuesta.mensaje, false);
         cargarCamiones();

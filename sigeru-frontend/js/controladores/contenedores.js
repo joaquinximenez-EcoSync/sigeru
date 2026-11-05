@@ -1,6 +1,7 @@
 // Controlador de la pagina de contenedores
 
 let listaContenedores = [];
+let idEditando = null; // null cuando se esta agregando uno nuevo
 
 async function iniciar() {
     const haySesion = await revisarSesion();
@@ -8,7 +9,7 @@ async function iniciar() {
 
     try {
         const tipos = await obtenerTiposResiduo();
-        llenarSelectResiduos(tipos);
+        llenarSelect("id_residuo", tipos, "id_residuo");
     } catch (error) {
         mostrarMensaje(error.message, true);
     }
@@ -18,7 +19,7 @@ async function iniciar() {
 async function cargarContenedores() {
     try {
         listaContenedores = await obtenerContenedores();
-        mostrarTablaContenedores(listaContenedores);
+        mostrarTablaContenedores(listaContenedores, puedeEditar());
     } catch (error) {
         mostrarMensaje(error.message, true);
     }
@@ -35,12 +36,42 @@ function buscar() {
             filtrados.push(c);
         }
     }
-    mostrarTablaContenedores(filtrados);
+    mostrarTablaContenedores(filtrados, puedeEditar());
 }
 
 function nuevoContenedor() {
+    idEditando = null;
     document.getElementById("formContenedor").reset();
+    document.getElementById("tituloModal").textContent = "Nuevo contenedor";
     abrirModal();
+}
+
+// Abre el formulario con los datos del contenedor elegido
+function editarContenedor(id) {
+    const c = buscarPorId(listaContenedores, id);
+    idEditando = id;
+
+    document.getElementById("calle").value = c.calle;
+    document.getElementById("zona").value = c.zona;
+    document.getElementById("id_residuo").value = c.id_residuo;
+    document.getElementById("capacidad").value = c.capacidad ? Number(c.capacidad) : "";
+    document.getElementById("estado").value = c.estado;
+
+    document.getElementById("tituloModal").textContent = "Modificar contenedor #" + id;
+    abrirModal();
+}
+
+async function borrarContenedorElegido(id) {
+    if (!confirm("¿Seguro que quieres borrar el contenedor #" + id + "?")) {
+        return;
+    }
+    try {
+        const respuesta = await borrarContenedor(id);
+        mostrarMensaje(respuesta.mensaje, false);
+        cargarContenedores();
+    } catch (error) {
+        mostrarMensaje(error.message, true);
+    }
 }
 
 document.getElementById("formContenedor").addEventListener("submit", async function (evento) {
@@ -55,7 +86,12 @@ document.getElementById("formContenedor").addEventListener("submit", async funct
     };
 
     try {
-        const respuesta = await crearContenedor(datos);
+        let respuesta;
+        if (idEditando == null) {
+            respuesta = await crearContenedor(datos);
+        } else {
+            respuesta = await modificarContenedor(idEditando, datos);
+        }
         cerrarModal();
         mostrarMensaje(respuesta.mensaje, false);
         cargarContenedores();

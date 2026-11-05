@@ -31,12 +31,12 @@ function mostrarDatosUsuario(usuario) {
         ocultar("solo-admin");
     }
 
-    // Solo el administrador y el operario pueden agregar contenedores y camiones
+    // Solo el administrador y el operario pueden agregar, editar y borrar contenedores, camiones, centros y maquinaria
     if (usuario.rol != "Administrador" && usuario.rol != "Operario") {
         ocultar("solo-gestion");
     }
 
-    // Los vecinos no ven los camiones
+    // Los vecinos no ven los camiones, los centros de acopio ni la maquinaria
     if (usuario.rol == "Vecino") {
         ocultar("no-vecino");
     }
@@ -64,7 +64,17 @@ function cerrarModal() {
 
 // Elige el color de la etiqueta segun el estado: verde (bien), amarillo (alerta) o rojo (mal)
 function colorEstado(estado) {
-    if (estado == "Funcional" || estado == "Operativo" || estado == "Disponible") return "";
-    if (estado == "En mantenimiento" || estado == "En ruta") return "alerta";
+    if (estado == "Funcional" || estado == "Operativo" || estado == "Operativa" || estado == "Disponible") return "";
+    if (estado == "En mantenimiento" || estado == "En reparación" || estado == "En ruta") return "alerta";
     return "mal";
+}
+
+// Busca un elemento de una lista por su id. Si no lo encuentra devuelve null.
+function buscarPorId(lista, id) {
+    for (const item of lista) {
+        if (item.id == id) {
+            return item;
+        }
+    }
+    return null;
 }

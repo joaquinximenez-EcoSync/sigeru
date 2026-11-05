@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centros de acopio | SiGeRU</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="panel">
+    <aside class="sidebar">
+        <div class="logo">SiGeRU</div>
+        <a href="panel.html">🏠 Inicio</a>
+        <a href="contenedores.html">🗑️ Contenedores</a>
+        <a href="camiones.html" class="no-vecino">🚛 Camiones</a>
+        <a href="centros.html" class="activo no-vecino">🏭 Centros de acopio</a>
+        <a href="maquinaria.html" class="no-vecino">⚙️ Maquinaria</a>
+        <a href="usuarios.html" class="solo-admin">👥 Usuarios</a>
+        <div class="usuario">
+            <div>
+                <strong id="nombreUsuario"></strong>
+                <span id="rolUsuario"></span>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="salir()">Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <main class="contenido">
+        <div class="encabezado">
+            <h1>Centros de acopio</h1>
+            <button class="btn btn-primary solo-gestion" onclick="nuevoCentro()">+ Nuevo centro</button>
+        </div>
+
+        <div id="mensaje" class="mensaje"></div>
+
+        <!-- Ventana emergente (modal) con el formulario para agregar o modificar. Empieza oculta -->
+        <dialog id="formModal">
+            <h3 id="tituloModal"></h3>
+            <form id="formCentro">
+                <div class="form-group">
+                    <label for="nombre">Nombre *</label>
+                    <input id="nombre" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="calle">Calle</label>
+                        <input id="calle">
+                    </div>
+                    <div class="form-group">
+                        <label for="zona">Zona</label>
+                        <input id="zona">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="capacidad_actual">Capacidad actual (kg)</label>
+                        <input id="capacidad_actual" type="number" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="capacidad_max">Capacidad máxima (kg)</label>
+                        <input id="capacidad_max" type="number" min="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="id_operario">Operario a cargo</label>
+                    <select id="id_operario">
+                        <option value="">Sin asignar</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Tipos de residuo que recibe</label>
+                    <div id="casillasResiduos" class="casillas"></div>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+            </form>
+        </dialog>
+
+        <input id="buscador" class="buscador" placeholder="Buscar por nombre, calle o zona..." oninput="buscar()">
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Ubicación</th>
+                        <th>Capacidad usada</th>
+                        <th>Residuos que recibe</th>
+                        <th>Operario</th>
+                        <th class="solo-gestion">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaCentros"></tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/modelos/servidor.js"></script>
+<script src="js/modelos/usuarios.js"></script>
+<script src="js/modelos/gestion.js"></script>
+<script src="js/vistas/comun.js"></script>
+<script src="js/vistas/tablas.js"></script>
+<script src="js/controladores/sesion.js"></script>
+<script src="js/controladores/centros.js"></script>
+</body>
+</html>

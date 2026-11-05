@@ -17,8 +17,8 @@ async function revisarSesion() {
     return true;
 }
 
-// Devuelve true si el usuario puede dar de alta contenedores y camiones
-function puedeRegistrar() {
+// Devuelve true si el usuario puede agregar, editar y borrar contenedores, camiones, centros y maquinaria
+function puedeEditar() {
     return usuarioLogueado.rol == "Administrador" || usuarioLogueado.rol == "Operario";
 }
 

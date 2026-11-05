@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maquinaria | SiGeRU</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="panel">
+    <aside class="sidebar">
+        <div class="logo">SiGeRU</div>
+        <a href="panel.html">🏠 Inicio</a>
+        <a href="contenedores.html">🗑️ Contenedores</a>
+        <a href="camiones.html" class="no-vecino">🚛 Camiones</a>
+        <a href="centros.html" class="no-vecino">🏭 Centros de acopio</a>
+        <a href="maquinaria.html" class="activo no-vecino">⚙️ Maquinaria</a>
+        <a href="usuarios.html" class="solo-admin">👥 Usuarios</a>
+        <div class="usuario">
+            <div>
+                <strong id="nombreUsuario"></strong>
+                <span id="rolUsuario"></span>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="salir()">Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <main class="contenido">
+        <div class="encabezado">
+            <h1>Maquinaria</h1>
+            <button class="btn btn-primary solo-gestion" onclick="nuevaMaquina()">+ Nueva máquina</button>
+        </div>
+
+        <div id="mensaje" class="mensaje"></div>
+
+        <!-- Ventana emergente (modal) con el formulario para agregar o modificar. Empieza oculta -->
+        <dialog id="formModal">
+            <h3 id="tituloModal"></h3>
+            <form id="formMaquina">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nombre">Nombre *</label>
+                        <input id="nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tipo">Tipo</label>
+                        <input id="tipo" placeholder="Compactadora, clasificadora...">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="estado">Estado</label>
+                        <select id="estado">
+                            <option>Operativa</option>
+                            <option>En reparación</option>
+                            <option>Fuera de servicio</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_instalacion">Instalación donde está</label>
+                        <select id="id_instalacion">
+                            <option value="">Sin asignar</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+            </form>
+        </dialog>
+
+        <input id="buscador" class="buscador" placeholder="Buscar por nombre, tipo, estado o instalación..." oninput="buscar()">
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Tipo</th>
+                        <th>Estado</th>
+                        <th>Instalación</th>
+                        <th class="solo-gestion">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaMaquinaria"></tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/modelos/servidor.js"></script>
+<script src="js/modelos/usuarios.js"></script>
+<script src="js/modelos/gestion.js"></script>
+<script src="js/vistas/comun.js"></script>
+<script src="js/vistas/tablas.js"></script>
+<script src="js/controladores/sesion.js"></script>
+<script src="js/controladores/maquinaria.js"></script>
+</body>
+</html>

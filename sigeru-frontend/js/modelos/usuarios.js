@@ -19,3 +19,11 @@ function obtenerUsuarios() {
 function crearUsuario(datos) {
     return pedirAlServidor(API_USUARIOS + "/usuarios", "POST", datos);
 }
+
+function modificarUsuario(id, datos) {
+    return pedirAlServidor(API_USUARIOS + "/usuarios?id=" + id, "PUT", datos);
+}
+
+function borrarUsuario(id) {
+    return pedirAlServidor(API_USUARIOS + "/usuarios?id=" + id, "DELETE");
+}

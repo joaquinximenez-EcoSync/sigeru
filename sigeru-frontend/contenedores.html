@@ -13,6 +13,8 @@
         <a href="panel.html">🏠 Inicio</a>
         <a href="contenedores.html" class="activo">🗑️ Contenedores</a>
         <a href="camiones.html" class="no-vecino">🚛 Camiones</a>
+        <a href="centros.html" class="no-vecino">🏭 Centros de acopio</a>
+        <a href="maquinaria.html" class="no-vecino">⚙️ Maquinaria</a>
         <a href="usuarios.html" class="solo-admin">👥 Usuarios</a>
         <div class="usuario">
             <div>
@@ -31,9 +33,9 @@
 
         <div id="mensaje" class="mensaje"></div>
 
-        <!-- Ventana emergente (modal) con el formulario para agregar. Empieza oculta -->
+        <!-- Ventana emergente (modal) con el formulario para agregar o modificar. Empieza oculta -->
         <dialog id="formModal">
-            <h3>Nuevo contenedor</h3>
+            <h3 id="tituloModal"></h3>
             <form id="formContenedor">
                 <div class="form-row">
                     <div class="form-group">
@@ -82,6 +84,7 @@
                         <th>Tipo de residuo</th>
                         <th>Capacidad</th>
                         <th>Estado</th>
+                        <th class="solo-gestion">Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="tablaContenedores"></tbody>

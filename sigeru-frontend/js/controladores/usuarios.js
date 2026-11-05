@@ -1,6 +1,7 @@
-// Controlador de la pagina de usuarios
+// Controlador de la pagina de usuarios (solo la ve el administrador)
 
 let listaUsuarios = [];
+let idEditando = null; // null cuando se esta agregando uno nuevo
 
 async function iniciar() {
     const haySesion = await revisarSesion();
@@ -12,7 +13,7 @@ async function iniciar() {
 async function cargarUsuarios() {
     try {
         listaUsuarios = await obtenerUsuarios();
-        mostrarTablaUsuarios(listaUsuarios);
+        mostrarTablaUsuarios(listaUsuarios, true);
     } catch (error) {
         mostrarMensaje(error.message, true);
     }
@@ -29,12 +30,54 @@ function buscar() {
             filtrados.push(u);
         }
     }
-    mostrarTablaUsuarios(filtrados);
+    mostrarTablaUsuarios(filtrados, true);
 }
 
 function nuevoUsuario() {
+    idEditando = null;
     document.getElementById("formUsuario").reset();
+    document.getElementById("tituloModal").textContent = "Nuevo usuario";
+
+    // Al crear un usuario la contraseña es obligatoria
+    document.getElementById("contrasena").required = true;
+    document.getElementById("ayudaContrasena").textContent = "Mínimo 6 caracteres.";
     abrirModal();
+}
+
+// Abre el formulario con los datos del usuario elegido
+function editarUsuario(id) {
+    const u = buscarPorId(listaUsuarios, id);
+    idEditando = id;
+
+    document.getElementById("primer_nombre").value = u.primer_nombre;
+    document.getElementById("primer_apellido").value = u.primer_apellido;
+    document.getElementById("email").value = u.email;
+    document.getElementById("telefono").value = u.telefono ?? "";
+    document.getElementById("rol").value = u.rol;
+    document.getElementById("calle").value = u.calle ?? "";
+    document.getElementById("zona").value = u.zona ?? "";
+    document.getElementById("especialidad").value = u.especialidad ?? "";
+
+    // Al modificar, la contraseña solo se cambia si escriben una nueva
+    document.getElementById("contrasena").value = "";
+    document.getElementById("contrasena").required = false;
+    document.getElementById("ayudaContrasena").textContent = "Déjala vacía para no cambiarla.";
+
+    document.getElementById("tituloModal").textContent = "Modificar usuario #" + id;
+    abrirModal();
+}
+
+async function borrarUsuarioElegido(id) {
+    if (!confirm("¿Seguro que quieres borrar el usuario #" + id + "?")) {
+        return;
+    }
+    try {
+        const respuesta = await borrarUsuario(id);
+        mostrarMensaje(respuesta.mensaje, false);
+        cargarUsuarios();
+    } catch (error) {
+        mostrarMensaje(error.message, true);
+    }
 }
 
 document.getElementById("formUsuario").addEventListener("submit", async function (evento) {
@@ -53,7 +96,12 @@ document.getElementById("formUsuario").addEventListener("submit", async function
     };
 
     try {
-        const respuesta = await crearUsuario(datos);
+        let respuesta;
+        if (idEditando == null) {
+            respuesta = await crearUsuario(datos);
+        } else {
+            respuesta = await modificarUsuario(idEditando, datos);
+        }
         cerrarModal();
         mostrarMensaje(respuesta.mensaje, false);
         cargarUsuarios();
