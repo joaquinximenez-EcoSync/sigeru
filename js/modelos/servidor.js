@@ -3,7 +3,7 @@
 // Hace un pedido a una API y devuelve la respuesta en JSON.
 // Si la API devuelve un error, lanza el mensaje de error.
 async function pedirAlServidor(url, metodo = "GET", datos = null) {
-    // credentials: "include" hace que se mande la cookie de la sesion
+    // credentials: "include" manda los datos de la sesion, asi la API sabe quien sos
     const opciones = { method: metodo, credentials: "include" };
 
     if (datos != null) {

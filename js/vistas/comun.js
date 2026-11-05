@@ -11,7 +11,7 @@ function mostrarMensaje(texto, esError) {
     }
 }
 
-// Para que nadie pueda meter codigo HTML en las tablas (ataque XSS)
+// Para que nadie pueda meter codigo HTML en las tablas desde un formulario
 function limpiarTexto(texto) {
     if (texto == null) return "";
     return String(texto)
