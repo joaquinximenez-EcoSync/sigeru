@@ -13,7 +13,7 @@ PHP 8.
 
 ```
 api.php                       Punto de entrada: recibe la solicitud y llama al controlador
-config.php                    CORS, roles y sesión
+config.php                    Sesión y formato de respuesta
 modelos/Usuario.php           Modelo (clase): guarda y busca usuarios
 controladores/usuarios.php    Controlador: valida los datos y usa el modelo
 vistas/respuesta.php          Vista: devuelve la respuesta en JSON

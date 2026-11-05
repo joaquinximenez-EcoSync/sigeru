@@ -3,7 +3,7 @@
 
 // Revisa que los datos del formulario esten bien. Si hay un error lo devuelve y corta.
 function validarUsuario($datos) {
-    global $rolesValidos;
+    $rolesValidos = ["Administrador", "Operario", "Recolector", "Vecino"];
 
     if (empty($datos['primer_nombre']) || empty($datos['primer_apellido']) || empty($datos['email']) || empty($datos['contrasena'])) {
         responder(["error" => "Completa todos los campos obligatorios"], 400);
