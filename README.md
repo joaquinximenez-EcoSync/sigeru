@@ -15,10 +15,19 @@ Proyecto de pasaje de grado de **EcoSync** - ESI 2026.
 ## Cómo ejecutarlo (XAMPP)
 
 1. Copiar las carpetas `sigeru-landing`, `sigeru-frontend`, `sigeru-api-usuarios` y `sigeru-api-gestion` dentro de `C:\xampp\htdocs\`.
-2. Prender **Apache** en XAMPP.
-3. Abrir http://localhost/sigeru-landing/
+2. Prender **Apache** y **MySQL** en XAMPP.
+3. Entrar a http://localhost/phpmyadmin → **Importar** → `sigeru-base-datos/ddl/sigeru_ddl.sql`.
+4. Otra vez **Importar** → `sigeru-base-datos/datos/sigeru_datos_prueba.sql` (datos de prueba).
+5. Abrir http://localhost/sigeru-landing/
 
-Usuario de prueba: **admin@sigeru.uy** / **admin123**
+## Usuarios de prueba
+
+| Correo | Contraseña | Rol |
+|--------|------------|-----|
+| admin@sigeru.uy | admin123 | Administrador |
+| operario@sigeru.uy | 123456 | Operario |
+| recolector@sigeru.uy | 123456 | Recolector |
+| vecino@sigeru.uy | 123456 | Vecino |
 
 Cada carpeta tiene su propio README con más detalles.
 
