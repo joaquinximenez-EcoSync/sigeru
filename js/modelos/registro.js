@@ -3,8 +3,6 @@
 async function enviarRegistro(datos) {
     const respuesta = await fetch(API_USUARIOS + "/registro", {
         method: "POST",
-        // Manda los datos de la sesion, porque en esta entrega los usuarios se guardan ahi
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(datos)
     });
