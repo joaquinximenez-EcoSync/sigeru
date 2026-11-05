@@ -1,5 +1,5 @@
 <?php
-// Modelo Usuario: guarda y busca usuarios en la base de datos
+// Modelo Usuario: guarda, busca, modifica y borra usuarios en la base de datos
 
 class Usuario
 {
@@ -12,6 +12,14 @@ class Usuario
                          FROM usuarios u
                          LEFT JOIN vecinos v ON u.id_usuario = v.id_usuario
                          LEFT JOIN operarios o ON u.id_usuario = o.id_usuario";
+
+    // Tabla donde se guardan los datos de cada rol
+    private $tablaDelRol = [
+        "Administrador" => "administradores",
+        "Operario" => "operarios",
+        "Recolector" => "recolectores",
+        "Vecino" => "vecinos"
+    ];
 
     public function __construct($conn)
     {
@@ -69,7 +77,75 @@ class Usuario
         // Numero de id que le dio la base de datos al usuario nuevo
         $id = $this->conn->insert_id;
 
-        // Segun el rol, tambien se guarda en su tabla
+        $this->guardarDatosDelRol($id, $rol, $datos);
+        return $this->obtenerPorId($id);
+    }
+
+    // Cambia los datos de un usuario. La contraseña solo se cambia si escribieron una nueva.
+    public function modificar($id, $datos)
+    {
+        $anterior = $this->obtenerPorId($id);
+
+        $nombre = $datos['primer_nombre'];
+        $apellido = $datos['primer_apellido'];
+        $email = $datos['email'];
+        $telefono = $datos['telefono'] ?? "";
+        $rol = $datos['rol'];
+
+        if ($telefono == "") {
+            $telefono = null;
+        }
+
+        $stmt = $this->conn->prepare("UPDATE usuarios SET primer_nombre = ?, primer_apellido = ?, email = ?, telefono = ?, rol = ? WHERE id_usuario = ?");
+        $stmt->bind_param("sssssi", $nombre, $apellido, $email, $telefono, $rol, $id);
+        $stmt->execute();
+
+        if (!empty($datos['contrasena'])) {
+            $contrasena = password_hash($datos['contrasena'], PASSWORD_DEFAULT);
+            $stmt = $this->conn->prepare("UPDATE usuarios SET contrasena = ? WHERE id_usuario = ?");
+            $stmt->bind_param("si", $contrasena, $id);
+            $stmt->execute();
+        }
+
+        if ($anterior['rol'] != $rol) {
+            // Si le cambiaron el rol, se borra de la tabla del rol viejo y se guarda en la del nuevo
+            $tabla = $this->tablaDelRol[$anterior['rol']];
+            $stmt = $this->conn->prepare("DELETE FROM $tabla WHERE id_usuario = ?");
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+
+            $this->guardarDatosDelRol($id, $rol, $datos);
+        } else {
+            // Si sigue con el mismo rol, se actualizan los datos de su tabla
+            if ($rol == "Vecino") {
+                $calle = $datos['calle'] ?? "";
+                $zona = $datos['zona'] ?? "";
+                $stmt = $this->conn->prepare("UPDATE vecinos SET calle = ?, zona = ? WHERE id_usuario = ?");
+                $stmt->bind_param("ssi", $calle, $zona, $id);
+                $stmt->execute();
+            }
+            if ($rol == "Operario") {
+                $especialidad = $datos['especialidad'] ?? "";
+                $stmt = $this->conn->prepare("UPDATE operarios SET especialidad = ? WHERE id_usuario = ?");
+                $stmt->bind_param("si", $especialidad, $id);
+                $stmt->execute();
+            }
+        }
+
+        return $this->obtenerPorId($id);
+    }
+
+    // Borra un usuario (sus datos del rol se borran solos por el ON DELETE CASCADE)
+    public function eliminar($id)
+    {
+        $stmt = $this->conn->prepare("DELETE FROM usuarios WHERE id_usuario = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+    }
+
+    // Guarda los datos que van en la tabla de cada rol
+    private function guardarDatosDelRol($id, $rol, $datos)
+    {
         if ($rol == "Vecino") {
             $calle = $datos['calle'] ?? "";
             $zona = $datos['zona'] ?? "";
@@ -93,7 +169,5 @@ class Usuario
             $stmt->bind_param("i", $id);
             $stmt->execute();
         }
-
-        return $this->obtenerPorId($id);
     }
 }
