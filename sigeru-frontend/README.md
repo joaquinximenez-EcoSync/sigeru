@@ -2,30 +2,37 @@
 
 Interfaz para los usuarios del Sistema de Gestión de Residuos Urbanos (SiGeRU), desarrollado por **EcoSync**.
 
-Permite iniciar sesión y, según el rol, navegar por los listados y formularios de usuarios, contenedores y camiones.
+Permite iniciar sesión y, según el rol, ver, agregar, modificar y borrar usuarios, contenedores,
+camiones, centros de acopio y maquinaria.
 No guarda datos ni accede a la base de datos: todo se hace a través de las APIs.
 
 ## Tecnologías
 
 HTML5, CSS y JavaScript.
 
-## Roles y navegación
+## Qué puede hacer cada rol
 
-| Rol           | Contenedores    | Camiones        | Usuarios        |
-|---------------|-----------------|-----------------|-----------------|
-| Administrador | Ver y registrar | Ver y registrar | Ver y registrar |
-| Operario      | Ver y registrar | Ver y registrar | -               |
-| Recolector    | Ver             | Ver             | -               |
-| Vecino        | Ver             | -               | -               |
+"Todo" = ver, agregar, modificar y borrar.
+
+| Rol           | Contenedores | Camiones | Centros de acopio | Maquinaria | Usuarios |
+|---------------|--------------|----------|-------------------|------------|----------|
+| Administrador | Todo         | Todo     | Todo              | Todo       | Todo     |
+| Operario      | Todo         | Todo     | Todo              | Todo       | -        |
+| Recolector    | Ver          | Ver      | Ver               | Ver        | -        |
+| Vecino        | Ver          | -        | -                 | -          | -        |
+
+El menú y los botones se muestran según el rol, y además cada API revisa el rol antes de responder.
 
 ## Estructura (MVC)
 
 ```
 index.html                      Inicio de sesión
 panel.html                      Inicio del panel
-usuarios.html                   Listado y formulario de usuarios
-contenedores.html               Listado y formulario de contenedores
-camiones.html                   Listado y formulario de camiones
+usuarios.html                   Usuarios
+contenedores.html               Contenedores
+camiones.html                   Camiones
+centros.html                    Centros de acopio
+maquinaria.html                 Maquinaria
 css/styles.css
 js/config.js                    Direcciones de las APIs
 js/modelos/                     Pedidos a las APIs (servidor, usuarios, gestion)

@@ -12,25 +12,30 @@ PHP 8.
 ## Estructura (MVC)
 
 ```
-api.php                       Punto de entrada: recibe la solicitud y llama al controlador
+api.php                       Punto de entrada: recibe la solicitud, revisa el rol y llama al controlador
 config.php                    Sesión y formato de respuesta
 conexion.php                  Conexión a la base de datos MySQL
-modelos/Usuario.php           Modelo (clase): guarda y busca usuarios
+seguridad.php                 Revisa que haya sesión iniciada y que el rol tenga permiso
+modelos/Usuario.php           Modelo (clase): guarda, busca, modifica y borra usuarios
 controladores/usuarios.php    Controlador: valida los datos y usa el modelo
 vistas/respuesta.php          Vista: devuelve la respuesta en JSON
 ```
 
 ## Endpoints
 
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| POST | `api.php/registro` | Registro de un vecino (desde la landing) |
-| POST | `api.php/login` | Inicio de sesión |
-| POST | `api.php/logout` | Cierre de sesión |
-| GET | `api.php/sesion` | Usuario que inició sesión |
-| GET | `api.php/usuarios` | Lista de usuarios |
-| GET | `api.php/usuarios?id=1` | Un usuario |
-| POST | `api.php/usuarios` | Crear un usuario con cualquier rol |
+| Método | Endpoint | Descripción | Quién puede |
+|--------|----------|-------------|-------------|
+| POST | `api.php/registro` | Registro de un vecino (desde la landing) | Cualquiera |
+| POST | `api.php/login` | Inicio de sesión | Cualquiera |
+| POST | `api.php/logout` | Cierre de sesión | Cualquiera |
+| GET | `api.php/sesion` | Usuario que inició sesión | Con sesión iniciada |
+| GET | `api.php/usuarios` | Lista de usuarios | Administrador |
+| GET | `api.php/usuarios?id=1` | Un usuario | Administrador |
+| POST | `api.php/usuarios` | Crear un usuario con cualquier rol | Administrador |
+| PUT | `api.php/usuarios?id=1` | Modificar un usuario (la contraseña es opcional) | Administrador |
+| DELETE | `api.php/usuarios?id=1` | Borrar un usuario (no se puede borrar a sí mismo) | Administrador |
+
+Según la RNE04, solo el administrador puede crear, modificar o eliminar usuarios.
 
 Ejemplo:
 

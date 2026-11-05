@@ -1,6 +1,6 @@
 # SiGeRU - API de Gestión
 
-API RESTful encargada de la gestión de contenedores y camiones del
+API RESTful encargada de la gestión de contenedores, camiones, centros de acopio y maquinaria del
 Sistema de Gestión de Residuos Urbanos (SiGeRU), desarrollado por **EcoSync**.
 
 Los datos se guardan en la base de datos MySQL `sigeru` (ver `sigeru-base-datos`).
@@ -12,33 +12,45 @@ PHP 8.
 ## Estructura (MVC)
 
 ```
-api.php                          Punto de entrada: recibe la solicitud y llama al controlador
+api.php                          Punto de entrada: recibe la solicitud, revisa el rol y llama al controlador
 config.php                       Sesión y formato de respuesta
 conexion.php                     Conexión a la base de datos MySQL
+seguridad.php                    Revisa que haya sesión iniciada y que el rol tenga permiso
 modelos/Contenedor.php           Modelo (clase) de contenedores y tipos de residuo
 modelos/Camion.php               Modelo (clase) de camiones
+modelos/Centro.php               Modelo (clase) de centros de acopio
+modelos/Maquinaria.php           Modelo (clase) de maquinaria
 controladores/contenedores.php   Controlador de contenedores
 controladores/camiones.php       Controlador de camiones
+controladores/centros.php        Controlador de centros de acopio
+controladores/maquinaria.php     Controlador de maquinaria
 vistas/respuesta.php             Vista: devuelve la respuesta en JSON
 ```
 
 ## Endpoints
 
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `api.php/contenedores` | Lista de contenedores |
-| GET | `api.php/contenedores?id=1` | Un contenedor |
-| POST | `api.php/contenedores` | Registrar un contenedor |
-| GET | `api.php/tipos_residuo` | Lista de tipos de residuo |
-| GET | `api.php/camiones` | Lista de camiones |
-| GET | `api.php/camiones?id=1` | Un camión |
-| POST | `api.php/camiones` | Registrar un camión |
+Todos necesitan la sesión iniciada (se inicia con la API de Usuarios).
+Para ver, modificar o borrar uno solo se agrega `?id=1` a la dirección.
 
-Ejemplo:
+| Endpoint | GET (ver) | POST (agregar) / PUT (modificar) / DELETE (borrar) |
+|----------|-----------|----------------------------------------------------|
+| `api.php/contenedores` | Todos los roles | Administrador y Operario |
+| `api.php/tipos_residuo` | Todos los roles | - |
+| `api.php/camiones` | Administrador, Operario y Recolector | Administrador y Operario |
+| `api.php/centros` | Administrador, Operario y Recolector | Administrador y Operario |
+| `api.php/maquinaria` | Administrador, Operario y Recolector | Administrador y Operario |
+| `api.php/operarios` | Administrador y Operario | - |
+| `api.php/instalaciones` | Administrador y Operario | - |
 
-```
-curl -X POST http://localhost/sigeru-api-gestion/api.php/camiones -H "Content-Type: application/json" -d "{\"matricula\":\"SBA 1234\",\"estado\":\"Operativo\",\"disponibilidad\":\"Disponible\"}"
-```
+Respuestas de error:
+
+| Código | Cuándo |
+|--------|--------|
+| 400 | Faltan datos o están mal |
+| 401 | No hay sesión iniciada |
+| 403 | El rol no tiene permiso |
+| 404 | No existe el registro o el endpoint |
+| 409 | Dato repetido (matrícula) o contenedor con incidencias que no se puede borrar |
 
 ## Cómo ejecutarla (XAMPP)
 
