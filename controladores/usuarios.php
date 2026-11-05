@@ -28,13 +28,13 @@ function validarUsuario($datos) {
     }
 }
 
-// GET usuarios
+// Devuelve la lista de todos los usuarios (GET usuarios)
 function listarUsuarios() {
     $usuario = new Usuario();
     responder($usuario->obtenerTodos());
 }
 
-// GET usuarios?id=1
+// Busca un usuario por su numero de id (GET usuarios?id=1)
 function obtenerUsuario($id) {
     $usuario = new Usuario();
     $encontrado = $usuario->obtenerPorId($id);
@@ -45,7 +45,7 @@ function obtenerUsuario($id) {
     responder($encontrado);
 }
 
-// POST registro (desde la landing: las personas que se registran solas son vecinos)
+// Registro desde la landing: las personas que se registran solas son vecinos (POST registro)
 function registrarUsuario($datos) {
     $datos['rol'] = "Vecino";
     validarUsuario($datos);
@@ -55,7 +55,7 @@ function registrarUsuario($datos) {
     responder(["mensaje" => "Registro realizado correctamente", "usuario" => $nuevo], 201);
 }
 
-// POST usuarios (desde el formulario de usuarios del frontend, con cualquier rol)
+// Crea un usuario desde el formulario del frontend, con cualquier rol (POST usuarios)
 function crearUsuario($datos) {
     validarUsuario($datos);
 
@@ -64,7 +64,7 @@ function crearUsuario($datos) {
     responder(["mensaje" => "Usuario creado correctamente", "usuario" => $nuevo], 201);
 }
 
-// POST login
+// Inicia la sesion si el correo y la contraseña son correctos (POST login)
 function iniciarSesion($datos) {
     $email = $datos['email'] ?? "";
     $contrasena = $datos['contrasena'] ?? "";
@@ -90,13 +90,13 @@ function iniciarSesion($datos) {
     responder(["mensaje" => "Bienvenido", "usuario" => $_SESSION['usuario_logueado']]);
 }
 
-// POST logout
+// Cierra la sesion (POST logout)
 function cerrarSesion() {
     unset($_SESSION['usuario_logueado']);
     responder(["mensaje" => "Sesión cerrada"]);
 }
 
-// GET sesion: devuelve quien esta logueado
+// Devuelve quien inicio sesion (GET sesion)
 function sesionActual() {
     if (!isset($_SESSION['usuario_logueado'])) {
         responder(["error" => "No hay ninguna sesión iniciada"], 401);

@@ -1,7 +1,7 @@
 <?php
 // API RESTful de Usuarios - SiGeRU
 //
-// Endpoints:
+// Direcciones que tiene esta API (endpoints):
 //   POST api.php/registro      registro de un vecino (desde la landing)
 //   POST api.php/login         inicio de sesion
 //   POST api.php/logout        cierre de sesion
@@ -15,13 +15,13 @@ require_once "vistas/respuesta.php";
 require_once "modelos/Usuario.php";
 require_once "controladores/usuarios.php";
 
-// Verbo HTTP de la solicitud
+// Tipo de pedido: GET (pedir datos) o POST (mandar datos)
 $metodo = $_SERVER['REQUEST_METHOD'];
 
-// Endpoint pedido (lo que viene despues de api.php/)
+// Que se pidio: lo que viene despues de api.php/ (por ejemplo login)
 $endpoint = trim($_SERVER['PATH_INFO'] ?? "", "/");
 
-// Datos que llegan en formato JSON
+// Datos que mando el formulario (llegan en formato JSON)
 $datos = json_decode(file_get_contents("php://input"), true) ?? [];
 
 switch ($endpoint) {
@@ -53,5 +53,5 @@ switch ($endpoint) {
         break;
 }
 
-// Si llega hasta aca, el endpoint o el metodo no existen
+// Si llega hasta aca es porque se pidio algo que la API no tiene
 responder(["error" => "Endpoint no encontrado"], 404);
