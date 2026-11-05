@@ -21,10 +21,14 @@ async function cargarCamiones() {
 function buscar() {
     const texto = document.getElementById("buscador").value.toLowerCase();
 
-    const filtrados = listaCamiones.filter(function (c) {
+    // Guardamos solo los que tienen el texto buscado
+    const filtrados = [];
+    for (const c of listaCamiones) {
         const contenido = (c.matricula + " " + c.estado + " " + c.disponibilidad).toLowerCase();
-        return contenido.includes(texto);
-    });
+        if (contenido.includes(texto)) {
+            filtrados.push(c);
+        }
+    }
     mostrarTablaCamiones(filtrados);
 }
 

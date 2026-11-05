@@ -11,9 +11,9 @@
     <aside class="sidebar">
         <div class="logo">SiGeRU</div>
         <a href="panel.html">🏠 Inicio</a>
-        <a href="contenedores.html">🗑️ Contenedores</a>
-        <a href="camiones.html" data-roles="Administrador,Operario,Recolector">🚛 Camiones</a>
-        <a href="usuarios.html" data-roles="Administrador">👥 Usuarios</a>
+        <a href="contenedores.html" class="activo">🗑️ Contenedores</a>
+        <a href="camiones.html" class="no-vecino">🚛 Camiones</a>
+        <a href="usuarios.html" class="solo-admin">👥 Usuarios</a>
         <div class="usuario">
             <div>
                 <strong id="nombreUsuario"></strong>
@@ -26,7 +26,7 @@
     <main class="contenido">
         <div class="encabezado">
             <h1>Contenedores</h1>
-            <button class="btn btn-primary" onclick="nuevoContenedor()" data-roles="Administrador,Operario">+ Nuevo contenedor</button>
+            <button class="btn btn-primary solo-gestion" onclick="nuevoContenedor()">+ Nuevo contenedor</button>
         </div>
 
         <div id="mensaje" class="mensaje"></div>

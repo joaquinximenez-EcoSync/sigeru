@@ -27,10 +27,14 @@ async function cargarContenedores() {
 function buscar() {
     const texto = document.getElementById("buscador").value.toLowerCase();
 
-    const filtrados = listaContenedores.filter(function (c) {
+    // Guardamos solo los que tienen el texto buscado
+    const filtrados = [];
+    for (const c of listaContenedores) {
         const contenido = (c.calle + " " + c.zona + " " + c.estado + " " + c.residuo).toLowerCase();
-        return contenido.includes(texto);
-    });
+        if (contenido.includes(texto)) {
+            filtrados.push(c);
+        }
+    }
     mostrarTablaContenedores(filtrados);
 }
 

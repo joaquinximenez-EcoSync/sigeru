@@ -26,22 +26,27 @@ function mostrarDatosUsuario(usuario) {
     document.getElementById("nombreUsuario").textContent = usuario.nombre;
     document.getElementById("rolUsuario").textContent = usuario.rol;
 
-    // Las partes de la pagina que tienen data-roles solo se muestran si el rol del usuario esta en esa lista
-    const elementos = document.querySelectorAll("[data-roles]");
-    for (const elemento of elementos) {
-        const roles = elemento.dataset.roles.split(",");
-        if (!roles.includes(usuario.rol)) {
-            elemento.style.display = "none";
-        }
+    // Solo el administrador ve lo de usuarios
+    if (usuario.rol != "Administrador") {
+        ocultar("solo-admin");
     }
 
-    // Marca en el menu la pagina en la que estamos
-    const paginaActual = window.location.pathname.split("/").pop();
-    const enlaces = document.querySelectorAll(".sidebar a");
-    for (const enlace of enlaces) {
-        if (enlace.getAttribute("href") == paginaActual) {
-            enlace.classList.add("activo");
-        }
+    // Solo el administrador y el operario pueden agregar contenedores y camiones
+    if (usuario.rol != "Administrador" && usuario.rol != "Operario") {
+        ocultar("solo-gestion");
+    }
+
+    // Los vecinos no ven los camiones
+    if (usuario.rol == "Vecino") {
+        ocultar("no-vecino");
+    }
+}
+
+// Oculta todas las partes de la pagina que tienen esa clase
+function ocultar(clase) {
+    const elementos = document.querySelectorAll("." + clase);
+    for (const elemento of elementos) {
+        elemento.style.display = "none";
     }
 }
 

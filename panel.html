@@ -10,10 +10,10 @@
 <div class="panel">
     <aside class="sidebar">
         <div class="logo">SiGeRU</div>
-        <a href="panel.html">🏠 Inicio</a>
+        <a href="panel.html" class="activo">🏠 Inicio</a>
         <a href="contenedores.html">🗑️ Contenedores</a>
-        <a href="camiones.html" data-roles="Administrador,Operario,Recolector">🚛 Camiones</a>
-        <a href="usuarios.html" data-roles="Administrador">👥 Usuarios</a>
+        <a href="camiones.html" class="no-vecino">🚛 Camiones</a>
+        <a href="usuarios.html" class="solo-admin">👥 Usuarios</a>
         <div class="usuario">
             <div>
                 <strong id="nombreUsuario"></strong>
@@ -38,11 +38,11 @@
                 <strong id="contenedoresProblema">-</strong>
                 <span>Contenedores rotos o desbordados</span>
             </div>
-            <div class="stat" data-roles="Administrador,Operario,Recolector">
+            <div class="stat no-vecino">
                 <strong id="totalCamiones">-</strong>
                 <span>Camiones</span>
             </div>
-            <div class="stat" data-roles="Administrador">
+            <div class="stat solo-admin">
                 <strong id="totalUsuarios">-</strong>
                 <span>Usuarios</span>
             </div>
@@ -53,11 +53,11 @@
                 <h3>🗑️ Contenedores</h3>
                 <p>Consulta la ubicación, el estado y el tipo de residuo de los contenedores.</p>
             </a>
-            <a class="card card-enlace" href="camiones.html" data-roles="Administrador,Operario,Recolector">
+            <a class="card card-enlace no-vecino" href="camiones.html">
                 <h3>🚛 Camiones</h3>
                 <p>Revisa la flota y su disponibilidad.</p>
             </a>
-            <a class="card card-enlace" href="usuarios.html" data-roles="Administrador">
+            <a class="card card-enlace solo-admin" href="usuarios.html">
                 <h3>👥 Usuarios</h3>
                 <p>Consulta y registra usuarios de todos los roles.</p>
             </a>

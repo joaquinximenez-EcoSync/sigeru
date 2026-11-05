@@ -21,10 +21,14 @@ async function cargarUsuarios() {
 function buscar() {
     const texto = document.getElementById("buscador").value.toLowerCase();
 
-    const filtrados = listaUsuarios.filter(function (u) {
+    // Guardamos solo los que tienen el texto buscado
+    const filtrados = [];
+    for (const u of listaUsuarios) {
         const contenido = (u.primer_nombre + " " + u.primer_apellido + " " + u.email + " " + u.rol).toLowerCase();
-        return contenido.includes(texto);
-    });
+        if (contenido.includes(texto)) {
+            filtrados.push(u);
+        }
+    }
     mostrarTablaUsuarios(filtrados);
 }
 
