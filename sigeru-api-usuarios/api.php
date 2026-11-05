@@ -11,6 +11,7 @@
 //   POST api.php/usuarios      crear un usuario con cualquier rol
 
 require_once "config.php";
+require_once "conexion.php";
 require_once "vistas/respuesta.php";
 require_once "modelos/Usuario.php";
 require_once "controladores/usuarios.php";
@@ -24,13 +25,16 @@ $endpoint = trim($_SERVER['PATH_INFO'] ?? "", "/");
 // Datos que mando el formulario (llegan en formato JSON)
 $datos = json_decode(file_get_contents("php://input"), true) ?? [];
 
+// Modelo que usa la base de datos
+$usuario = new Usuario($conn);
+
 switch ($endpoint) {
     case "registro":
-        if ($metodo == "POST") registrarUsuario($datos);
+        if ($metodo == "POST") registrarUsuario($usuario, $datos);
         break;
 
     case "login":
-        if ($metodo == "POST") iniciarSesion($datos);
+        if ($metodo == "POST") iniciarSesion($usuario, $datos);
         break;
 
     case "logout":
@@ -44,12 +48,12 @@ switch ($endpoint) {
     case "usuarios":
         if ($metodo == "GET") {
             if (isset($_GET['id'])) {
-                obtenerUsuario($_GET['id']);
+                obtenerUsuario($usuario, $_GET['id']);
             } else {
-                listarUsuarios();
+                listarUsuarios($usuario);
             }
         }
-        if ($metodo == "POST") crearUsuario($datos);
+        if ($metodo == "POST") crearUsuario($usuario, $datos);
         break;
 }
 

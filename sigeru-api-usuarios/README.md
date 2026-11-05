@@ -3,7 +3,7 @@
 API RESTful encargada del registro, la autenticación y la gestión de usuarios del
 Sistema de Gestión de Residuos Urbanos (SiGeRU), desarrollado por **EcoSync**.
 
-> **Primera entrega:** los datos se guardan en la sesión de PHP (`$_SESSION`), sin base de datos.
+Los datos se guardan en la base de datos MySQL `sigeru` (ver `sigeru-base-datos`).
 
 ## Tecnologías
 
@@ -14,6 +14,7 @@ PHP 8.
 ```
 api.php                       Punto de entrada: recibe la solicitud y llama al controlador
 config.php                    Sesión y formato de respuesta
+conexion.php                  Conexión a la base de datos MySQL
 modelos/Usuario.php           Modelo (clase): guarda y busca usuarios
 controladores/usuarios.php    Controlador: valida los datos y usa el modelo
 vistas/respuesta.php          Vista: devuelve la respuesta en JSON
@@ -40,8 +41,9 @@ curl -X POST http://localhost/sigeru-api-usuarios/api.php/login -H "Content-Type
 ## Cómo ejecutarla (XAMPP)
 
 1. Copiar la carpeta `sigeru-api-usuarios` dentro de `C:\xampp\htdocs\`.
-2. Prender **Apache** en el panel de XAMPP.
-3. La API queda en http://localhost/sigeru-api-usuarios/api.php
+2. Prender **Apache** y **MySQL** en el panel de XAMPP.
+3. Crear la base de datos importando en phpMyAdmin `sigeru-base-datos/ddl/sigeru_ddl.sql` y después `sigeru-base-datos/datos/sigeru_datos_prueba.sql`.
+4. La API queda en http://localhost/sigeru-api-usuarios/api.php
 
 Usuario de prueba: **admin@sigeru.uy** / **admin123**
 

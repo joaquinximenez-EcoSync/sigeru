@@ -2,7 +2,7 @@
 // Controlador de usuarios: valida los datos y usa el modelo Usuario
 
 // Revisa que los datos del formulario esten bien. Si hay un error lo devuelve y corta.
-function validarUsuario($datos) {
+function validarUsuario($usuario, $datos) {
     $rolesValidos = ["Administrador", "Operario", "Recolector", "Vecino"];
 
     if (empty($datos['primer_nombre']) || empty($datos['primer_apellido']) || empty($datos['email']) || empty($datos['contrasena'])) {
@@ -22,21 +22,18 @@ function validarUsuario($datos) {
         responder(["error" => "El rol no es válido"], 400);
     }
 
-    $usuario = new Usuario();
     if ($usuario->buscarPorEmail($datos['email']) != null) {
         responder(["error" => "Ese correo ya está registrado"], 409);
     }
 }
 
 // Devuelve la lista de todos los usuarios (GET usuarios)
-function listarUsuarios() {
-    $usuario = new Usuario();
+function listarUsuarios($usuario) {
     responder($usuario->obtenerTodos());
 }
 
 // Busca un usuario por su numero de id (GET usuarios?id=1)
-function obtenerUsuario($id) {
-    $usuario = new Usuario();
+function obtenerUsuario($usuario, $id) {
     $encontrado = $usuario->obtenerPorId($id);
 
     if ($encontrado == null) {
@@ -46,26 +43,24 @@ function obtenerUsuario($id) {
 }
 
 // Registro desde la landing: las personas que se registran solas son vecinos (POST registro)
-function registrarUsuario($datos) {
+function registrarUsuario($usuario, $datos) {
     $datos['rol'] = "Vecino";
-    validarUsuario($datos);
+    validarUsuario($usuario, $datos);
 
-    $usuario = new Usuario();
     $nuevo = $usuario->agregar($datos);
     responder(["mensaje" => "Registro realizado correctamente", "usuario" => $nuevo], 201);
 }
 
 // Crea un usuario desde el formulario del frontend, con cualquier rol (POST usuarios)
-function crearUsuario($datos) {
-    validarUsuario($datos);
+function crearUsuario($usuario, $datos) {
+    validarUsuario($usuario, $datos);
 
-    $usuario = new Usuario();
     $nuevo = $usuario->agregar($datos);
     responder(["mensaje" => "Usuario creado correctamente", "usuario" => $nuevo], 201);
 }
 
 // Inicia la sesion si el correo y la contraseña son correctos (POST login)
-function iniciarSesion($datos) {
+function iniciarSesion($usuario, $datos) {
     $email = $datos['email'] ?? "";
     $contrasena = $datos['contrasena'] ?? "";
 
@@ -73,7 +68,6 @@ function iniciarSesion($datos) {
         responder(["error" => "Completa el correo y la contraseña"], 400);
     }
 
-    $usuario = new Usuario();
     $encontrado = $usuario->buscarPorEmail($email);
 
     // password_verify compara la contraseña escrita con la encriptada
@@ -83,7 +77,7 @@ function iniciarSesion($datos) {
 
     // Guardamos en la sesion quien inicio sesion
     $_SESSION['usuario_logueado'] = [
-        "id" => $encontrado['id'],
+        "id" => $encontrado['id_usuario'],
         "nombre" => $encontrado['primer_nombre'] . " " . $encontrado['primer_apellido'],
         "rol" => $encontrado['rol']
     ];

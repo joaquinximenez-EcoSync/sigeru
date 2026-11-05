@@ -1,8 +1,8 @@
 <?php
 // Configuracion general de la API de Usuarios
 
-// En esta entrega los datos se guardan en la sesion (todavia no hay base de datos)
-session_name("SIGERU_USUARIOS");
+// La sesion guarda quien inicio sesion (la comparten las dos APIs)
+session_name("SIGERU");
 session_start();
 
 // La API siempre responde en formato JSON
