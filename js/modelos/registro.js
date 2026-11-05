@@ -3,14 +3,14 @@
 async function enviarRegistro(datos) {
     const respuesta = await fetch(API_USUARIOS + "/registro", {
         method: "POST",
-        // Manda la cookie de la sesion: en esta entrega los usuarios se guardan en la sesion de la API
+        // Manda los datos de la sesion, porque en esta entrega los usuarios se guardan ahi
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(datos)
     });
     const json = await respuesta.json();
 
-    // Si la API devolvio un error, lo lanzamos para mostrarlo
+    // Si la API devolvio un error, lo pasamos para mostrarlo en pantalla
     if (!respuesta.ok) {
         throw new Error(json.error);
     }
