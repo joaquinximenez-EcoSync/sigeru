@@ -1,55 +1,60 @@
 <?php
-// Modelo Camion
-// En esta entrega los camiones se guardan en $_SESSION['camiones'] (sin base de datos)
+// Modelo Camion: guarda y busca camiones en la base de datos
 
 class Camion
 {
-    public function __construct()
+    private $conn;
+
+    private $consulta = "SELECT id_camion AS id, matricula, estado, disponibilidad, capacidad_carga FROM camiones";
+
+    public function __construct($conn)
     {
-        // Si es la primera vez, cargamos algunos camiones de prueba
-        if (!isset($_SESSION['camiones'])) {
-            $_SESSION['camiones'] = [];
-            $this->agregar(["matricula" => "SBA 1234", "estado" => "Operativo", "disponibilidad" => "Disponible", "capacidad_carga" => 10000]);
-            $this->agregar(["matricula" => "SBC 5678", "estado" => "En mantenimiento", "disponibilidad" => "No disponible", "capacidad_carga" => 8000]);
-        }
+        $this->conn = $conn;
     }
 
     public function obtenerTodos()
     {
-        return $_SESSION['camiones'];
+        $result = mysqli_query($this->conn, $this->consulta . " ORDER BY id_camion");
+
+        $camiones = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $camiones[] = $row;
+        }
+        return $camiones;
     }
 
     public function obtenerPorId($id)
     {
-        foreach ($_SESSION['camiones'] as $camion) {
-            if ($camion['id'] == $id) {
-                return $camion;
-            }
-        }
-        return null;
+        $stmt = $this->conn->prepare($this->consulta . " WHERE id_camion = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc();
     }
 
     public function buscarPorMatricula($matricula)
     {
-        foreach ($_SESSION['camiones'] as $camion) {
-            if ($camion['matricula'] == $matricula) {
-                return $camion;
-            }
-        }
-        return null;
+        $stmt = $this->conn->prepare($this->consulta . " WHERE matricula = ?");
+        $stmt->bind_param("s", $matricula);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc();
     }
 
     public function agregar($datos)
     {
-        $nuevo = [
-            "id" => count($_SESSION['camiones']) + 1,
-            "matricula" => strtoupper($datos['matricula']),
-            "estado" => $datos['estado'],
-            "disponibilidad" => $datos['disponibilidad'],
-            "capacidad_carga" => $datos['capacidad_carga'] ?? ""
-        ];
+        $matricula = strtoupper($datos['matricula']);
+        $estado = $datos['estado'];
+        $disponibilidad = $datos['disponibilidad'];
+        $capacidad = $datos['capacidad_carga'] ?? "";
 
-        $_SESSION['camiones'][] = $nuevo;
-        return $nuevo;
+        // Si no escribieron capacidad, se guarda vacio (NULL)
+        if ($capacidad == "") {
+            $capacidad = null;
+        }
+
+        $stmt = $this->conn->prepare("INSERT INTO camiones (matricula, estado, disponibilidad, capacidad_carga) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssss", $matricula, $estado, $disponibilidad, $capacidad);
+        $stmt->execute();
+
+        return $this->obtenerPorId($this->conn->insert_id);
     }
 }

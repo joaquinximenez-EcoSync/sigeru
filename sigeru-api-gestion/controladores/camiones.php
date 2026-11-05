@@ -2,14 +2,12 @@
 // Controlador de camiones: valida los datos y usa el modelo Camion
 
 // Devuelve la lista de todos los camiones (GET camiones)
-function listarCamiones() {
-    $camion = new Camion();
+function listarCamiones($camion) {
     responder($camion->obtenerTodos());
 }
 
 // Busca un camion por su numero de id (GET camiones?id=1)
-function obtenerCamion($id) {
-    $camion = new Camion();
+function obtenerCamion($camion, $id) {
     $encontrado = $camion->obtenerPorId($id);
 
     if ($encontrado == null) {
@@ -19,10 +17,9 @@ function obtenerCamion($id) {
 }
 
 // Registra un camion nuevo (POST camiones)
-function registrarCamion($datos) {
+function registrarCamion($camion, $datos) {
     $estadosCamion = ["Operativo", "En mantenimiento", "Fuera de servicio"];
     $disponibilidades = ["Disponible", "En ruta", "No disponible"];
-    $camion = new Camion();
 
     if (empty($datos['matricula'])) {
         responder(["error" => "La matrícula es obligatoria"], 400);

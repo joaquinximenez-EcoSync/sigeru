@@ -3,7 +3,7 @@
 API RESTful encargada de la gestión de contenedores y camiones del
 Sistema de Gestión de Residuos Urbanos (SiGeRU), desarrollado por **EcoSync**.
 
-> **Primera entrega:** los datos se guardan en la sesión de PHP (`$_SESSION`), sin base de datos.
+Los datos se guardan en la base de datos MySQL `sigeru` (ver `sigeru-base-datos`).
 
 ## Tecnologías
 
@@ -14,6 +14,7 @@ PHP 8.
 ```
 api.php                          Punto de entrada: recibe la solicitud y llama al controlador
 config.php                       Sesión y formato de respuesta
+conexion.php                     Conexión a la base de datos MySQL
 modelos/Contenedor.php           Modelo (clase) de contenedores y tipos de residuo
 modelos/Camion.php               Modelo (clase) de camiones
 controladores/contenedores.php   Controlador de contenedores
@@ -42,6 +43,7 @@ curl -X POST http://localhost/sigeru-api-gestion/api.php/camiones -H "Content-Ty
 ## Cómo ejecutarla (XAMPP)
 
 1. Copiar la carpeta `sigeru-api-gestion` dentro de `C:\xampp\htdocs\`.
-2. Prender **Apache** en el panel de XAMPP.
-3. La API queda en http://localhost/sigeru-api-gestion/api.php
+2. Prender **Apache** y **MySQL** en el panel de XAMPP.
+3. Crear la base de datos importando en phpMyAdmin `sigeru-base-datos/ddl/sigeru_ddl.sql` y después `sigeru-base-datos/datos/sigeru_datos_prueba.sql`.
+4. La API queda en http://localhost/sigeru-api-gestion/api.php
 

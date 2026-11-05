@@ -2,14 +2,12 @@
 // Controlador de contenedores: valida los datos y usa el modelo Contenedor
 
 // Devuelve la lista de todos los contenedores (GET contenedores)
-function listarContenedores() {
-    $contenedor = new Contenedor();
+function listarContenedores($contenedor) {
     responder($contenedor->obtenerTodos());
 }
 
 // Busca un contenedor por su numero de id (GET contenedores?id=1)
-function obtenerContenedor($id) {
-    $contenedor = new Contenedor();
+function obtenerContenedor($contenedor, $id) {
     $encontrado = $contenedor->obtenerPorId($id);
 
     if ($encontrado == null) {
@@ -19,15 +17,13 @@ function obtenerContenedor($id) {
 }
 
 // Devuelve la lista de tipos de residuo (GET tipos_residuo)
-function listarTiposResiduo() {
-    $contenedor = new Contenedor();
+function listarTiposResiduo($contenedor) {
     responder($contenedor->obtenerTiposResiduo());
 }
 
 // Registra un contenedor nuevo (POST contenedores)
-function registrarContenedor($datos) {
+function registrarContenedor($contenedor, $datos) {
     $estadosContenedor = ["Funcional", "Roto", "Desbordado"];
-    $contenedor = new Contenedor();
 
     if (empty($datos['calle']) || empty($datos['zona'])) {
         responder(["error" => "La calle y la zona son obligatorias"], 400);
@@ -35,7 +31,7 @@ function registrarContenedor($datos) {
     if (!in_array($datos['estado'] ?? "", $estadosContenedor)) {
         responder(["error" => "El estado no es válido"], 400);
     }
-    if ($contenedor->nombreResiduo($datos['id_residuo'] ?? "") == null) {
+    if (empty($datos['id_residuo']) || !$contenedor->existeResiduo($datos['id_residuo'])) {
         responder(["error" => "Elige un tipo de residuo"], 400);
     }
     if (!empty($datos['capacidad']) && !is_numeric($datos['capacidad'])) {

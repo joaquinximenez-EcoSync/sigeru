@@ -1,72 +1,78 @@
 <?php
-// Modelo Contenedor
-// En esta entrega los contenedores se guardan en $_SESSION['contenedores'] (sin base de datos)
+// Modelo Contenedor: guarda y busca contenedores en la base de datos
 
 class Contenedor
 {
-    // Tipos de residuo (regla RNE01 del MER: cada contenedor guarda un solo tipo)
-    private $tiposResiduo = [
-        ["id_residuo" => 1, "nombre" => "Orgánico"],
-        ["id_residuo" => 2, "nombre" => "Reciclable"],
-        ["id_residuo" => 3, "nombre" => "No reciclable"],
-        ["id_residuo" => 4, "nombre" => "Peligroso"]
-    ];
+    private $conn;
 
-    public function __construct()
+    // Consulta que trae el contenedor con el nombre de su tipo de residuo
+    private $consulta = "SELECT c.id_contenedor AS id, c.calle, c.zona, c.estado, c.capacidad,
+                                c.id_residuo, t.nombre AS residuo
+                         FROM contenedores c
+                         LEFT JOIN tipos_residuo t ON c.id_residuo = t.id_residuo";
+
+    public function __construct($conn)
     {
-        // Si es la primera vez, cargamos algunos contenedores de prueba
-        if (!isset($_SESSION['contenedores'])) {
-            $_SESSION['contenedores'] = [];
-            $this->agregar(["calle" => "Av. 18 de Julio 1200", "zona" => "Centro", "estado" => "Funcional", "capacidad" => 1000, "id_residuo" => 2]);
-            $this->agregar(["calle" => "Rambla República de México 5500", "zona" => "Carrasco", "estado" => "Desbordado", "capacidad" => 1200, "id_residuo" => 3]);
-            $this->agregar(["calle" => "Bv. Artigas 1500", "zona" => "Tres Cruces", "estado" => "Roto", "capacidad" => 800, "id_residuo" => 1]);
-        }
+        $this->conn = $conn;
     }
 
     public function obtenerTodos()
     {
-        return $_SESSION['contenedores'];
+        $result = mysqli_query($this->conn, $this->consulta . " ORDER BY c.id_contenedor");
+
+        $contenedores = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $contenedores[] = $row;
+        }
+        return $contenedores;
     }
 
     public function obtenerPorId($id)
     {
-        foreach ($_SESSION['contenedores'] as $contenedor) {
-            if ($contenedor['id'] == $id) {
-                return $contenedor;
-            }
-        }
-        return null;
+        $stmt = $this->conn->prepare($this->consulta . " WHERE c.id_contenedor = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc();
     }
 
+    // Tipos de residuo (regla RNE01 del MER: cada contenedor guarda un solo tipo)
     public function obtenerTiposResiduo()
     {
-        return $this->tiposResiduo;
+        $result = mysqli_query($this->conn, "SELECT id_residuo, nombre FROM tipos_residuo ORDER BY nombre");
+
+        $tipos = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $tipos[] = $row;
+        }
+        return $tipos;
     }
 
-    // Devuelve el nombre de un tipo de residuo, o nada (null) si no existe
-    public function nombreResiduo($idResiduo)
+    // Devuelve true si existe ese tipo de residuo
+    public function existeResiduo($idResiduo)
     {
-        foreach ($this->tiposResiduo as $tipo) {
-            if ($tipo['id_residuo'] == $idResiduo) {
-                return $tipo['nombre'];
-            }
-        }
-        return null;
+        $stmt = $this->conn->prepare("SELECT id_residuo FROM tipos_residuo WHERE id_residuo = ?");
+        $stmt->bind_param("i", $idResiduo);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc() != null;
     }
 
     public function agregar($datos)
     {
-        $nuevo = [
-            "id" => count($_SESSION['contenedores']) + 1,
-            "calle" => $datos['calle'],
-            "zona" => $datos['zona'],
-            "estado" => $datos['estado'],
-            "capacidad" => $datos['capacidad'] ?? "",
-            "id_residuo" => $datos['id_residuo'],
-            "residuo" => $this->nombreResiduo($datos['id_residuo'])
-        ];
+        $calle = $datos['calle'];
+        $zona = $datos['zona'];
+        $estado = $datos['estado'];
+        $capacidad = $datos['capacidad'] ?? "";
+        $idResiduo = $datos['id_residuo'];
 
-        $_SESSION['contenedores'][] = $nuevo;
-        return $nuevo;
+        // Si no escribieron capacidad, se guarda vacio (NULL)
+        if ($capacidad == "") {
+            $capacidad = null;
+        }
+
+        $stmt = $this->conn->prepare("INSERT INTO contenedores (calle, zona, estado, capacidad, id_residuo) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssi", $calle, $zona, $estado, $capacidad, $idResiduo);
+        $stmt->execute();
+
+        return $this->obtenerPorId($this->conn->insert_id);
     }
 }
