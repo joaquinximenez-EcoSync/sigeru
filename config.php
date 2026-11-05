@@ -1,21 +1,21 @@
 <?php
 // Configuracion general de la API de Gestion
 
-// Paginas que tienen permitido usar esta API (frontend)
-$origenesPermitidos = [
+// Paginas que tienen permiso para usar esta API (frontend)
+$paginasPermitidas = [
     "http://localhost"
 ];
 
-// CORS: como el frontend esta en otra direccion, hay que permitirle usar la API
-$origen = $_SERVER['HTTP_ORIGIN'] ?? "";
-if (in_array($origen, $origenesPermitidos)) {
-    header("Access-Control-Allow-Origin: $origen");
+// Si la pagina que pide datos esta en la lista, le damos permiso para usar la API
+$paginaQuePide = $_SERVER['HTTP_ORIGIN'] ?? "";
+if (in_array($paginaQuePide, $paginasPermitidas)) {
+    header("Access-Control-Allow-Origin: $paginaQuePide");
     header("Access-Control-Allow-Credentials: true");
     header("Access-Control-Allow-Headers: Content-Type");
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 }
 
-// El navegador manda una solicitud OPTIONS antes de cada POST, solo hay que responderle OK
+// Antes de mandar datos, el navegador pregunta si tiene permiso. Le respondemos que si.
 if ($_SERVER['REQUEST_METHOD'] == "OPTIONS") {
     http_response_code(204);
     exit;
