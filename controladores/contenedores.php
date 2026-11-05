@@ -1,8 +1,6 @@
 <?php
 // Controlador de contenedores: valida los datos y usa el modelo Contenedor
 
-$estadosContenedor = ["Funcional", "Roto", "Desbordado"];
-
 // Devuelve la lista de todos los contenedores (GET contenedores)
 function listarContenedores() {
     $contenedor = new Contenedor();
@@ -28,7 +26,7 @@ function listarTiposResiduo() {
 
 // Registra un contenedor nuevo (POST contenedores)
 function registrarContenedor($datos) {
-    global $estadosContenedor;
+    $estadosContenedor = ["Funcional", "Roto", "Desbordado"];
     $contenedor = new Contenedor();
 
     if (empty($datos['calle']) || empty($datos['zona'])) {

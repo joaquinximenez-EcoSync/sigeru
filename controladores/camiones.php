@@ -1,9 +1,6 @@
 <?php
 // Controlador de camiones: valida los datos y usa el modelo Camion
 
-$estadosCamion = ["Operativo", "En mantenimiento", "Fuera de servicio"];
-$disponibilidades = ["Disponible", "En ruta", "No disponible"];
-
 // Devuelve la lista de todos los camiones (GET camiones)
 function listarCamiones() {
     $camion = new Camion();
@@ -23,7 +20,8 @@ function obtenerCamion($id) {
 
 // Registra un camion nuevo (POST camiones)
 function registrarCamion($datos) {
-    global $estadosCamion, $disponibilidades;
+    $estadosCamion = ["Operativo", "En mantenimiento", "Fuera de servicio"];
+    $disponibilidades = ["Disponible", "En ruta", "No disponible"];
     $camion = new Camion();
 
     if (empty($datos['matricula'])) {

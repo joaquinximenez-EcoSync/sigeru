@@ -13,7 +13,7 @@ PHP 8.
 
 ```
 api.php                          Punto de entrada: recibe la solicitud y llama al controlador
-config.php                       CORS y sesión
+config.php                       Sesión y formato de respuesta
 modelos/Contenedor.php           Modelo (clase) de contenedores y tipos de residuo
 modelos/Camion.php               Modelo (clase) de camiones
 controladores/contenedores.php   Controlador de contenedores
