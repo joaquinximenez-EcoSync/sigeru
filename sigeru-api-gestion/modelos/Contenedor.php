@@ -1,5 +1,5 @@
 <?php
-// Modelo Contenedor: guarda y busca contenedores en la base de datos
+// Modelo Contenedor: guarda, busca, modifica y borra contenedores en la base de datos
 
 class Contenedor
 {
@@ -56,6 +56,15 @@ class Contenedor
         return $stmt->get_result()->fetch_assoc() != null;
     }
 
+    // Devuelve true si el contenedor tiene incidencias registradas
+    public function tieneIncidencias($id)
+    {
+        $stmt = $this->conn->prepare("SELECT id_incidencia FROM incidencias WHERE id_contenedor = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc() != null;
+    }
+
     public function agregar($datos)
     {
         $calle = $datos['calle'];
@@ -74,5 +83,31 @@ class Contenedor
         $stmt->execute();
 
         return $this->obtenerPorId($this->conn->insert_id);
+    }
+
+    public function modificar($id, $datos)
+    {
+        $calle = $datos['calle'];
+        $zona = $datos['zona'];
+        $estado = $datos['estado'];
+        $capacidad = $datos['capacidad'] ?? "";
+        $idResiduo = $datos['id_residuo'];
+
+        if ($capacidad == "") {
+            $capacidad = null;
+        }
+
+        $stmt = $this->conn->prepare("UPDATE contenedores SET calle = ?, zona = ?, estado = ?, capacidad = ?, id_residuo = ? WHERE id_contenedor = ?");
+        $stmt->bind_param("ssssii", $calle, $zona, $estado, $capacidad, $idResiduo, $id);
+        $stmt->execute();
+
+        return $this->obtenerPorId($id);
+    }
+
+    public function eliminar($id)
+    {
+        $stmt = $this->conn->prepare("DELETE FROM contenedores WHERE id_contenedor = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
     }
 }

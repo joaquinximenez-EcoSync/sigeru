@@ -1,61 +1,132 @@
 <?php
 // API RESTful de Gestion - SiGeRU
 //
-// Direcciones que tiene esta API (endpoints):
-//   GET  api.php/contenedores       lista de contenedores
-//   GET  api.php/contenedores?id=1  un contenedor
-//   POST api.php/contenedores       registrar un contenedor
-//   GET  api.php/tipos_residuo      lista de tipos de residuo
-//   GET  api.php/camiones           lista de camiones
-//   GET  api.php/camiones?id=1      un camion
-//   POST api.php/camiones           registrar un camion
+// Direcciones que tiene esta API (endpoints). Todas necesitan la sesion iniciada.
+//   GET    api.php/contenedores       lista de contenedores            (todos los roles)
+//   POST   api.php/contenedores       registrar un contenedor          (administrador y operario)
+//   PUT    api.php/contenedores?id=1  modificar un contenedor          (administrador y operario)
+//   DELETE api.php/contenedores?id=1  borrar un contenedor             (administrador y operario)
+//   GET    api.php/tipos_residuo      lista de tipos de residuo        (todos los roles)
+//   GET    api.php/camiones           lista de camiones                (administrador, operario y recolector)
+//   POST / PUT / DELETE camiones                                       (administrador y operario)
+//   GET    api.php/centros            lista de centros de acopio       (administrador, operario y recolector)
+//   POST / PUT / DELETE centros                                        (administrador y operario)
+//   GET    api.php/maquinaria         lista de maquinas                (administrador, operario y recolector)
+//   POST / PUT / DELETE maquinaria                                     (administrador y operario)
+//   GET    api.php/operarios          lista de operarios               (administrador y operario)
+//   GET    api.php/instalaciones      lista de instalaciones           (administrador y operario)
+// Con ?id=1 en un GET se pide uno solo.
 
 require_once "config.php";
 require_once "conexion.php";
 require_once "vistas/respuesta.php";
+require_once "seguridad.php";
 require_once "modelos/Contenedor.php";
 require_once "modelos/Camion.php";
+require_once "modelos/Centro.php";
+require_once "modelos/Maquinaria.php";
 require_once "controladores/contenedores.php";
 require_once "controladores/camiones.php";
+require_once "controladores/centros.php";
+require_once "controladores/maquinaria.php";
 
-// Tipo de pedido: GET (pedir datos) o POST (mandar datos)
+// Tipo de pedido: GET (pedir), POST (crear), PUT (modificar) o DELETE (borrar)
 $metodo = $_SERVER['REQUEST_METHOD'];
 
-// Que se pidio: lo que viene despues de api.php/ (por ejemplo login)
+// Que se pidio: lo que viene despues de api.php/ (por ejemplo camiones)
 $endpoint = trim($_SERVER['PATH_INFO'] ?? "", "/");
+
+// Id que viene en la direccion (para ver, modificar o borrar uno)
+$id = $_GET['id'] ?? null;
 
 // Datos que mando el formulario (llegan en formato JSON)
 $datos = json_decode(file_get_contents("php://input"), true) ?? [];
 
+// Quien puede hacer cada cosa
+$todos = ["Administrador", "Operario", "Recolector", "Vecino"];
+$personal = ["Administrador", "Operario", "Recolector"];
+$gestores = ["Administrador", "Operario"];
+
 // Modelos que usan la base de datos
 $contenedor = new Contenedor($conn);
 $camion = new Camion($conn);
+$centro = new Centro($conn);
+$maquinaria = new Maquinaria($conn);
 
 switch ($endpoint) {
     case "contenedores":
         if ($metodo == "GET") {
-            if (isset($_GET['id'])) {
-                obtenerContenedor($contenedor, $_GET['id']);
+            verificarRol($todos);
+            if ($id != null) {
+                obtenerContenedor($contenedor, $id);
             } else {
                 listarContenedores($contenedor);
             }
         }
+        verificarRol($gestores);
         if ($metodo == "POST") registrarContenedor($contenedor, $datos);
+        if ($metodo == "PUT") modificarContenedor($contenedor, $id, $datos);
+        if ($metodo == "DELETE") eliminarContenedor($contenedor, $id);
         break;
 
     case "tipos_residuo":
+        verificarRol($todos);
         if ($metodo == "GET") listarTiposResiduo($contenedor);
         break;
 
     case "camiones":
         if ($metodo == "GET") {
-            if (isset($_GET['id'])) {
-                obtenerCamion($camion, $_GET['id']);
+            verificarRol($personal);
+            if ($id != null) {
+                obtenerCamion($camion, $id);
             } else {
                 listarCamiones($camion);
             }
         }
+        verificarRol($gestores);
         if ($metodo == "POST") registrarCamion($camion, $datos);
+        if ($metodo == "PUT") modificarCamion($camion, $id, $datos);
+        if ($metodo == "DELETE") eliminarCamion($camion, $id);
+        break;
+
+    case "centros":
+        if ($metodo == "GET") {
+            verificarRol($personal);
+            if ($id != null) {
+                obtenerCentro($centro, $id);
+            } else {
+                listarCentros($centro);
+            }
+        }
+        verificarRol($gestores);
+        if ($metodo == "POST") registrarCentro($centro, $contenedor, $datos);
+        if ($metodo == "PUT") modificarCentro($centro, $contenedor, $id, $datos);
+        if ($metodo == "DELETE") eliminarCentro($centro, $id);
+        break;
+
+    case "maquinaria":
+        if ($metodo == "GET") {
+            verificarRol($personal);
+            if ($id != null) {
+                obtenerMaquina($maquinaria, $id);
+            } else {
+                listarMaquinaria($maquinaria);
+            }
+        }
+        verificarRol($gestores);
+        if ($metodo == "POST") registrarMaquina($maquinaria, $datos);
+        if ($metodo == "PUT") modificarMaquina($maquinaria, $id, $datos);
+        if ($metodo == "DELETE") eliminarMaquina($maquinaria, $id);
+        break;
+
+    case "operarios":
+        verificarRol($gestores);
+        if ($metodo == "GET") listarOperarios($centro);
+        break;
+
+    case "instalaciones":
+        verificarRol($gestores);
+        if ($metodo == "GET") listarInstalaciones($maquinaria);
         break;
 }
 

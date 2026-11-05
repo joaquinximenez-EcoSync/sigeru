@@ -1,6 +1,24 @@
 <?php
 // Controlador de contenedores: valida los datos y usa el modelo Contenedor
 
+// Revisa que los datos del formulario esten bien. Si hay un error lo devuelve y corta.
+function validarContenedor($contenedor, $datos) {
+    $estadosContenedor = ["Funcional", "Roto", "Desbordado"];
+
+    if (empty($datos['calle']) || empty($datos['zona'])) {
+        responder(["error" => "La calle y la zona son obligatorias"], 400);
+    }
+    if (!in_array($datos['estado'] ?? "", $estadosContenedor)) {
+        responder(["error" => "El estado no es válido"], 400);
+    }
+    if (empty($datos['id_residuo']) || !$contenedor->existeResiduo($datos['id_residuo'])) {
+        responder(["error" => "Elige un tipo de residuo"], 400);
+    }
+    if (!empty($datos['capacidad']) && !is_numeric($datos['capacidad'])) {
+        responder(["error" => "La capacidad debe ser un número"], 400);
+    }
+}
+
 // Devuelve la lista de todos los contenedores (GET contenedores)
 function listarContenedores($contenedor) {
     responder($contenedor->obtenerTodos());
@@ -23,21 +41,33 @@ function listarTiposResiduo($contenedor) {
 
 // Registra un contenedor nuevo (POST contenedores)
 function registrarContenedor($contenedor, $datos) {
-    $estadosContenedor = ["Funcional", "Roto", "Desbordado"];
-
-    if (empty($datos['calle']) || empty($datos['zona'])) {
-        responder(["error" => "La calle y la zona son obligatorias"], 400);
-    }
-    if (!in_array($datos['estado'] ?? "", $estadosContenedor)) {
-        responder(["error" => "El estado no es válido"], 400);
-    }
-    if (empty($datos['id_residuo']) || !$contenedor->existeResiduo($datos['id_residuo'])) {
-        responder(["error" => "Elige un tipo de residuo"], 400);
-    }
-    if (!empty($datos['capacidad']) && !is_numeric($datos['capacidad'])) {
-        responder(["error" => "La capacidad debe ser un número"], 400);
-    }
+    validarContenedor($contenedor, $datos);
 
     $nuevo = $contenedor->agregar($datos);
     responder(["mensaje" => "Contenedor registrado correctamente", "contenedor" => $nuevo], 201);
+}
+
+// Modifica un contenedor (PUT contenedores?id=1)
+function modificarContenedor($contenedor, $id, $datos) {
+    if ($contenedor->obtenerPorId($id) == null) {
+        responder(["error" => "Contenedor no encontrado"], 404);
+    }
+    validarContenedor($contenedor, $datos);
+
+    $modificado = $contenedor->modificar($id, $datos);
+    responder(["mensaje" => "Contenedor modificado correctamente", "contenedor" => $modificado]);
+}
+
+// Borra un contenedor (DELETE contenedores?id=1)
+function eliminarContenedor($contenedor, $id) {
+    if ($contenedor->obtenerPorId($id) == null) {
+        responder(["error" => "Contenedor no encontrado"], 404);
+    }
+    // Si tiene incidencias no se borra, para no perder el historial
+    if ($contenedor->tieneIncidencias($id)) {
+        responder(["error" => "No se puede borrar: el contenedor tiene incidencias registradas"], 409);
+    }
+
+    $contenedor->eliminar($id);
+    responder(["mensaje" => "Contenedor eliminado correctamente"]);
 }

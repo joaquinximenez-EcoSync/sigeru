@@ -1,5 +1,5 @@
 <?php
-// Modelo Camion: guarda y busca camiones en la base de datos
+// Modelo Camion: guarda, busca, modifica y borra camiones en la base de datos
 
 class Camion
 {
@@ -56,5 +56,31 @@ class Camion
         $stmt->execute();
 
         return $this->obtenerPorId($this->conn->insert_id);
+    }
+
+    public function modificar($id, $datos)
+    {
+        $matricula = strtoupper($datos['matricula']);
+        $estado = $datos['estado'];
+        $disponibilidad = $datos['disponibilidad'];
+        $capacidad = $datos['capacidad_carga'] ?? "";
+
+        if ($capacidad == "") {
+            $capacidad = null;
+        }
+
+        $stmt = $this->conn->prepare("UPDATE camiones SET matricula = ?, estado = ?, disponibilidad = ?, capacidad_carga = ? WHERE id_camion = ?");
+        $stmt->bind_param("ssssi", $matricula, $estado, $disponibilidad, $capacidad, $id);
+        $stmt->execute();
+
+        return $this->obtenerPorId($id);
+    }
+
+    // Borra el camion (sus mantenimientos se borran solos por el ON DELETE CASCADE)
+    public function eliminar($id)
+    {
+        $stmt = $this->conn->prepare("DELETE FROM camiones WHERE id_camion = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
     }
 }
