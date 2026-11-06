@@ -44,8 +44,8 @@ function claseContenedor(estado) {
 }
 
 // Ventanita que aparece al tocar un contenedor.
-// Si el usuario es personal (no vecino) tiene botones para vaciar y reportar.
-function textoContenedor(c, conBotones) {
+// "botones" puede ser "personal" (vaciar y reportar), "vecino" (avisar un problema) o "" (sin botones).
+function textoContenedor(c, botones) {
     let texto = `<strong>${limpiarTexto(c.calle)}</strong><br>
         ${limpiarTexto(c.zona)}${c.municipio ? " - Municipio " + c.municipio : ""}<br>
         Residuo: ${limpiarTexto(c.residuo)}<br>
@@ -57,10 +57,15 @@ function textoContenedor(c, conBotones) {
     if (c.ultima_recoleccion) {
         texto += `Última recolección: ${limpiarTexto(c.ultima_recoleccion.substring(0, 16))}<br>`;
     }
-    if (conBotones) {
+    if (botones == "personal") {
         texto += `<div class="popup-botones">
             <button class="btn btn-primary btn-sm" onclick="marcarVaciado(${c.id})">✔ Vaciado</button>
             <button class="btn btn-danger btn-sm" onclick="abrirReporte(${c.id})">⚠ Reportar problema</button>
+        </div>`;
+    }
+    if (botones == "vecino") {
+        texto += `<div class="popup-botones">
+            <button class="btn btn-danger btn-sm" onclick="abrirAviso(${c.id})">📣 Avisar un problema</button>
         </div>`;
     }
     return texto;
@@ -172,4 +177,41 @@ function mostrarListaRecorridos(recorridos, colores) {
         </div>`;
     }
     lista.innerHTML = html;
+}
+
+// Como va el aviso de un vecino, segun el estado de su incidencia
+function estadoDelAviso(estadoIncidencia) {
+    if (estadoIncidencia == "Resuelta") return "Resuelto";
+    if (estadoIncidencia == "En proceso") return "En proceso";
+    return "Recibido";
+}
+
+// Tabla de avisos. Si conVecino es true se agrega la columna con el nombre del vecino.
+function mostrarTablaAvisos(idTabla, lista, conVecino) {
+    const tabla = document.getElementById(idTabla);
+    let columnas = 4;
+    if (conVecino) columnas = 5;
+
+    if (lista.length == 0) {
+        tabla.innerHTML = `<tr><td colspan="${columnas}" class="vacio">Todavía no hay avisos</td></tr>`;
+        return;
+    }
+
+    let filas = "";
+    for (const a of lista) {
+        const estado = estadoDelAviso(a.estado_incidencia);
+        let color = "alerta";
+        if (estado == "Resuelto") color = "";
+
+        filas += `<tr>
+            <td>${limpiarTexto(a.fecha)}</td>`;
+        if (conVecino) {
+            filas += `<td>${limpiarTexto(a.vecino)}</td>`;
+        }
+        filas += `<td class="ajustar">${limpiarTexto(a.calle)}${a.zona ? ", " + limpiarTexto(a.zona) : ""}</td>
+            <td class="ajustar">${limpiarTexto(a.descripcion)}</td>
+            <td><span class="etiqueta ${color}">${estado}</span></td>
+        </tr>`;
+    }
+    tabla.innerHTML = filas;
 }

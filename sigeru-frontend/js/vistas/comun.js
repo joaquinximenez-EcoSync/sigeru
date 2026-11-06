@@ -40,6 +40,11 @@ function mostrarDatosUsuario(usuario) {
     if (usuario.rol == "Vecino") {
         ocultar("no-vecino");
     }
+
+    // Lo que es solo para vecinos (por ejemplo "Mis avisos")
+    if (usuario.rol != "Vecino") {
+        ocultar("solo-vecino");
+    }
 }
 
 // Oculta todas las partes de la pagina que tienen esa clase

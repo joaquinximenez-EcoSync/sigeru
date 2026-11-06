@@ -39,6 +39,11 @@ Mapa de Montevideo hecho con [Leaflet](https://leafletjs.com) (guardado en `js/l
 | Botones "Vaciado" y "Reportar problema" en cada contenedor | Administrador, Operario, Recolector |
 | Zonas críticas: municipios pintados según sus incidencias abiertas, y resumen por municipio | Administrador, Operario, Recolector |
 | ➕ Agregar un contenedor tocando el mapa (el municipio se elige solo) | Administrador y Operario |
+| 📣 Avisar un problema en un contenedor (desbordado, roto o falta de recolección) y ver "Mis avisos" con su estado | Vecino |
+| Tabla "Avisos de vecinos" con todos los avisos | Administrador y Operario |
+
+Cada aviso de un vecino se guarda como **notificación** y genera una **incidencia** abierta (relaciones
+*Realizan* y *Genera2* del MER). Un vecino no puede avisar dos veces del mismo contenedor mientras no se resuelva.
 
 ### Límites de los municipios
 

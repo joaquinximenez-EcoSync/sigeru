@@ -104,6 +104,65 @@
             </div>
         </div>
 
+        <div class="solo-vecino">
+            <h2 class="titulo-seccion">Mis avisos</h2>
+            <p class="subtitulo">¿Un contenedor está lleno, roto o no lo vinieron a vaciar? Tócalo en el mapa y elige "📣 Avisar un problema".</p>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Contenedor</th>
+                            <th>Problema</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaMisAvisos"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="solo-gestion">
+            <h2 class="titulo-seccion">Avisos de vecinos</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Vecino</th>
+                            <th>Contenedor</th>
+                            <th>Problema</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaAvisosVecinos"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Ventana para que un vecino avise un problema en un contenedor -->
+        <dialog id="avisoModal">
+            <h3>Avisar un problema</h3>
+            <p class="subtitulo">Contenedor: <strong id="avisoContenedor"></strong></p>
+            <form id="formAviso">
+                <div class="form-group">
+                    <label for="problemaAviso">¿Qué pasa? *</label>
+                    <select id="problemaAviso" required>
+                        <option value="">Elegir...</option>
+                        <option>Desbordado</option>
+                        <option>Roto</option>
+                        <option>Falta de recolección</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="comentarioAviso">Comentario</label>
+                    <input id="comentarioAviso" maxlength="200" placeholder="Por ejemplo: hay bolsas en la vereda">
+                </div>
+                <button type="submit" class="btn btn-primary">Enviar aviso</button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarAviso()">Cancelar</button>
+            </form>
+        </dialog>
+
         <!-- Ventana para agregar un contenedor en el lugar que se toco del mapa -->
         <dialog id="formModal">
             <h3>Nuevo contenedor</h3>

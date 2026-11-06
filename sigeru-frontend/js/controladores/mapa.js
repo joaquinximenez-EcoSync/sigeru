@@ -18,6 +18,7 @@ let marcasCamiones = [];
 
 let modoAgregar = false;       // true cuando se esta eligiendo el lugar de un contenedor nuevo
 let idParaReportar = null;     // contenedor al que se le reporta un problema
+let idParaAvisar = null;       // contenedor del que avisa un vecino
 
 const COLORES_RECORRIDOS = ["#1d6fd8", "#8e44ad", "#16a085", "#d35400"];
 const MUNICIPIOS = ["A", "B", "C", "CH", "D", "E", "F", "G"];
@@ -73,6 +74,16 @@ async function cargarDatos() {
         recorridos = await obtenerRecorridos();
         mostrarListaRecorridos(recorridos, COLORES_RECORRIDOS);
     }
+
+    // El vecino ve sus avisos; el administrador y el operario ven los de todos los vecinos
+    if (usuarioLogueado.rol == "Vecino") {
+        const avisos = await obtenerAvisos();
+        mostrarTablaAvisos("tablaMisAvisos", avisos, false);
+    }
+    if (puedeEditar()) {
+        const avisos = await obtenerAvisos();
+        mostrarTablaAvisos("tablaAvisosVecinos", avisos, true);
+    }
     dibujarTodo();
 }
 
@@ -110,13 +121,19 @@ function dibujarContenedores() {
     capaContenedores.clearLayers();
     if (!capaVisible("verContenedores")) return;
 
+    // Botones de la ventanita: el personal vacia y reporta, el vecino avisa
+    let botones = "vecino";
+    if (esPersonal()) {
+        botones = "personal";
+    }
+
     let cantidad = 0;
     for (const c of contenedores) {
         if (c.latitud == null || !pasaFiltros(c)) continue;
 
         const icono = crearIcono(claseContenedor(c.estado), "🗑");
         L.marker([c.latitud, c.longitud], { icon: icono })
-            .bindPopup(textoContenedor(c, esPersonal()))
+            .bindPopup(textoContenedor(c, botones))
             .addTo(capaContenedores);
         cantidad++;
     }
@@ -401,6 +418,40 @@ document.getElementById("formReporte").addEventListener("submit", async function
         mostrarMensaje(respuesta.mensaje, false);
         await cargarDatos();
     } catch (error) {
+        alert(error.message);
+    }
+});
+
+// ----- Avisar un problema (vecinos) -----
+function abrirAviso(id) {
+    idParaAvisar = id;
+    const c = buscarPorId(contenedores, id);
+    document.getElementById("formAviso").reset();
+    document.getElementById("avisoContenedor").textContent = c.calle;
+    document.getElementById("avisoModal").showModal();
+}
+
+function cerrarAviso() {
+    document.getElementById("avisoModal").close();
+}
+
+document.getElementById("formAviso").addEventListener("submit", async function (evento) {
+    evento.preventDefault();
+
+    const datos = {
+        id_contenedor: idParaAvisar,
+        problema: document.getElementById("problemaAviso").value,
+        comentario: document.getElementById("comentarioAviso").value.trim()
+    };
+
+    try {
+        const respuesta = await avisarProblema(datos);
+        cerrarAviso();
+        mapa.closePopup();
+        mostrarMensaje(respuesta.mensaje, false);
+        await cargarDatos();
+    } catch (error) {
+        // Si hay un error con la ventana abierta, el mensaje no se ve, por eso usamos alert
         alert(error.message);
     }
 });
