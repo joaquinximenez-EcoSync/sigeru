@@ -103,12 +103,13 @@ verificar($parametro->obtener("idioma", "") == "en", "Modifica un parámetro");
 titulo("Mensajes (notificaciones)");
 
 $mensaje = new Mensaje($conn);
-verificar($mensaje->contarSinLeer(1) == 1, "El administrador de prueba tiene 1 mensaje sin leer");
+verificar($mensaje->contarSinLeer(1) == 0, "El administrador de prueba no tiene mensajes");
 $mensaje->enviarARol("Administrador", "Mensaje de prueba", "panel.html");
-verificar($mensaje->contarSinLeer(1) == 2 && $mensaje->contarSinLeer($admin['id']) == 1, "Mandar a un rol le llega a todos los administradores activos");
-verificar($mensaje->contarSinLeer(2) == 1, "Al operario no le llega");
+verificar($mensaje->contarSinLeer(1) == 1 && $mensaje->contarSinLeer($admin['id']) == 1, "Mandar a un rol le llega a todos los administradores activos");
+verificar($mensaje->contarSinLeer(2) == 0, "Al operario no le llega");
+$mensaje->enviarAUsuario(1, "Otro mensaje", "incidencias.html");
 $lista = $mensaje->obtenerDelUsuario(1);
-verificar($lista[0]['texto'] == "Mensaje de prueba", "El más nuevo aparece primero");
+verificar(count($lista) == 2 && $lista[0]['texto'] == "Otro mensaje", "El más nuevo aparece primero");
 $mensaje->marcarLeido($lista[0]['id'], 2);
 verificar($mensaje->contarSinLeer(1) == 2, "Un usuario no puede marcar como leído un mensaje de otro");
 $mensaje->marcarLeido($lista[0]['id'], 1);

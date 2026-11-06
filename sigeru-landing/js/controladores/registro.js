@@ -39,11 +39,6 @@ formulario.addEventListener("submit", async function (evento) {
         const respuesta = await enviarRegistro(datos);
         mostrarMensaje(respuesta.mensaje, false);
         formulario.reset();
-
-        // Modo prueba: si la API no tiene configurado Gmail, nos manda el enlace para verificar
-        if (respuesta.enlace_verificacion) {
-            mostrarEnlacePrueba(respuesta.enlace_verificacion);
-        }
     } catch (error) {
         mostrarMensaje(error.message, true);
     }

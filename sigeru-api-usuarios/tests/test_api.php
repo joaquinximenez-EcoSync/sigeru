@@ -50,61 +50,77 @@ verificar($r['codigo'] == 403, "Un operario no puede crear usuarios (403)");
 
 titulo("Registro desde la landing");
 
+$base = conectarBaseReal();
+$correoRegistro = "registro" . $correoPrueba;
+
 $r = pedir("POST", $api . "/registro", [
     "primer_nombre" => "Prueba",
     "primer_apellido" => "Registro",
-    "email" => "registro" . $correoPrueba,
+    "email" => $correoRegistro,
     "contrasena" => "123456",
     "rol" => "Administrador"
 ], "landing");
-verificar($r['codigo'] == 201, "Registro correcto devuelve 201");
-verificar($r['json']['usuario']['rol'] == "Vecino", "El que se registra solo queda como Vecino aunque mande otro rol");
-verificar($r['json']['usuario']['estado'] == "Sin verificar", "Queda Sin verificar hasta que abra el enlace del correo");
-$idRegistrado = $r['json']['usuario']['id'];
-$enlace = $r['json']['enlace_verificacion'] ?? "";
 
-$r = entrar($api, "registrado", "registro" . $correoPrueba, "123456");
+// Si Gmail esta configurado se manda el correo de verificacion de verdad (a un correo que no existe).
+// Si no esta configurado, la API no puede mandar el correo: devuelve 500 y no deja creado el usuario.
+if ($r['codigo'] == 500) {
+    echo "  (Gmail no está configurado: se prueba que no quede el registro y se crea el vecino directo en la base)\n";
+    verificar(str_contains($r['json']['error'], "correo"), "Si no se puede mandar el correo avisa el error (500)");
+    $quedo = mysqli_fetch_assoc(mysqli_query($base, "SELECT COUNT(*) AS cantidad FROM usuarios WHERE email = '" . $correoRegistro . "'"))['cantidad'];
+    verificar($quedo == 0, "Y no deja creado el usuario, para que se pueda registrar de nuevo");
+
+    // Creamos el vecino como si se hubiera mandado el correo
+    $clave = password_hash("123456", PASSWORD_DEFAULT);
+    mysqli_query($base, "INSERT INTO usuarios (primer_nombre, primer_apellido, email, contrasena, rol, estado, codigo_verificacion)
+                         VALUES ('Prueba', 'Registro', '" . $correoRegistro . "', '" . $clave . "', 'Vecino', 'Sin verificar', 'codigo-del-test-" . time() . "')");
+    $idRegistrado = mysqli_insert_id($base);
+    mysqli_query($base, "INSERT INTO vecinos (id_usuario) VALUES (" . $idRegistrado . ")");
+} else {
+    verificar($r['codigo'] == 201, "Registro correcto devuelve 201");
+    verificar($r['json']['usuario']['rol'] == "Vecino", "El que se registra solo queda como Vecino aunque mande otro rol");
+    verificar($r['json']['usuario']['estado'] == "Sin verificar", "Queda Sin verificar hasta que abra el enlace del correo");
+    $idRegistrado = $r['json']['usuario']['id'];
+}
+
+// El codigo del enlace del correo lo sacamos de la base (el correo no lo podemos leer desde el test)
+$codigo = mysqli_fetch_assoc(mysqli_query($base, "SELECT codigo_verificacion FROM usuarios WHERE id_usuario = " . $idRegistrado))['codigo_verificacion'];
+
+$r = entrar($api, "registrado", $correoRegistro, "123456");
 verificar($r['codigo'] == 403 && str_contains($r['json']['error'], "verificaste"), "Sin verificar el correo no puede iniciar sesión (403)");
 
 $r = pedir("GET", $api . "/verificar?codigo=codigo-falso", null, "landing");
 verificar($r['codigo'] == 404, "Con un código falso devuelve 404");
 
-// Si Gmail no esta configurado (modo prueba), la API devuelve el enlace y lo usamos
-if ($enlace == "") {
-    echo "  (Gmail está configurado: no se prueba la verificación porque el enlace llegó por correo)\n";
-} else {
-    $codigo = substr($enlace, strpos($enlace, "codigo=") + 7);
-    $r = pedir("GET", $api . "/verificar?codigo=" . $codigo, null, "landing");
-    verificar($r['codigo'] == 200 && $r['json']['estado'] == "Pendiente", "Con el enlace del correo queda verificado y Pendiente de aprobación");
+$r = pedir("GET", $api . "/verificar?codigo=" . $codigo, null, "landing");
+verificar($r['codigo'] == 200 && $r['json']['estado'] == "Pendiente", "Con el enlace del correo queda verificado y Pendiente de aprobación");
 
-    $r = pedir("GET", $api . "/verificar?codigo=" . $codigo, null, "landing");
-    verificar($r['codigo'] == 404, "El mismo enlace no sirve dos veces");
+$r = pedir("GET", $api . "/verificar?codigo=" . $codigo, null, "landing");
+verificar($r['codigo'] == 404, "El mismo enlace no sirve dos veces");
 
-    $r = entrar($api, "registrado", "registro" . $correoPrueba, "123456");
-    verificar($r['codigo'] == 403 && str_contains($r['json']['error'], "apruebe"), "Mientras no lo aprueban no puede entrar (403)");
+$r = entrar($api, "registrado", $correoRegistro, "123456");
+verificar($r['codigo'] == 403 && str_contains($r['json']['error'], "apruebe"), "Mientras no lo aprueban no puede entrar (403)");
 
-    $r = pedir("GET", $api . "/mensajes", null, "admin");
-    verificar(str_contains($r['json']['mensajes'][0]['texto'], "Prueba Registro"), "Al administrador le llega la notificación de la solicitud");
+$r = pedir("GET", $api . "/mensajes", null, "admin");
+verificar(str_contains($r['json']['mensajes'][0]['texto'], "Prueba Registro"), "Al administrador le llega la notificación de la solicitud");
 
-    $r = pedir("POST", $api . "/aprobar?id=" . $idRegistrado, ["aprobado" => true], "operario");
-    verificar($r['codigo'] == 403, "El operario no puede aprobar registros (403)");
+$r = pedir("POST", $api . "/aprobar?id=" . $idRegistrado, ["aprobado" => true], "operario");
+verificar($r['codigo'] == 403, "El operario no puede aprobar registros (403)");
 
-    $r = pedir("POST", $api . "/aprobar?id=" . $idRegistrado, ["aprobado" => true], "admin");
-    verificar($r['codigo'] == 200, "El administrador aprueba el registro");
+$r = pedir("POST", $api . "/aprobar?id=" . $idRegistrado, ["aprobado" => true], "admin");
+verificar($r['codigo'] == 200, "El administrador aprueba el registro");
 
-    $r = pedir("POST", $api . "/aprobar?id=" . $idRegistrado, ["aprobado" => true], "admin");
-    verificar($r['codigo'] == 409, "No se puede aprobar dos veces (409)");
+$r = pedir("POST", $api . "/aprobar?id=" . $idRegistrado, ["aprobado" => true], "admin");
+verificar($r['codigo'] == 409, "No se puede aprobar dos veces (409)");
 
-    $r = entrar($api, "registrado", "registro" . $correoPrueba, "123456");
-    verificar($r['codigo'] == 200, "Ahora sí puede iniciar sesión");
+$r = entrar($api, "registrado", $correoRegistro, "123456");
+verificar($r['codigo'] == 200, "Ahora sí puede iniciar sesión");
 
-    $r = pedir("GET", $api . "/mensajes", null, "registrado");
-    verificar($r['codigo'] == 200 && $r['json']['sin_leer'] == 1 && str_contains($r['json']['mensajes'][0]['texto'], "Bienvenido"), "Y tiene la notificación de bienvenida");
+$r = pedir("GET", $api . "/mensajes", null, "registrado");
+verificar($r['codigo'] == 200 && $r['json']['sin_leer'] == 1 && str_contains($r['json']['mensajes'][0]['texto'], "Bienvenido"), "Y tiene la notificación de bienvenida");
 
-    $r = pedir("PUT", $api . "/mensajes", null, "registrado");
-    $r = pedir("GET", $api . "/mensajes", null, "registrado");
-    verificar($r['json']['sin_leer'] == 0, "Marca todas sus notificaciones como leídas");
-}
+$r = pedir("PUT", $api . "/mensajes", null, "registrado");
+$r = pedir("GET", $api . "/mensajes", null, "registrado");
+verificar($r['json']['sin_leer'] == 0, "Marca todas sus notificaciones como leídas");
 
 $r = pedir("POST", $api . "/registro", ["primer_nombre" => "A", "primer_apellido" => "B", "email" => "admin@sigeru.uy", "contrasena" => "123456"], "landing");
 verificar($r['codigo'] == 409, "Con un correo que ya existe devuelve 409");
@@ -182,6 +198,17 @@ $r = pedir("GET", $api . "/usuarios?id=" . $idNuevo, null, "admin");
 verificar($r['codigo'] == 404, "El usuario borrado ya no existe (404)");
 
 // Borramos tambien el que se registro desde la landing
+titulo("Cambiar el rol");
+
+$r = pedir("PUT", $api . "/usuarios?id=1", ["primer_nombre" => "Usuario", "primer_apellido" => "Administrador", "email" => "admin@sigeru.uy", "rol" => "Operario"], "admin");
+verificar($r['codigo'] == 400, "El administrador no se puede cambiar su propio rol (400)");
+
+$r = pedir("PUT", $api . "/usuarios?id=" . $idRegistrado, ["primer_nombre" => "Prueba", "primer_apellido" => "Registro", "email" => $correoRegistro, "rol" => "Operario", "especialidad" => "Choferes"], "admin");
+verificar($r['codigo'] == 200 && $r['json']['usuario']['rol'] == "Operario", "El administrador le da el rol de Operario a un vecino");
+
+$r = pedir("PUT", $api . "/usuarios?id=" . $idRegistrado, ["primer_nombre" => "Prueba", "primer_apellido" => "Registro", "email" => $correoRegistro, "rol" => "Administrador"], "admin");
+verificar($r['codigo'] == 200 && $r['json']['usuario']['rol'] == "Administrador", "Y después lo hace Administrador");
+
 $r = pedir("DELETE", $api . "/usuarios?id=" . $idRegistrado, null, "admin");
 verificar($r['codigo'] == 200, "Borra el usuario que se registró en la prueba");
 
@@ -194,7 +221,6 @@ $r = pedir("GET", $api . "/usuarios", null, "admin");
 verificar($r['codigo'] == 401, "Después de cerrar sesión ya no puede ver los usuarios");
 
 // Borramos las notificaciones que crearon los tests
-$base = conectarBaseReal();
 mysqli_query($base, "DELETE FROM mensajes WHERE texto LIKE '%Prueba Registro%'");
 
 $r = pedir("GET", $api . "/no-existe", null, "admin");

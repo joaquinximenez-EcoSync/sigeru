@@ -69,16 +69,16 @@ function registrarUsuario($usuario, $datos) {
               "<p style='color: #6b7280; font-size: 13px'>Si no te registraste, ignora este mensaje.</p>";
     $seMando = enviarCorreo($nuevo['email'], $nuevo['primer_nombre'], "Verifica tu correo", $texto);
 
-    $respuesta = [
-        "mensaje" => "¡Ya casi! Te mandamos un correo a " . $nuevo['email'] . ". Abre el enlace del correo para verificar tu cuenta.",
-        "usuario" => $nuevo
-    ];
-    // Si el correo no esta configurado (modo prueba), devolvemos el enlace para poder probar igual
+    // Si no se pudo mandar el correo, no puede verificar la cuenta: borramos el registro para que lo intente de nuevo
     if (!$seMando) {
-        $respuesta['mensaje'] = "Registro recibido. El correo de Gmail no está configurado en la API, así que no se pudo mandar el mail (modo prueba): usa el enlace de abajo para verificar la cuenta.";
-        $respuesta['enlace_verificacion'] = $enlace;
+        $usuario->eliminar($nuevo['id']);
+        responder(["error" => "No pudimos mandarte el correo de verificación. Revisa que el correo esté bien escrito o inténtalo más tarde."], 500);
     }
-    responder($respuesta, 201);
+
+    responder([
+        "mensaje" => "¡Ya casi! Te mandamos un correo a " . $nuevo['email'] . ". Abre el enlace del correo para verificar tu cuenta (si no lo ves, revisa la carpeta de spam).",
+        "usuario" => $nuevo
+    ], 201);
 }
 
 // El vecino abre el enlace del correo (GET verificar?codigo=...)
@@ -160,10 +160,16 @@ function crearUsuario($usuario, $datos) {
 
 // Modifica un usuario (PUT usuarios?id=1)
 function modificarUsuario($usuario, $id, $datos) {
-    if ($usuario->obtenerPorId($id) == null) {
+    $anterior = $usuario->obtenerPorId($id);
+    if ($anterior == null) {
         responder(["error" => "Usuario no encontrado"], 404);
     }
     validarUsuario($usuario, $datos, $id);
+
+    // Un administrador no se puede sacar su propio rol (si no, podria quedar el sistema sin administrador)
+    if ($id == $_SESSION['usuario_logueado']['id'] && $datos['rol'] != $anterior['rol']) {
+        responder(["error" => "No puedes cambiarte tu propio rol"], 400);
+    }
 
     $modificado = $usuario->modificar($id, $datos);
     responder(["mensaje" => "Usuario modificado correctamente", "usuario" => $modificado]);

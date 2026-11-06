@@ -3,8 +3,7 @@
 Página principal del Sistema de Gestión de Residuos Urbanos (SiGeRU), desarrollado por **EcoSync**.
 
 Brinda información al público y recibe las solicitudes de registro de usuarios (vecinos).
-Al registrarse le llega un correo para verificar la cuenta (si Gmail no está configurado en la API,
-la página muestra el enlace de verificación: modo prueba).
+Al registrarse le llega un correo para verificar la cuenta.
 No guarda datos: el registro se envía a la **API de Usuarios**.
 
 ## Tecnologías
