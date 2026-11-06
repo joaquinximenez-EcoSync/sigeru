@@ -69,35 +69,23 @@ INSERT INTO tipos_residuo (id_residuo, nombre, descripcion) VALUES
 -- Contenedores en distintos barrios y municipios de Montevideo
 INSERT INTO contenedores (id_contenedor, calle, zona, municipio, estado, capacidad, id_residuo, latitud, longitud, ultima_recoleccion) VALUES
 (1, 'Av. 18 de Julio 1200', 'Centro', 'B', 'Funcional', 1000, 2, -34.905500, -56.188900, '2026-11-05 07:30'),
-(2, 'Rambla República de México 5500', 'Carrasco', 'E', 'Desbordado', 1200, 3, -34.892800, -56.056500, '2026-11-01 08:00'),
-(3, 'Bv. Artigas 1500', 'Tres Cruces', 'CH', 'Roto', 800, 1, -34.894400, -56.166900, '2026-11-04 09:10'),
+(2, 'Rambla República de México 5500', 'Carrasco', 'E', 'Funcional', 1200, 3, -34.892800, -56.056500, '2026-11-01 08:00'),
+(3, 'Bv. Artigas 1500', 'Tres Cruces', 'CH', 'Funcional', 800, 1, -34.894400, -56.166900, '2026-11-04 09:10'),
 (4, '25 de Mayo 500', 'Ciudad Vieja', 'B', 'Funcional', 1000, 3, -34.906700, -56.207400, '2026-11-05 06:45'),
 (5, 'Plaza Independencia', 'Centro', 'B', 'Funcional', 1200, 2, -34.906900, -56.199600, '2026-11-05 07:00'),
-(6, 'Av. Brasil 2500', 'Pocitos', 'CH', 'Desbordado', 1000, 3, -34.908300, -56.150800, '2026-11-02 10:00'),
+(6, 'Av. Brasil 2500', 'Pocitos', 'CH', 'Funcional', 1000, 3, -34.908300, -56.150800, '2026-11-02 10:00'),
 (7, 'Rambla Gandhi 600', 'Punta Carretas', 'CH', 'Funcional', 800, 2, -34.922100, -56.158800, '2026-11-05 08:15'),
 (8, 'Av. Italia 4500', 'Malvín', 'E', 'Funcional', 1000, 1, -34.885500, -56.111000, '2026-11-04 11:00'),
 (9, 'Av. Agraciada 3000', 'Paso Molino', 'C', 'Funcional', 1000, 3, -34.867600, -56.206900, '2026-11-05 06:30'),
-(10, 'Av. Millán 4000', 'Prado', 'C', 'Roto', 800, 1, -34.854500, -56.207800, '2026-11-03 07:20'),
-(11, 'Av. Carlos María Ramírez 1500', 'Cerro', 'A', 'Desbordado', 1200, 3, -34.883100, -56.250300, '2026-10-31 09:00'),
+(10, 'Av. Millán 4000', 'Prado', 'C', 'Funcional', 800, 1, -34.854500, -56.207800, '2026-11-03 07:20'),
+(11, 'Av. Carlos María Ramírez 1500', 'Cerro', 'A', 'Funcional', 1200, 3, -34.883100, -56.250300, '2026-10-31 09:00'),
 (12, 'Av. Gral. Flores 4500', 'Piedras Blancas', 'D', 'Funcional', 1000, 3, -34.835900, -56.155300, '2026-11-05 10:30'),
 (13, 'Camino Maldonado 6000', 'Punta de Rieles', 'F', 'Funcional', 1000, 2, -34.832600, -56.104100, '2026-11-04 12:00'),
-(14, 'Av. Garzón 1500', 'Colón', 'G', 'Roto', 800, 3, -34.798700, -56.226000, '2026-11-02 08:40'),
+(14, 'Av. Garzón 1500', 'Colón', 'G', 'Funcional', 800, 3, -34.798700, -56.226000, '2026-11-02 08:40'),
 (15, 'Av. 8 de Octubre 3500', 'Unión', 'E', 'Funcional', 1000, 4, -34.876800, -56.144900, '2026-11-05 09:00'),
 (16, 'Av. Rivera 3000', 'Pocitos', 'CH', 'Funcional', 1000, 4, -34.897900, -56.159500, '2026-11-05 09:30');
 
-INSERT INTO incidencias (id_incidencia, id_contenedor, fecha_deteccion, zona_incidencia, tipo, estado, prioridad, fecha, fecha_resolucion, descripcion, id_recorrido) VALUES
-(1, 2, '2026-11-01', 'Carrasco', 'Desbordado', 'Abierta', 'Alta', '2026-11-01', NULL, 'Contenedor desbordado, hay basura en la vereda', 2),
-(2, 3, '2026-10-28', 'Tres Cruces', 'Roto', 'En proceso', 'Media', '2026-10-29', NULL, 'La tapa del contenedor está rota', 1),
-(3, 6, '2026-11-02', 'Pocitos', 'Desbordado', 'Abierta', 'Alta', '2026-11-02', NULL, 'Contenedor desbordado desde el fin de semana', 2),
-(4, 11, '2026-10-31', 'Cerro', 'Desbordado', 'Abierta', 'Alta', '2026-10-31', NULL, 'Contenedor desbordado, bolsas en la calle', NULL),
-(5, 10, '2026-11-03', 'Prado', 'Roto', 'Abierta', 'Media', '2026-11-03', NULL, 'Tapa rota', NULL),
-(6, 14, '2026-11-02', 'Colón', 'Roto', 'Abierta', 'Baja', '2026-11-02', NULL, 'Una rueda del contenedor está rota', NULL),
-(7, 1, '2026-10-25', 'Centro', 'Falta de recolección', 'Resuelta', 'Baja', '2026-10-26', '2026-10-26', 'Falta de recolección', 1),
-(8, 2, '2026-10-20', 'Carrasco', 'Desbordado', 'Resuelta', 'Media', '2026-10-22', '2026-10-22', 'Contenedor desbordado', 2),
-(9, 2, '2026-11-02', 'Carrasco', 'Desbordado', 'Resuelta', 'Alta', '2026-11-03', '2026-11-03', 'Contenedor desbordado otra vez', 2);
-
-INSERT INTO notificaciones (id_usuario, id_notificacion, estado, descripcion, fecha, id_incidencia) VALUES
-(4, 1, 'Recibida', 'El contenedor de la rambla está lleno hace dos días', '2026-11-01', 1);
+-- No hay incidencias de prueba: se cargan desde el sistema (las reporta el personal o los vecinos).
 
 -- ---------- Instalaciones ----------
 INSERT INTO instalaciones (id_instalacion, nombre, calle, zona, capacidad_actual, capacidad_max, id_operario, latitud, longitud) VALUES
@@ -134,13 +122,6 @@ INSERT INTO repuestos (id_repuesto, nombre, tipo, id_residuo, cantidad, cantidad
 (3, 'Contenedor no reciclable 800 L', 'Contenedor', 3, 4, 2, 3),
 (4, 'Tapa de contenedor', 'Tapa', NULL, 15, 5, 1),
 (5, 'Rueda de contenedor', 'Rueda', NULL, 3, 8, 3);
-
-INSERT INTO mensajes (id_usuario, texto, enlace, leido, fecha) VALUES
-(1, '📣 Sofía González avisó un problema en el contenedor de Rambla República de México 5500', 'incidencias.html', FALSE, '2026-11-01 09:30:00'),
-(2, '📣 Sofía González avisó un problema en el contenedor de Rambla República de México 5500', 'incidencias.html', FALSE, '2026-11-01 09:30:00'),
-(3, '📣 Sofía González avisó un problema en el contenedor de Rambla República de México 5500', 'incidencias.html', FALSE, '2026-11-01 09:30:00'),
-(4, '✅ Recibimos tu aviso sobre el contenedor de Rambla República de México 5500', 'mapa.html', TRUE, '2026-11-01 09:30:00');
-
 -- Recolecciones simuladas de octubre y noviembre (kilos que se sacaron cada vez que se vacio un contenedor)
 INSERT INTO recolecciones (id_contenedor, fecha, kilos) VALUES
 (1, '2026-10-01 07:15:00', 170.53),

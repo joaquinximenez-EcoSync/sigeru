@@ -90,7 +90,8 @@ UQ (id_cuadrilla, id_ruta)
 | nro_mantenimiento | INT | PK |
 | tipo | VARCHAR(80) | |
 | costo | DECIMAL(10,2) | |
-| descripcion | TEXT | |
+| descripcion | TEXT | Qué pasó, contado por el que la reporta |
+| referencia | VARCHAR(200) | Dónde está exactamente el problema (agregado en la 3ra entrega) |
 | fecha | DATE | |
 
 ### Contenedores e incidencias
@@ -120,7 +121,7 @@ UQ (id_cuadrilla, id_ruta)
 | id_contenedor | INT | FK → contenedores, NOT NULL |
 | fecha_deteccion | DATE | |
 | zona_incidencia | VARCHAR(100) | |
-| tipo | ENUM('Desbordado','Roto','Falta de recolección') | NOT NULL (agregado en la 3ra entrega) |
+| tipo | ENUM('Desbordado','Roto','Falta de recolección','Basura en la calle') | NOT NULL (agregado en la 3ra entrega) |
 | estado | ENUM('Abierta','En proceso','Resuelta') | NOT NULL |
 | prioridad | ENUM('Baja','Media','Alta') | NOT NULL |
 | fecha | DATE | Último cambio de estado |
@@ -208,6 +209,9 @@ Parámetros cargados: `dias_alerta_desborde` (2), `porcentaje_centro_lleno` (80)
   y así no se podía contar bien, por ejemplo para el top de contenedores desbordados del mes.
 - `incidencias.fecha_resolucion`: el día en que la incidencia quedó Resuelta. Sirve para los informes
   y para calcular cuántos días se tarda en resolver una incidencia.
+- `incidencias.referencia` y el tipo "Basura en la calle": el vecino cuenta dónde está exactamente el problema
+  y puede reportar basura tirada alrededor de un contenedor.
+- Los datos de prueba no traen incidencias: se cargan desde el sistema.
 - `usuarios.estado`, `codigo_verificacion` y `fecha_registro`: los vecinos que se registran verifican su correo
   con un enlace y después un administrador aprueba su cuenta (la letra pide registro "para su posterior aprobación").
 - Tabla `mensajes`: las notificaciones que le llegan a cada usuario (por ejemplo, cuando un vecino avisa un problema

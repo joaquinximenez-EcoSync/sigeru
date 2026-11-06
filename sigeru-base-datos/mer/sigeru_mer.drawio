@@ -1136,7 +1136,7 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="p2-txt-1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=15;" value="&lt;b&gt;Agregado en la 3ra entrega&lt;/b&gt;&lt;br&gt;Las entidades grises con borde punteado ya están en la Página-1; acá se muestran solo para dibujar sus relaciones nuevas.&lt;br&gt;En Incidencia se agregaron los atributos Tipo y FechaResolucion (están en la Página-1)." vertex="1"><mxGeometry x="40" y="0" width="900" height="80" as="geometry" /></mxCell>
+        <mxCell id="p2-txt-1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=15;" value="&lt;b&gt;Agregado en la 3ra entrega&lt;/b&gt;&lt;br&gt;Las entidades grises con borde punteado ya están en la Página-1; acá se muestran solo para dibujar sus relaciones nuevas.&lt;br&gt;En Incidencia se agregaron los atributos Tipo, FechaResolucion (están en la Página-1) y Referencia (dónde está exactamente el problema)." vertex="1"><mxGeometry x="40" y="0" width="900" height="80" as="geometry" /></mxCell>
         <mxCell id="p2-ent-2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=18;dashed=1;fillColor=#f5f5f5;fontColor=#666666;" value="Usuarios" vertex="1"><mxGeometry x="40" y="200" width="140" height="60" as="geometry" /></mxCell>
         <mxCell id="p2-atr-3" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Estado" vertex="1"><mxGeometry x="0" y="110" width="80" height="32" as="geometry" /></mxCell>
         <mxCell id="p2-lin-4" edge="1" parent="1" source="p2-atr-3" target="p2-ent-2" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>

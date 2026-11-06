@@ -155,19 +155,21 @@ CREATE TABLE contenedores (
 -- Relacion Genera1: un contenedor genera muchas incidencias (1:N)
 -- Relacion Resuelven: un recorrido (cuadrilla) resuelve muchas incidencias (1:N)
 -- RNE02: una incidencia tiene un solo estado a la vez
--- tipo: que problema tiene el contenedor (se usa para el top de desbordados)
+-- tipo: que problema hay en el contenedor o alrededor (se usa para el top de desbordados)
+-- referencia: donde esta exactamente el problema (lo escribe el que lo reporta)
 -- fecha: ultimo cambio de estado. fecha_resolucion: dia en que quedo Resuelta
 CREATE TABLE incidencias (
     id_incidencia    INT AUTO_INCREMENT PRIMARY KEY,
     id_contenedor    INT NOT NULL,
     fecha_deteccion  DATE,
     zona_incidencia  VARCHAR(100),
-    tipo             ENUM('Desbordado', 'Roto', 'Falta de recolección') NOT NULL DEFAULT 'Desbordado',
+    tipo             ENUM('Desbordado', 'Roto', 'Falta de recolección', 'Basura en la calle') NOT NULL DEFAULT 'Desbordado',
     estado           ENUM('Abierta', 'En proceso', 'Resuelta') NOT NULL DEFAULT 'Abierta',
     prioridad        ENUM('Baja', 'Media', 'Alta') NOT NULL DEFAULT 'Media',
     fecha            DATE,
     fecha_resolucion DATE,
     descripcion      TEXT,
+    referencia       VARCHAR(200),
     id_recorrido     INT,
     FOREIGN KEY (id_contenedor) REFERENCES contenedores(id_contenedor) ON DELETE CASCADE,
     FOREIGN KEY (id_recorrido)  REFERENCES recorridos(id_recorrido) ON DELETE SET NULL
