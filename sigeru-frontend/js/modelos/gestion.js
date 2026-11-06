@@ -79,3 +79,34 @@ function borrarMaquina(id) {
 function obtenerInstalaciones() {
     return pedirAlServidor(API_GESTION + "/instalaciones");
 }
+
+// ----- Mapa -----
+function vaciarContenedor(id) {
+    return pedirAlServidor(API_GESTION + "/vaciar?id=" + id, "POST");
+}
+
+function obtenerIncidencias() {
+    return pedirAlServidor(API_GESTION + "/incidencias");
+}
+
+function reportarProblema(datos) {
+    return pedirAlServidor(API_GESTION + "/incidencias", "POST", datos);
+}
+
+function obtenerRecorridos() {
+    return pedirAlServidor(API_GESTION + "/recorridos");
+}
+
+// Limites de los municipios (archivo GeoJSON descargado de la Intendencia).
+// Si el archivo no esta, devuelve null y el mapa funciona igual.
+async function obtenerLimitesMunicipios() {
+    try {
+        const respuesta = await fetch("js/datos/municipios.json");
+        if (!respuesta.ok) {
+            return null;
+        }
+        return await respuesta.json();
+    } catch (error) {
+        return null;
+    }
+}

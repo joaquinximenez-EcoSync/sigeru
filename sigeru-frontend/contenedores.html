@@ -11,6 +11,7 @@
     <aside class="sidebar">
         <div class="logo">SiGeRU</div>
         <a href="panel.html">🏠 Inicio</a>
+        <a href="mapa.html">🗺️ Mapa</a>
         <a href="contenedores.html" class="activo">🗑️ Contenedores</a>
         <a href="camiones.html" class="no-vecino">🚛 Camiones</a>
         <a href="centros.html" class="no-vecino">🏭 Centros de acopio</a>
@@ -59,20 +60,47 @@
                         <input id="capacidad" type="number" min="0">
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="estado">Estado</label>
-                    <select id="estado">
-                        <option>Funcional</option>
-                        <option>Roto</option>
-                        <option>Desbordado</option>
-                    </select>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="estado">Estado</label>
+                        <select id="estado">
+                            <option>Funcional</option>
+                            <option>Roto</option>
+                            <option>Desbordado</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="municipio">Municipio</label>
+                        <select id="municipio">
+                            <option value="">Sin indicar</option>
+                            <option>A</option>
+                            <option>B</option>
+                            <option>C</option>
+                            <option>CH</option>
+                            <option>D</option>
+                            <option>E</option>
+                            <option>F</option>
+                            <option>G</option>
+                        </select>
+                    </div>
                 </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="latitud">Latitud</label>
+                        <input id="latitud" type="number" step="0.000001" placeholder="-34.9055">
+                    </div>
+                    <div class="form-group">
+                        <label for="longitud">Longitud</label>
+                        <input id="longitud" type="number" step="0.000001" placeholder="-56.1889">
+                    </div>
+                </div>
+                <small>La ubicación es opcional. También se puede agregar el contenedor tocando el mapa.</small>
                 <button type="submit" class="btn btn-primary">Guardar</button>
                 <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
             </form>
         </dialog>
 
-        <input id="buscador" class="buscador" placeholder="Buscar por calle, zona, estado o residuo..." oninput="buscar()">
+        <input id="buscador" class="buscador" placeholder="Buscar por calle, zona, municipio, estado o residuo..." oninput="buscar()">
 
         <div class="table-container">
             <table>
@@ -81,6 +109,7 @@
                         <th>ID</th>
                         <th>Calle</th>
                         <th>Zona</th>
+                        <th>Municipio</th>
                         <th>Tipo de residuo</th>
                         <th>Capacidad</th>
                         <th>Estado</th>

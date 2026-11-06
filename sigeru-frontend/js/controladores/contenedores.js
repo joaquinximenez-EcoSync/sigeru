@@ -31,7 +31,7 @@ function buscar() {
     // Guardamos solo los que tienen el texto buscado
     const filtrados = [];
     for (const c of listaContenedores) {
-        const contenido = (c.calle + " " + c.zona + " " + c.estado + " " + c.residuo).toLowerCase();
+        const contenido = (c.calle + " " + c.zona + " municipio " + c.municipio + " " + c.estado + " " + c.residuo).toLowerCase();
         if (contenido.includes(texto)) {
             filtrados.push(c);
         }
@@ -56,6 +56,9 @@ function editarContenedor(id) {
     document.getElementById("id_residuo").value = c.id_residuo;
     document.getElementById("capacidad").value = c.capacidad ? Number(c.capacidad) : "";
     document.getElementById("estado").value = c.estado;
+    document.getElementById("municipio").value = c.municipio ?? "";
+    document.getElementById("latitud").value = c.latitud ?? "";
+    document.getElementById("longitud").value = c.longitud ?? "";
 
     document.getElementById("tituloModal").textContent = "Modificar contenedor #" + id;
     abrirModal();
@@ -82,7 +85,10 @@ document.getElementById("formContenedor").addEventListener("submit", async funct
         zona: document.getElementById("zona").value.trim(),
         estado: document.getElementById("estado").value,
         capacidad: document.getElementById("capacidad").value,
-        id_residuo: document.getElementById("id_residuo").value
+        id_residuo: document.getElementById("id_residuo").value,
+        municipio: document.getElementById("municipio").value,
+        latitud: document.getElementById("latitud").value,
+        longitud: document.getElementById("longitud").value
     };
 
     try {

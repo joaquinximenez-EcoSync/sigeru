@@ -7,7 +7,7 @@ Proyecto de pasaje de grado de **EcoSync** - ESI 2026.
 | Carpeta | Qué es |
 |---------|--------|
 | `sigeru-landing` | Página principal y registro de vecinos |
-| `sigeru-frontend` | Inicio de sesión, panel y CRUD de usuarios, contenedores, camiones, centros de acopio y maquinaria |
+| `sigeru-frontend` | Inicio de sesión, panel, mapa interactivo de Montevideo y CRUD de usuarios, contenedores, camiones, centros de acopio y maquinaria |
 | `sigeru-api-usuarios` | API de registro, inicio de sesión y usuarios |
 | `sigeru-api-gestion` | API de contenedores, camiones, centros de acopio y maquinaria |
 | `sigeru-base-datos` | MER, modelo físico, DDL y dump de la base de datos |

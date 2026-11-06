@@ -91,6 +91,41 @@ tbody tr:hover { background: #fafcfb; }
 .etiqueta.alerta { background: #fef3c7; color: #b7791f; }
 .etiqueta.mal { background: #fdecea; color: #c0392b; }
 
+/* ===== Mapa ===== */
+#mapa { height: 560px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,.06); z-index: 0; }
+#mapa.eligiendo { cursor: crosshair; }
+.botones-mapa { display: flex; gap: 10px; flex-wrap: wrap; }
+.mapa-barra { display: flex; justify-content: space-between; gap: 15px; flex-wrap: wrap; margin-bottom: 12px; }
+.filtros { display: flex; gap: 10px; flex-wrap: wrap; }
+.filtros select { padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font: inherit; background: #fff; }
+.capas { display: flex; gap: 6px 16px; flex-wrap: wrap; align-items: center; font-size: 14px; }
+.capas label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+.leyenda { display: flex; gap: 8px 18px; flex-wrap: wrap; align-items: center; margin: 12px 0 25px; font-size: 14px; color: #4b5563; }
+.leyenda span { display: inline-flex; align-items: center; gap: 6px; }
+.leyenda .marca { width: 22px; height: 22px; font-size: 12px; }
+.leyenda .cantidad { margin-left: auto; font-weight: bold; color: #176b3a; }
+.titulo-seccion { font-size: 20px; margin: 10px 0 12px; }
+.recorrido { padding: 8px 0; border-bottom: 1px solid #e5e7eb; }
+.recorrido:last-child { border-bottom: 0; }
+#listaRecorridos { margin-bottom: 25px; padding: 15px 20px; }
+.punto-color { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+.popup-botones { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.etiqueta-municipio { font-weight: bold; }
+
+/* Iconos redondos de las marcas del mapa */
+.marca { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+         font-size: 15px; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.4); color: #fff; font-weight: bold; }
+.marca-verde { background: #2e9d5b; }
+.marca-naranja { background: #e67e22; }
+.marca-roja { background: #c0392b; }
+.marca-gris { background: #4b5563; }
+.marca-azul { background: #1d6fd8; }
+.marca-yo { background: #fff; border-color: #1d6fd8; }
+.marca-numero { background: #1f2937; font-size: 13px; }
+.marca-alerta-alta { background: #c0392b; }
+.marca-alerta-media { background: #e67e22; }
+.marca-alerta-baja { background: #f1c40f; }
+
 /* ===== Celulares y pantallas chicas ===== */
 @media (max-width: 800px) {
     .cards, .form-row { grid-template-columns: 1fr; }
@@ -100,4 +135,6 @@ tbody tr:hover { background: #fafcfb; }
     .sidebar .usuario { width: 100%; margin: 0; display: flex; justify-content: space-between; align-items: center; }
     .sidebar .usuario button { margin: 0; }
     .contenido { padding: 25px 16px; }
+    #mapa { height: 65vh; }
+    .leyenda .cantidad { margin-left: 0; }
 }

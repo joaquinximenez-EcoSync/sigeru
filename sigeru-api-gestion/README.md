@@ -20,10 +20,13 @@ modelos/Contenedor.php           Modelo (clase) de contenedores y tipos de resid
 modelos/Camion.php               Modelo (clase) de camiones
 modelos/Centro.php               Modelo (clase) de centros de acopio
 modelos/Maquinaria.php           Modelo (clase) de maquinaria
+modelos/Incidencia.php           Modelo (clase) de incidencias
+modelos/Recorrido.php            Modelo (clase) de recorridos de las cuadrillas
 controladores/contenedores.php   Controlador de contenedores
 controladores/camiones.php       Controlador de camiones
 controladores/centros.php        Controlador de centros de acopio
 controladores/maquinaria.php     Controlador de maquinaria
+controladores/mapa.php           Controlador de incidencias y recorridos (para el mapa)
 vistas/respuesta.php             Vista: devuelve la respuesta en JSON
 ```
 
@@ -40,7 +43,10 @@ Para ver, modificar o borrar uno solo se agrega `?id=1` a la dirección.
 | `api.php/centros` | Administrador, Operario y Recolector | Administrador y Operario |
 | `api.php/maquinaria` | Administrador, Operario y Recolector | Administrador y Operario |
 | `api.php/operarios` | Administrador y Operario | - |
-| `api.php/instalaciones` | Administrador y Operario | - |
+| `api.php/instalaciones` | Administrador, Operario y Recolector | - |
+| `api.php/incidencias` | Administrador, Operario y Recolector | POST (reportar un problema): Administrador, Operario y Recolector |
+| `api.php/recorridos` | Administrador, Operario y Recolector (el recolector solo ve los de su cuadrilla) | - |
+| `api.php/vaciar?id=1` | - | POST (marcar un contenedor como vaciado): Administrador, Operario y Recolector |
 
 Respuestas de error:
 

@@ -44,7 +44,7 @@ function mostrarTablaContenedores(lista, conAcciones) {
     const tabla = document.getElementById("tablaContenedores");
 
     if (lista.length == 0) {
-        tabla.innerHTML = filaVacia(7, "No hay contenedores");
+        tabla.innerHTML = filaVacia(8, "No hay contenedores");
         return;
     }
 
@@ -54,6 +54,7 @@ function mostrarTablaContenedores(lista, conAcciones) {
             <td>${c.id}</td>
             <td class="ajustar">${limpiarTexto(c.calle)}</td>
             <td>${limpiarTexto(c.zona)}</td>
+            <td>${limpiarTexto(c.municipio)}</td>
             <td>${limpiarTexto(c.residuo)}</td>
             <td>${c.capacidad ? Number(c.capacidad) + " L" : ""}</td>
             <td><span class="etiqueta ${colorEstado(c.estado)}">${limpiarTexto(c.estado)}</span></td>`;
