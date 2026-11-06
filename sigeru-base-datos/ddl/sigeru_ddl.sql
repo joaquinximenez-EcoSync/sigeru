@@ -3,6 +3,12 @@
 -- DDL de creación de la base de datos y sus tablas (primera versión)
 -- Empresa: EcoSync
 -- Motor: MySQL 8
+--
+-- ATENCION: este archivo BORRA la base de datos sigeru y la crea vacia (DROP DATABASE).
+-- Se importa solo la PRIMERA VEZ que se instala el sistema en una computadora.
+-- Si ya tienen datos cargados (usuarios, incidencias...) NO lo vuelvan a importar:
+-- para los cambios nuevos de la base se usan los archivos de la carpeta "actualizaciones",
+-- que agregan lo nuevo sin borrar nada.
 -- =====================================================================
 
 SET NAMES utf8mb4;

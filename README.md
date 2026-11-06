@@ -17,9 +17,34 @@ Proyecto de pasaje de grado de **EcoSync** - ESI 2026.
 
 1. Copiar las carpetas `sigeru-landing`, `sigeru-frontend`, `sigeru-api-usuarios`, `sigeru-api-gestion` y `sigeru-api-recoleccion` dentro de `C:\xampp\htdocs\`.
 2. Prender **Apache** y **MySQL** en XAMPP.
-3. Entrar a http://localhost/phpmyadmin → **Importar** → `sigeru-base-datos/ddl/sigeru_ddl.sql`.
-4. Otra vez **Importar** → `sigeru-base-datos/datos/sigeru_datos_prueba.sql` (datos de prueba).
+3. **Solo la primera vez:** entrar a http://localhost/phpmyadmin → **Importar** → `sigeru-base-datos/ddl/sigeru_ddl.sql`.
+4. **Solo la primera vez:** otra vez **Importar** → `sigeru-base-datos/datos/sigeru_datos_prueba.sql` (datos de prueba).
 5. Abrir http://localhost/sigeru-landing/
+
+### Que no se pierdan los datos
+
+Los datos (usuarios, incidencias, etc.) quedan guardados en MySQL aunque se apague o reinicie la computadora.
+Lo único que los borra es **volver a importar `sigeru_ddl.sql`**, porque empieza borrando la base entera.
+
+- Cuando se baja una versión nueva del proyecto, solo se reemplazan las 5 carpetas de `htdocs`. **No** se vuelve a importar la base.
+- Si la base cambia (una tabla o columna nueva), el cambio viene en la carpeta `sigeru-base-datos/actualizaciones`
+  y se importa ese archivo, que agrega lo nuevo sin borrar nada.
+- **Para llevar los datos a otra computadora** (o guardar una copia): en phpMyAdmin elegir la base **sigeru** →
+  **Exportar** → **Continuar**. Se descarga un archivo `.sql` con todo. En la otra computadora: crear la base con
+  `sigeru_ddl.sql` (sin los datos de prueba) y después **Importar** ese archivo.
+
+### Entrar desde el celular
+
+El celular tiene que estar conectado **al mismo WiFi** que la computadora que tiene XAMPP.
+
+1. En la computadora: tecla Windows → escribir `cmd` → Enter → escribir `ipconfig` → Enter.
+   Buscar **"Dirección IPv4"** (por ejemplo `192.168.1.10`).
+2. En el celular abrir `http://192.168.1.10/sigeru-landing/` (con la IP de la computadora, **no** `localhost`).
+3. Si no abre, es el firewall de Windows: Panel de control → Firewall de Windows Defender →
+   Permitir una aplicación → buscar **Apache HTTP Server** y marcar **Privada**.
+
+Los enlaces de los correos (verificar la cuenta) usan la misma dirección con la que se entró: si el vecino se
+registra desde el celular con la IP, el enlace del correo también abre en el celular.
 
 ## Cómo ejecutarlo con Docker
 
