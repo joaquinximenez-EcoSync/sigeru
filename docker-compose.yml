@@ -48,6 +48,8 @@ services:
       GMAIL_USUARIO: ""
       GMAIL_CLAVE: ""
       DIRECCION_SITIO: "http://localhost:8080"
+      # Donde se guarda la clave de cifrado de los telefonos (se crea sola la primera vez)
+      SIGERU_CLAVE_ARCHIVO: /var/www/claves/sigeru_clave.php
     volumes:
       - ./sigeru-landing:/var/www/html/sigeru-landing
       - ./sigeru-frontend:/var/www/html/sigeru-frontend
@@ -57,6 +59,7 @@ services:
       # Los tests de los modelos usan los archivos de la base de datos
       - ./sigeru-base-datos:/var/www/html/sigeru-base-datos
       - ./docker/index.html:/var/www/html/index.html
+      - claves:/var/www/claves
     ports:
       - "8080:80"
 
@@ -73,3 +76,4 @@ services:
 
 volumes:
   datos-mysql:
+  claves:

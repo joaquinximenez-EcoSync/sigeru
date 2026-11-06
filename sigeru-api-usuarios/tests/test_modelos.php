@@ -59,6 +59,19 @@ $modificado = $usuario->modificar($id, [
 verificar($modificado['rol'] == "Operario" && $modificado['telefono'] == "099555555", "Cambia el rol y el teléfono");
 verificar(contarFilas($conn, "SELECT * FROM vecinos WHERE id_usuario = $id") == 0, "Al cambiar de rol se borra de la tabla vecinos");
 verificar($modificado['especialidad'] == "Choferes", "Y se guarda en la tabla operarios con su especialidad");
+
+titulo("Cifrado del teléfono (AES-256-GCM)");
+
+$enLaBase = mysqli_fetch_assoc(mysqli_query($conn, "SELECT telefono FROM usuarios WHERE id_usuario = $id"))['telefono'];
+verificar(str_starts_with($enLaBase, "enc:") && !str_contains($enLaBase, "099555555"), "En la base el teléfono queda cifrado (no se ve el número)");
+verificar(descifrar($enLaBase) == "099555555", "Con la clave se descifra y da el número original");
+verificar(cifrar("099555555") != cifrar("099555555"), "El mismo número cifrado dos veces da distinto (IV al azar)");
+$cambiado = substr($enLaBase, 0, -4) . (substr($enLaBase, -4) == "AAAA" ? "BBBB" : "AAAA");
+verificar(descifrar($cambiado) == "(no se pudo descifrar)", "Si alguien modifica el dato cifrado se detecta (etiqueta GCM)");
+mysqli_query($conn, "UPDATE usuarios SET telefono = '094111222' WHERE id_usuario = 1");
+$usuario->cifrarTelefonosViejos();
+$admin1 = mysqli_fetch_assoc(mysqli_query($conn, "SELECT telefono FROM usuarios WHERE id_usuario = 1"))['telefono'];
+verificar(str_starts_with($admin1, "enc:") && $usuario->obtenerPorId(1)['telefono'] == "094111222", "Los teléfonos viejos sin cifrar se cifran solos");
 verificar(password_verify("123456", $usuario->buscarPorEmail("juan@mail.com")['contrasena']), "Si la contraseña viene vacía no se cambia");
 
 $usuario->modificar($id, [
@@ -84,6 +97,8 @@ titulo("Registro con verificación de correo");
 $vecino = $usuario->agregar(["primer_nombre" => "Ana", "primer_apellido" => "Rodríguez", "email" => "ana@mail.com", "contrasena" => "123456", "rol" => "Vecino"], "Sin verificar", "codigo123");
 verificar($vecino['estado'] == "Sin verificar", "El vecino que se registra queda Sin verificar");
 verificar($usuario->buscarPorCodigo("codigo123")['id_usuario'] == $vecino['id'], "Lo encuentra por el código del enlace");
+$codigoEnLaBase = mysqli_fetch_assoc(mysqli_query($conn, "SELECT codigo_verificacion FROM usuarios WHERE id_usuario = " . $vecino['id']))['codigo_verificacion'];
+verificar($codigoEnLaBase == hash("sha256", "codigo123") && $codigoEnLaBase != "codigo123", "En la base se guarda el resumen SHA-256 del código, no el código");
 verificar($usuario->buscarPorCodigo("otro") == null, "Con otro código no encuentra a nadie");
 $usuario->cambiarEstado($vecino['id'], "Pendiente");
 verificar($usuario->obtenerPorId($vecino['id'])['estado'] == "Pendiente", "Cambia el estado a Pendiente");

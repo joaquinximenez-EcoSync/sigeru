@@ -37,6 +37,11 @@ $endpoint = trim($_SERVER['PATH_INFO'] ?? "", "/");
 
 // Datos que vienen en la direccion
 $id = $_GET['id'] ?? null;
+
+// El id tiene que ser un numero entero positivo (si no, alguien esta probando meter otra cosa)
+if ($id !== null && !ctype_digit((string) $id)) {
+    responder(["error" => "El id no es válido"], 400);
+}
 $idCamion = $_GET['camion'] ?? null;
 $nro = $_GET['nro'] ?? null;
 

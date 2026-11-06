@@ -1,5 +1,8 @@
 <?php
 // Modelo Usuario: guarda, busca, modifica y borra usuarios en la base de datos
+// El telefono se guarda cifrado con AES-256-GCM y el codigo del enlace de verificacion como resumen SHA-256 (ver cifrado.php)
+
+require_once __DIR__ . "/../cifrado.php";
 
 class Usuario
 {
@@ -29,10 +32,14 @@ class Usuario
     // Devuelve todos los usuarios (sin la contraseña)
     public function obtenerTodos()
     {
+        // Los telefonos que se cargaron antes del cifrado (por ejemplo los datos de prueba) se cifran ahora
+        $this->cifrarTelefonosViejos();
+
         $result = mysqli_query($this->conn, $this->consulta . " ORDER BY u.id_usuario");
 
         $usuarios = [];
         while ($row = mysqli_fetch_assoc($result)) {
+            $row['telefono'] = descifrar($row['telefono']);
             $usuarios[] = $row;
         }
         return $usuarios;
@@ -43,7 +50,7 @@ class Usuario
         $stmt = $this->conn->prepare($this->consulta . " WHERE u.id_usuario = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
-        return $stmt->get_result()->fetch_assoc();
+        return $this->descifrarFila($stmt->get_result()->fetch_assoc());
     }
 
     // Este si devuelve la contraseña, porque se usa para el login
@@ -52,7 +59,7 @@ class Usuario
         $stmt = $this->conn->prepare("SELECT * FROM usuarios WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
-        return $stmt->get_result()->fetch_assoc();
+        return $this->descifrarFila($stmt->get_result()->fetch_assoc());
     }
 
     // Guarda un usuario nuevo y devuelve sus datos.
@@ -68,8 +75,12 @@ class Usuario
         // La contraseña se guarda encriptada
         $contrasena = password_hash($datos['contrasena'], PASSWORD_DEFAULT);
 
-        if ($telefono == "") {
-            $telefono = null;
+        // El telefono es un dato personal: se guarda cifrado (si viene vacio queda NULL)
+        $telefono = cifrar($telefono);
+
+        // Del codigo de verificacion se guarda solo su resumen SHA-256
+        if ($codigo != null) {
+            $codigo = resumen($codigo);
         }
 
         $stmt = $this->conn->prepare("INSERT INTO usuarios (primer_nombre, primer_apellido, email, telefono, contrasena, rol, estado, codigo_verificacion)
@@ -95,9 +106,8 @@ class Usuario
         $telefono = $datos['telefono'] ?? "";
         $rol = $datos['rol'];
 
-        if ($telefono == "") {
-            $telefono = null;
-        }
+        // El telefono es un dato personal: se guarda cifrado (si viene vacio queda NULL)
+        $telefono = cifrar($telefono);
 
         $stmt = $this->conn->prepare("UPDATE usuarios SET primer_nombre = ?, primer_apellido = ?, email = ?, telefono = ?, rol = ? WHERE id_usuario = ?");
         $stmt->bind_param("sssssi", $nombre, $apellido, $email, $telefono, $rol, $id);
@@ -141,8 +151,10 @@ class Usuario
     // Busca al usuario que tiene ese codigo de verificacion (el que va en el enlace del correo)
     public function buscarPorCodigo($codigo)
     {
+        // En la base esta guardado el resumen SHA-256 del codigo, no el codigo
+        $resumenCodigo = resumen($codigo);
         $stmt = $this->conn->prepare("SELECT * FROM usuarios WHERE codigo_verificacion = ? AND estado = 'Sin verificar'");
-        $stmt->bind_param("s", $codigo);
+        $stmt->bind_param("s", $resumenCodigo);
         $stmt->execute();
         return $stmt->get_result()->fetch_assoc();
     }
@@ -188,6 +200,27 @@ class Usuario
         if ($rol == "Recolector") {
             $stmt = $this->conn->prepare("INSERT INTO recolectores (id_usuario) VALUES (?)");
             $stmt->bind_param("i", $id);
+            $stmt->execute();
+        }
+    }
+
+    // Descifra el telefono de una fila (si la fila existe)
+    private function descifrarFila($fila)
+    {
+        if ($fila != null) {
+            $fila['telefono'] = descifrar($fila['telefono']);
+        }
+        return $fila;
+    }
+
+    // Cifra los telefonos que todavia estan guardados como texto (los que no empiezan con "enc:")
+    public function cifrarTelefonosViejos()
+    {
+        $result = mysqli_query($this->conn, "SELECT id_usuario, telefono FROM usuarios WHERE telefono IS NOT NULL AND telefono NOT LIKE 'enc:%'");
+        while ($row = mysqli_fetch_assoc($result)) {
+            $cifrado = cifrar($row['telefono']);
+            $stmt = $this->conn->prepare("UPDATE usuarios SET telefono = ? WHERE id_usuario = ?");
+            $stmt->bind_param("si", $cifrado, $row['id_usuario']);
             $stmt->execute();
         }
     }

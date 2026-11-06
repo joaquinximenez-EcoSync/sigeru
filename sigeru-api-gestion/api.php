@@ -60,6 +60,11 @@ $endpoint = trim($_SERVER['PATH_INFO'] ?? "", "/");
 // Id que viene en la direccion (para ver, modificar o borrar uno)
 $id = $_GET['id'] ?? null;
 
+// El id tiene que ser un numero entero positivo (si no, alguien esta probando meter otra cosa)
+if ($id !== null && !ctype_digit((string) $id)) {
+    responder(["error" => "El id no es válido"], 400);
+}
+
 // Datos que mando el formulario (llegan en formato JSON)
 $datos = json_decode(file_get_contents("php://input"), true) ?? [];
 

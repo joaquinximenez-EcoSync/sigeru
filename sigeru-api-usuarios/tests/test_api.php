@@ -72,7 +72,7 @@ if ($r['codigo'] == 503 || $r['codigo'] == 500) {
     // Creamos el vecino como si se hubiera mandado el correo
     $clave = password_hash("clave1234", PASSWORD_DEFAULT);
     mysqli_query($base, "INSERT INTO usuarios (primer_nombre, primer_apellido, email, contrasena, rol, estado, codigo_verificacion)
-                         VALUES ('Prueba', 'Registro', '" . $correoRegistro . "', '" . $clave . "', 'Vecino', 'Sin verificar', 'codigo-del-test-" . time() . "')");
+                         VALUES ('Prueba', 'Registro', '" . $correoRegistro . "', '" . $clave . "', 'Vecino', 'Sin verificar', SHA2('codigo-del-test', 256))");
     $idRegistrado = mysqli_insert_id($base);
     mysqli_query($base, "INSERT INTO vecinos (id_usuario) VALUES (" . $idRegistrado . ")");
 } else {
@@ -82,8 +82,12 @@ if ($r['codigo'] == 503 || $r['codigo'] == 500) {
     $idRegistrado = $r['json']['usuario']['id'];
 }
 
-// El codigo del enlace del correo lo sacamos de la base (el correo no lo podemos leer desde el test)
-$codigo = mysqli_fetch_assoc(mysqli_query($base, "SELECT codigo_verificacion FROM usuarios WHERE id_usuario = " . $idRegistrado))['codigo_verificacion'];
+// En la base solo esta el resumen SHA-256 del codigo del enlace (el correo no lo podemos leer desde el test).
+$enLaBase = mysqli_fetch_assoc(mysqli_query($base, "SELECT codigo_verificacion FROM usuarios WHERE id_usuario = " . $idRegistrado))['codigo_verificacion'];
+verificar(strlen($enLaBase) == 64, "En la base el código del enlace está guardado como resumen SHA-256");
+// Ponemos el resumen de un codigo que conocemos, como si fuera el del correo
+$codigo = "codigo-conocido-" . time();
+mysqli_query($base, "UPDATE usuarios SET codigo_verificacion = '" . hash("sha256", $codigo) . "' WHERE id_usuario = " . $idRegistrado);
 
 $r = entrar($api, "registrado", $correoRegistro, "clave1234");
 verificar($r['codigo'] == 403 && str_contains($r['json']['error'], "verificaste"), "Sin verificar el correo no puede iniciar sesión (403)");
