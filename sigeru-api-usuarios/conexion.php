@@ -5,6 +5,11 @@ $username = "root";
 $password = "";
 $database = "sigeru";
 
+// Con Docker la base de datos esta en otro contenedor: su direccion viene en DB_HOST (ver docker-compose.yml)
+if (getenv("DB_HOST")) {
+    $hostname = getenv("DB_HOST");
+}
+
 // Para que los errores los manejemos nosotros
 mysqli_report(MYSQLI_REPORT_OFF);
 
