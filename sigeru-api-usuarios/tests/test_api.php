@@ -62,10 +62,10 @@ $r = pedir("POST", $api . "/registro", [
 ], "landing");
 
 // Si Gmail esta configurado se manda el correo de verificacion de verdad (a un correo que no existe).
-// Si no esta configurado, la API no puede mandar el correo: devuelve 500 y no deja creado el usuario.
-if ($r['codigo'] == 500) {
+// Si no esta configurado, la API avisa que falta configurar el correo (503) y no crea el usuario.
+if ($r['codigo'] == 503 || $r['codigo'] == 500) {
     echo "  (Gmail no está configurado: se prueba que no quede el registro y se crea el vecino directo en la base)\n";
-    verificar(str_contains($r['json']['error'], "correo"), "Si no se puede mandar el correo avisa el error (500)");
+    verificar(str_contains($r['json']['error'], "correo"), "Si no se puede mandar el correo avisa el error");
     $quedo = mysqli_fetch_assoc(mysqli_query($base, "SELECT COUNT(*) AS cantidad FROM usuarios WHERE email = '" . $correoRegistro . "'"))['cantidad'];
     verificar($quedo == 0, "Y no deja creado el usuario, para que se pueda registrar de nuevo");
 

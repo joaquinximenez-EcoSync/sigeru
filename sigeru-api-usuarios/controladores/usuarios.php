@@ -58,6 +58,11 @@ function registrarUsuario($usuario, $datos) {
     $datos['rol'] = "Vecino";
     validarUsuario($usuario, $datos, null);
 
+    // Si el sistema no tiene configurado el Gmail, no se puede mandar el correo de verificacion
+    if (!correoConfigurado()) {
+        responder(["error" => "El registro no está disponible: falta configurar el correo de SiGeRU (archivo sigeru_correo.php). Avísale al administrador."], 503);
+    }
+
     // Codigo al azar que va en el enlace del correo (32 letras y numeros)
     $codigo = bin2hex(random_bytes(16));
     $nuevo = $usuario->agregar($datos, "Sin verificar", $codigo);
@@ -72,7 +77,7 @@ function registrarUsuario($usuario, $datos) {
     // Si no se pudo mandar el correo, no puede verificar la cuenta: borramos el registro para que lo intente de nuevo
     if (!$seMando) {
         $usuario->eliminar($nuevo['id']);
-        responder(["error" => "No pudimos mandarte el correo de verificación. Revisa que el correo esté bien escrito o inténtalo más tarde."], 500);
+        responder(["error" => "No pudimos mandarte el correo de verificación: Gmail no aceptó el envío. Inténtalo más tarde (si sigue pasando, avísale al administrador)."], 500);
     }
 
     responder([
