@@ -37,10 +37,16 @@ class Maquinaria
         return $stmt->get_result()->fetch_assoc();
     }
 
-    // Lista de instalaciones (centros de acopio y vertederos), para elegir donde esta la maquina
+    // Lista de instalaciones (centros de acopio y vertederos) con su ubicacion.
+    // Se usa para elegir donde esta la maquina y para mostrarlas en el mapa.
     public function obtenerInstalaciones()
     {
-        $result = mysqli_query($this->conn, "SELECT id_instalacion AS id, nombre FROM instalaciones ORDER BY nombre");
+        $result = mysqli_query($this->conn, "SELECT i.id_instalacion AS id, i.nombre, i.calle, i.zona,
+                                                    i.capacidad_actual, i.capacidad_max, i.latitud, i.longitud,
+                                                    IF(v.id_instalacion IS NULL, 'Centro de acopio', 'Vertedero') AS tipo
+                                             FROM instalaciones i
+                                             LEFT JOIN vertederos v ON i.id_instalacion = v.id_instalacion
+                                             ORDER BY i.nombre");
 
         $instalaciones = [];
         while ($row = mysqli_fetch_assoc($result)) {

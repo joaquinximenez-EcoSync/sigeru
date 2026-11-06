@@ -17,6 +17,24 @@ function validarContenedor($contenedor, $datos) {
     if (!empty($datos['capacidad']) && !is_numeric($datos['capacidad'])) {
         responder(["error" => "La capacidad debe ser un número"], 400);
     }
+
+    // Los 8 municipios de Montevideo (el municipio es opcional)
+    $municipios = ["A", "B", "C", "CH", "D", "E", "F", "G"];
+    if (!empty($datos['municipio']) && !in_array($datos['municipio'], $municipios)) {
+        responder(["error" => "El municipio no es válido"], 400);
+    }
+
+    // La ubicacion es opcional, pero si viene tiene que estar dentro de Montevideo
+    $latitud = $datos['latitud'] ?? "";
+    $longitud = $datos['longitud'] ?? "";
+    if ($latitud != "" || $longitud != "") {
+        if (!is_numeric($latitud) || !is_numeric($longitud)) {
+            responder(["error" => "La ubicación no es válida"], 400);
+        }
+        if ($latitud < -35 || $latitud > -34.6 || $longitud < -56.5 || $longitud > -55.9) {
+            responder(["error" => "La ubicación tiene que estar dentro de Montevideo"], 400);
+        }
+    }
 }
 
 // Devuelve la lista de todos los contenedores (GET contenedores)
@@ -70,4 +88,14 @@ function eliminarContenedor($contenedor, $id) {
 
     $contenedor->eliminar($id);
     responder(["mensaje" => "Contenedor eliminado correctamente"]);
+}
+
+// El recolector marca que vacio el contenedor (POST vaciar?id=1)
+function vaciarContenedor($contenedor, $id) {
+    if ($contenedor->obtenerPorId($id) == null) {
+        responder(["error" => "Contenedor no encontrado"], 404);
+    }
+
+    $vaciado = $contenedor->vaciar($id);
+    responder(["mensaje" => "Contenedor marcado como vaciado", "contenedor" => $vaciado]);
 }

@@ -5,7 +5,7 @@ class Camion
 {
     private $conn;
 
-    private $consulta = "SELECT id_camion AS id, matricula, estado, disponibilidad, capacidad_carga FROM camiones";
+    private $consulta = "SELECT id_camion AS id, matricula, estado, disponibilidad, capacidad_carga, latitud, longitud FROM camiones";
 
     public function __construct($conn)
     {
