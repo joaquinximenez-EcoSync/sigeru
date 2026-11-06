@@ -44,7 +44,7 @@ services:
       DB_HOST: mysql
       TZ: America/Montevideo
       # Correo de Gmail para los mails de verificacion (ver sigeru-api-usuarios/config_correo.php).
-      # Si se dejan vacios, el registro funciona en "modo prueba" (muestra el enlace en pantalla).
+      # Si se dejan vacios no se mandan correos y los vecinos no se pueden registrar.
       GMAIL_USUARIO: ""
       GMAIL_CLAVE: ""
       DIRECCION_SITIO: "http://localhost:8080"
