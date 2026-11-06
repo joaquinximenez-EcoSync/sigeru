@@ -17,8 +17,6 @@ let capaContenedores, capaIncidencias, capaInstalaciones, capaCamiones, capaReco
 let marcasCamiones = [];
 
 let modoAgregar = false;       // true cuando se esta eligiendo el lugar de un contenedor nuevo
-let idParaReportar = null;     // contenedor al que se le reporta un problema
-let idParaAvisar = null;       // contenedor del que avisa un vecino
 
 const COLORES_RECORRIDOS = ["#1d6fd8", "#8e44ad", "#16a085", "#d35400"];
 const MUNICIPIOS = ["A", "B", "C", "CH", "D", "E", "F", "G"];
@@ -73,16 +71,6 @@ async function cargarDatos() {
         camiones = await obtenerCamiones();
         recorridos = await obtenerRecorridos();
         mostrarListaRecorridos(recorridos, COLORES_RECORRIDOS);
-    }
-
-    // El vecino ve sus avisos; el administrador y el operario ven los de todos los vecinos
-    if (usuarioLogueado.rol == "Vecino") {
-        const avisos = await obtenerAvisos();
-        mostrarTablaAvisos("tablaMisAvisos", avisos, false);
-    }
-    if (puedeEditar()) {
-        const avisos = await obtenerAvisos();
-        mostrarTablaAvisos("tablaAvisosVecinos", avisos, true);
     }
     dibujarTodo();
 }
@@ -401,72 +389,11 @@ async function marcarVaciado(id) {
     }
 }
 
-function abrirReporte(id) {
-    idParaReportar = id;
-    const c = buscarPorId(contenedores, id);
-    document.getElementById("formReporte").reset();
-    document.getElementById("reporteContenedor").textContent = c.calle;
-    document.getElementById("reporteModal").showModal();
+// Reportar una incidencia: se abre la pagina de incidencias con el contenedor ya elegido
+// (asi el personal y los vecinos usan el mismo formulario)
+function irAReportar(idContenedor) {
+    window.location.href = "incidencias.html?contenedor=" + idContenedor;
 }
-
-function cerrarReporte() {
-    document.getElementById("reporteModal").close();
-}
-
-document.getElementById("formReporte").addEventListener("submit", async function (evento) {
-    evento.preventDefault();
-
-    const datos = {
-        id_contenedor: idParaReportar,
-        problema: document.getElementById("problema").value,
-        prioridad: document.getElementById("prioridad").value,
-        descripcion: document.getElementById("descripcionProblema").value.trim()
-    };
-
-    try {
-        const respuesta = await reportarProblema(datos);
-        cerrarReporte();
-        mapa.closePopup();
-        mostrarMensaje(respuesta.mensaje, false);
-        await cargarDatos();
-    } catch (error) {
-        alert(error.message);
-    }
-});
-
-// ----- Avisar un problema (vecinos) -----
-function abrirAviso(id) {
-    idParaAvisar = id;
-    const c = buscarPorId(contenedores, id);
-    document.getElementById("formAviso").reset();
-    document.getElementById("avisoContenedor").textContent = c.calle;
-    document.getElementById("avisoModal").showModal();
-}
-
-function cerrarAviso() {
-    document.getElementById("avisoModal").close();
-}
-
-document.getElementById("formAviso").addEventListener("submit", async function (evento) {
-    evento.preventDefault();
-
-    const datos = {
-        id_contenedor: idParaAvisar,
-        problema: document.getElementById("problemaAviso").value,
-        comentario: document.getElementById("comentarioAviso").value.trim()
-    };
-
-    try {
-        const respuesta = await avisarProblema(datos);
-        cerrarAviso();
-        mapa.closePopup();
-        mostrarMensaje(respuesta.mensaje, false);
-        await cargarDatos();
-    } catch (error) {
-        // Si hay un error con la ventana abierta, el mensaje no se ve, por eso usamos alert
-        alert(error.message);
-    }
-});
 
 // ----- Agregar un contenedor tocando el mapa (operario y administrador) -----
 function activarModoAgregar() {

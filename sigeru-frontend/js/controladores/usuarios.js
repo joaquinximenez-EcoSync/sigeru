@@ -76,6 +76,66 @@ async function aprobarElegido(id, aprobado) {
     }
 }
 
+// ----- Cambiar el rol de un usuario (por ejemplo, pasar un vecino a operario o a administrador) -----
+let idCambioRol = null;
+
+function abrirCambioRol(id) {
+    const u = buscarPorId(listaUsuarios, id);
+    idCambioRol = id;
+
+    document.getElementById("nombreCambioRol").textContent = u.primer_nombre + " " + u.primer_apellido + " (ahora es " + u.rol + ")";
+    document.getElementById("nuevoRol").value = u.rol;
+    document.getElementById("especialidadRol").value = u.especialidad ?? "";
+    mostrarEspecialidadRol();
+    document.getElementById("rolModal").showModal();
+}
+
+function cerrarCambioRol() {
+    document.getElementById("rolModal").close();
+}
+
+// La especialidad solo se pide si el rol nuevo es Operario
+function mostrarEspecialidadRol() {
+    const caja = document.getElementById("cajaEspecialidadRol");
+    if (document.getElementById("nuevoRol").value == "Operario") {
+        caja.style.display = "block";
+    } else {
+        caja.style.display = "none";
+    }
+}
+
+document.getElementById("formRol").addEventListener("submit", async function (evento) {
+    evento.preventDefault();
+    const u = buscarPorId(listaUsuarios, idCambioRol);
+    const nuevoRol = document.getElementById("nuevoRol").value;
+
+    if (!confirm("¿Cambiar el rol de " + u.primer_nombre + " " + u.primer_apellido + " a " + nuevoRol + "?")) {
+        return;
+    }
+
+    // Se mandan los mismos datos que ya tiene, solo cambia el rol (la contraseña vacia no se cambia)
+    const datos = {
+        primer_nombre: u.primer_nombre,
+        primer_apellido: u.primer_apellido,
+        email: u.email,
+        telefono: u.telefono ?? "",
+        rol: nuevoRol,
+        contrasena: "",
+        calle: u.calle ?? "",
+        zona: u.zona ?? "",
+        especialidad: document.getElementById("especialidadRol").value
+    };
+
+    try {
+        await modificarUsuario(idCambioRol, datos);
+        cerrarCambioRol();
+        mostrarMensaje("Ahora " + u.primer_nombre + " " + u.primer_apellido + " es " + nuevoRol, false);
+        cargarUsuarios();
+    } catch (error) {
+        alert(error.message);
+    }
+});
+
 function nuevoUsuario() {
     idEditando = null;
     document.getElementById("formUsuario").reset();

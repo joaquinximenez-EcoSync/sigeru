@@ -24,7 +24,7 @@
         <div id="avisoEmergente" class="aviso-emergente"></div>
         <a href="panel.html">🏠 Inicio <span id="contadorAlertas" class="contador" title="Alertas"></span></a>
         <a href="mapa.html">🗺️ Mapa</a>
-        <a href="incidencias.html" class="activo no-vecino">⚠️ Incidencias</a>
+        <a href="incidencias.html" class="activo">⚠️ Incidencias</a>
         <a href="contenedores.html">🗑️ Contenedores</a>
         <a href="camiones.html" class="no-vecino">🚛 Camiones</a>
         <a href="recorridos.html" class="no-vecino">🛣️ Recorridos</a>
@@ -46,9 +46,9 @@
     <main class="contenido">
         <div class="encabezado">
             <h1>Incidencias</h1>
-            <button class="btn btn-primary" onclick="nuevaIncidencia()">+ Registrar incidencia</button>
+            <button class="btn btn-primary" onclick="nuevaIncidencia()">+ Reportar incidencia</button>
         </div>
-        <p class="subtitulo">Problemas en los contenedores y su seguimiento: Abierta → En proceso → Resuelta.</p>
+        <p class="subtitulo">Problemas en los contenedores o basura en la calle, y su seguimiento: Abierta → En proceso → Resuelta.</p>
 
         <div id="mensaje" class="mensaje"></div>
 
@@ -57,19 +57,23 @@
             <h3 id="tituloModal"></h3>
             <form id="formIncidencia">
                 <div class="form-group">
-                    <label for="id_contenedor">Contenedor</label>
-                    <select id="id_contenedor" required></select>
+                    <label for="id_contenedor">Contenedor *</label>
+                    <select id="id_contenedor" required>
+                        <option value="">Elegir el contenedor más cercano al problema...</option>
+                    </select>
+                    <small>También puedes tocar el contenedor en el 🗺️ Mapa y elegir "⚠️ Reportar incidencia".</small>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="problema">Problema</label>
+                        <label for="problema">¿Qué pasa? *</label>
                         <select id="problema" required>
-                            <option value="Desbordado">Desbordado</option>
-                            <option value="Roto">Roto</option>
-                            <option value="Falta de recolección">Falta de recolección</option>
+                            <option value="Desbordado">Está desbordado</option>
+                            <option value="Roto">Está roto</option>
+                            <option value="Falta de recolección">No lo vinieron a vaciar</option>
+                            <option value="Basura en la calle">Hay basura en la calle</option>
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group no-vecino">
                         <label for="prioridad">Prioridad</label>
                         <select id="prioridad" required>
                             <option value="Baja">Baja</option>
@@ -79,8 +83,13 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="descripcion">Descripción <small>(opcional)</small></label>
-                    <input id="descripcion" maxlength="200">
+                    <label for="descripcion">Cuéntanos qué pasó *</label>
+                    <textarea id="descripcion" rows="4" minlength="10" maxlength="500" required
+                              placeholder="Por ejemplo: el contenedor está lleno desde el lunes y hay bolsas rotas en la vereda"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="referencia">¿Dónde exactamente?</label>
+                    <input id="referencia" maxlength="200" placeholder="Por ejemplo: frente al número 2510, al lado de la parada del ómnibus">
                 </div>
                 <button type="submit" class="btn btn-primary">Guardar</button>
                 <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
@@ -142,7 +151,7 @@
         </dialog>
 
         <div class="filtros barra-filtros">
-            <input id="buscador" class="buscador" placeholder="Buscar por calle, zona, municipio, tipo o cuadrilla..." oninput="buscar()">
+            <input id="buscador" class="buscador" placeholder="Buscar por calle, zona, tipo, descripción, vecino o cuadrilla..." oninput="buscar()">
             <select id="filtroEstado" onchange="cargarIncidencias()">
                 <option value="">Todos los estados</option>
                 <option value="Abierta">Abiertas</option>
@@ -157,8 +166,8 @@
                     <tr>
                         <th>ID</th>
                         <th>Detectada</th>
-                        <th>Contenedor</th>
-                        <th>Tipo</th>
+                        <th>Contenedor / lugar</th>
+                        <th>Qué pasó</th>
                         <th>Prioridad</th>
                         <th>Estado</th>
                         <th>Cuadrilla</th>

@@ -24,7 +24,7 @@
         <div id="avisoEmergente" class="aviso-emergente"></div>
         <a href="panel.html">🏠 Inicio <span id="contadorAlertas" class="contador" title="Alertas"></span></a>
         <a href="mapa.html">🗺️ Mapa</a>
-        <a href="incidencias.html" class="no-vecino">⚠️ Incidencias</a>
+        <a href="incidencias.html">⚠️ Incidencias</a>
         <a href="contenedores.html">🗑️ Contenedores</a>
         <a href="camiones.html" class="no-vecino">🚛 Camiones</a>
         <a href="recorridos.html" class="no-vecino">🛣️ Recorridos</a>
@@ -130,6 +130,29 @@
                 <tbody id="tablaUsuarios"></tbody>
             </table>
         </div>
+
+        <!-- Ventana para cambiarle el rol a un usuario -->
+        <dialog id="rolModal">
+            <h3>🔑 Cambiar el rol</h3>
+            <p id="nombreCambioRol" class="subtitulo"></p>
+            <form id="formRol">
+                <div class="form-group">
+                    <label for="nuevoRol">Nuevo rol</label>
+                    <select id="nuevoRol" onchange="mostrarEspecialidadRol()">
+                        <option>Vecino</option>
+                        <option>Recolector</option>
+                        <option>Operario</option>
+                        <option>Administrador</option>
+                    </select>
+                </div>
+                <div id="cajaEspecialidadRol" class="form-group">
+                    <label for="especialidadRol">Especialidad <small>(operarios)</small></label>
+                    <input id="especialidadRol" placeholder="Por ejemplo: mantenimiento de contenedores">
+                </div>
+                <button type="submit" class="btn btn-primary">Cambiar rol</button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarCambioRol()">Cancelar</button>
+            </form>
+        </dialog>
     </main>
 </div>
 

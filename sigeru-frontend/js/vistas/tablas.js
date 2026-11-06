@@ -40,7 +40,11 @@ function mostrarTablaUsuarios(lista, conAcciones) {
                 <button class="btn btn-danger btn-sm" onclick="aprobarElegido(${u.id}, false)">✖ Rechazar</button>
             </td>`;
         } else if (conAcciones) {
-            filas += botonesAcciones("Usuario", u.id);
+            filas += `<td class="acciones">
+                <button class="btn btn-secondary btn-sm" onclick="editarUsuario(${u.id})">${traducir("Editar")}</button>
+                <button class="btn btn-secondary btn-sm" onclick="abrirCambioRol(${u.id})">🔑 ${traducir("Rol")}</button>
+                <button class="btn btn-danger btn-sm" onclick="borrarUsuarioElegido(${u.id})">${traducir("Borrar")}</button>
+            </td>`;
         }
         filas += `</tr>`;
     }
@@ -258,8 +262,8 @@ function textoCuadrilla(i) {
     return `${limpiarTexto(i.cuadrilla)}<br><small>${limpiarTexto(i.ruta)}</small>`;
 }
 
-// Tabla de incidencias. Cada incidencia trae "puedeCambiar" (lo calcula el controlador)
-// para saber si se muestra el boton de Seguimiento.
+// Tabla de incidencias. Cada incidencia trae "puedeCambiar" y "conHistorial" (los calcula el controlador)
+// para saber si se muestran los botones de Seguimiento e Historial.
 function mostrarTablaIncidencias(lista) {
     const tabla = document.getElementById("tablaIncidencias");
 
@@ -270,22 +274,33 @@ function mostrarTablaIncidencias(lista) {
 
     let filas = "";
     for (const i of lista) {
-        let botonSeguimiento = "";
+        let botones = "";
         if (i.puedeCambiar) {
-            botonSeguimiento = `<button class="btn btn-primary btn-sm" onclick="abrirSeguimiento(${i.id})">Seguimiento</button>`;
+            botones += `<button class="btn btn-primary btn-sm" onclick="abrirSeguimiento(${i.id})">${traducir("Seguimiento")}</button>`;
         }
+        if (i.conHistorial) {
+            botones += `<button class="btn btn-secondary btn-sm" onclick="verHistorial(${i.id_contenedor})">${traducir("Historial")}</button>`;
+        }
+
+        // Donde esta exactamente y quien la reporto (si fue un vecino)
+        let lugar = "";
+        if (i.referencia) {
+            lugar = `<br><small>📍 ${limpiarTexto(i.referencia)}</small>`;
+        }
+        let quien = "";
+        if (i.vecino) {
+            quien = `<br><small class="reportada-por">📣 Reportada por ${limpiarTexto(i.vecino)}</small>`;
+        }
+
         filas += `<tr>
             <td>${i.id}</td>
             <td>${limpiarTexto(i.fecha_deteccion)}</td>
-            <td class="ajustar">${limpiarTexto(i.calle)}<br><small>${limpiarTexto(i.zona_incidencia)} · Municipio ${limpiarTexto(i.municipio)}</small></td>
-            <td>${limpiarTexto(i.tipo)}</td>
+            <td class="ajustar">${limpiarTexto(i.calle)}<br><small>${limpiarTexto(i.zona_incidencia)} · Municipio ${limpiarTexto(i.municipio)}</small>${lugar}</td>
+            <td class="ajustar descripcion-incidencia"><strong>${limpiarTexto(i.tipo)}</strong><br><small>${limpiarTexto(i.descripcion)}</small>${quien}</td>
             <td><span class="etiqueta ${colorPrioridad(i.prioridad)}">${limpiarTexto(i.prioridad)}</span></td>
             <td><span class="etiqueta ${colorEstado(i.estado)}">${limpiarTexto(i.estado)}</span></td>
             <td>${textoCuadrilla(i)}</td>
-            <td class="acciones acciones-columna">
-                ${botonSeguimiento}
-                <button class="btn btn-secondary btn-sm" onclick="verHistorial(${i.id_contenedor})">Historial</button>
-            </td>
+            <td class="acciones acciones-columna">${botones}</td>
         </tr>`;
     }
     tabla.innerHTML = filas;

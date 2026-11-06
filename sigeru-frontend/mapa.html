@@ -25,7 +25,7 @@
         <div id="avisoEmergente" class="aviso-emergente"></div>
         <a href="panel.html">🏠 Inicio <span id="contadorAlertas" class="contador" title="Alertas"></span></a>
         <a href="mapa.html" class="activo">🗺️ Mapa</a>
-        <a href="incidencias.html" class="no-vecino">⚠️ Incidencias</a>
+        <a href="incidencias.html">⚠️ Incidencias</a>
         <a href="contenedores.html">🗑️ Contenedores</a>
         <a href="camiones.html" class="no-vecino">🚛 Camiones</a>
         <a href="recorridos.html" class="no-vecino">🛣️ Recorridos</a>
@@ -122,63 +122,12 @@
         </div>
 
         <div class="solo-vecino">
-            <h2 class="titulo-seccion">Mis avisos</h2>
-            <p class="subtitulo">¿Un contenedor está lleno, roto o no lo vinieron a vaciar? Tócalo en el mapa y elige "📣 Avisar un problema".</p>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Contenedor</th>
-                            <th>Problema</th>
-                            <th>Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tablaMisAvisos"></tbody>
-                </table>
+            <div class="card aviso-mapa">
+                <h3>⚠️ ¿Viste un problema?</h3>
+                <p>Si un contenedor está lleno, roto, no lo vinieron a vaciar o hay basura en la calle, tócalo en el mapa y elige
+                   <strong>"⚠️ Reportar incidencia"</strong>. Puedes seguir cómo van en <a href="incidencias.html">Mis incidencias</a>.</p>
             </div>
         </div>
-
-        <div class="solo-gestion">
-            <h2 class="titulo-seccion">Avisos de vecinos</h2>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Vecino</th>
-                            <th>Contenedor</th>
-                            <th>Problema</th>
-                            <th>Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tablaAvisosVecinos"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Ventana para que un vecino avise un problema en un contenedor -->
-        <dialog id="avisoModal">
-            <h3>Avisar un problema</h3>
-            <p class="subtitulo">Contenedor: <strong id="avisoContenedor"></strong></p>
-            <form id="formAviso">
-                <div class="form-group">
-                    <label for="problemaAviso">¿Qué pasa? *</label>
-                    <select id="problemaAviso" required>
-                        <option value="">Elegir...</option>
-                        <option>Desbordado</option>
-                        <option>Roto</option>
-                        <option>Falta de recolección</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="comentarioAviso">Comentario</label>
-                    <input id="comentarioAviso" maxlength="200" placeholder="Por ejemplo: hay bolsas en la vereda">
-                </div>
-                <button type="submit" class="btn btn-primary">Enviar aviso</button>
-                <button type="button" class="btn btn-secondary" onclick="cerrarAviso()">Cancelar</button>
-            </form>
-        </dialog>
 
         <!-- Ventana para agregar un contenedor en el lugar que se toco del mapa -->
         <dialog id="formModal">
@@ -235,39 +184,6 @@
                 </div>
                 <button type="submit" class="btn btn-primary">Guardar</button>
                 <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
-            </form>
-        </dialog>
-
-        <!-- Ventana para reportar un problema en un contenedor -->
-        <dialog id="reporteModal">
-            <h3>Reportar un problema</h3>
-            <p class="subtitulo">Contenedor: <strong id="reporteContenedor"></strong></p>
-            <form id="formReporte">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="problema">Problema *</label>
-                        <select id="problema" required>
-                            <option value="">Elegir...</option>
-                            <option>Desbordado</option>
-                            <option>Roto</option>
-                            <option>Falta de recolección</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="prioridad">Prioridad</label>
-                        <select id="prioridad">
-                            <option>Media</option>
-                            <option>Alta</option>
-                            <option>Baja</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="descripcionProblema">Comentario</label>
-                    <input id="descripcionProblema" placeholder="Por ejemplo: hay bolsas en la vereda">
-                </div>
-                <button type="submit" class="btn btn-primary">Enviar</button>
-                <button type="button" class="btn btn-secondary" onclick="cerrarReporte()">Cancelar</button>
             </form>
         </dialog>
     </main>

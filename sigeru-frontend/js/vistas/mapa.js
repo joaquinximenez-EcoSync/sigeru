@@ -44,7 +44,7 @@ function claseContenedor(estado) {
 }
 
 // Ventanita que aparece al tocar un contenedor.
-// "botones" puede ser "personal" (vaciar y reportar), "vecino" (avisar un problema) o "" (sin botones).
+// "botones" puede ser "personal" (vaciar y reportar), "vecino" (reportar) o "" (sin botones).
 function textoContenedor(c, botones) {
     let texto = `<strong>${limpiarTexto(c.calle)}</strong><br>
         ${limpiarTexto(c.zona)}${c.municipio ? " - Municipio " + c.municipio : ""}<br>
@@ -60,20 +60,21 @@ function textoContenedor(c, botones) {
     if (botones == "personal") {
         texto += `<div class="popup-botones">
             <button class="btn btn-primary btn-sm" onclick="marcarVaciado(${c.id})">✔ Vaciado</button>
-            <button class="btn btn-danger btn-sm" onclick="abrirReporte(${c.id})">⚠ Reportar problema</button>
+            <button class="btn btn-danger btn-sm" onclick="irAReportar(${c.id})">⚠️ Reportar incidencia</button>
         </div>`;
     }
     if (botones == "vecino") {
         texto += `<div class="popup-botones">
-            <button class="btn btn-danger btn-sm" onclick="abrirAviso(${c.id})">📣 Avisar un problema</button>
+            <button class="btn btn-danger btn-sm" onclick="irAReportar(${c.id})">⚠️ Reportar incidencia</button>
         </div>`;
     }
     return texto;
 }
 
 function textoIncidencia(i) {
-    return `<strong>⚠ Incidencia #${i.id}</strong><br>
+    return `<strong>⚠ Incidencia #${i.id}: ${limpiarTexto(i.tipo)}</strong><br>
         ${limpiarTexto(i.descripcion)}<br>
+        ${i.referencia ? "📍 " + limpiarTexto(i.referencia) + "<br>" : ""}
         ${limpiarTexto(i.calle)}${i.municipio ? " - Municipio " + i.municipio : ""}<br>
         Prioridad: ${limpiarTexto(i.prioridad)} | Estado: ${limpiarTexto(i.estado)}<br>
         Detectada: ${limpiarTexto(i.fecha_deteccion)}`;
@@ -191,41 +192,4 @@ function mostrarListaRecorridos(recorridos, colores) {
         </div>`;
     }
     lista.innerHTML = html;
-}
-
-// Como va el aviso de un vecino, segun el estado de su incidencia
-function estadoDelAviso(estadoIncidencia) {
-    if (estadoIncidencia == "Resuelta") return "Resuelto";
-    if (estadoIncidencia == "En proceso") return "En proceso";
-    return "Recibido";
-}
-
-// Tabla de avisos. Si conVecino es true se agrega la columna con el nombre del vecino.
-function mostrarTablaAvisos(idTabla, lista, conVecino) {
-    const tabla = document.getElementById(idTabla);
-    let columnas = 4;
-    if (conVecino) columnas = 5;
-
-    if (lista.length == 0) {
-        tabla.innerHTML = `<tr><td colspan="${columnas}" class="vacio">Todavía no hay avisos</td></tr>`;
-        return;
-    }
-
-    let filas = "";
-    for (const a of lista) {
-        const estado = estadoDelAviso(a.estado_incidencia);
-        let color = "alerta";
-        if (estado == "Resuelto") color = "";
-
-        filas += `<tr>
-            <td>${limpiarTexto(a.fecha)}</td>`;
-        if (conVecino) {
-            filas += `<td>${limpiarTexto(a.vecino)}</td>`;
-        }
-        filas += `<td class="ajustar">${limpiarTexto(a.calle)}${a.zona ? ", " + limpiarTexto(a.zona) : ""}</td>
-            <td class="ajustar">${limpiarTexto(a.descripcion)}</td>
-            <td><span class="etiqueta ${color}">${estado}</span></td>
-        </tr>`;
-    }
-    tabla.innerHTML = filas;
 }

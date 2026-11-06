@@ -41,10 +41,20 @@ Valores del sistema que se cambian sin tocar el código: días para avisar de un
 centro lleno, si hay que aprobar los registros, **idioma** (español o inglés) y kilos por litro.
 Con el idioma en inglés se traducen el menú, los títulos, las tablas y los botones (`js/idioma.js`).
 
+## Incidencias para el vecino
+
+El vecino entra a **⚠️ Incidencias** y la página se llama **Mis incidencias**. Ahí reporta una incidencia
+eligiendo el contenedor, qué pasa (está desbordado, está roto, no lo vinieron a vaciar o hay basura en la calle),
+**cuenta con detalle qué pasó** y **dónde exactamente** (por ejemplo "frente al 2510, al lado de la parada").
+Después ve el estado de cada una. El personal ve en cada incidencia qué vecino la reportó.
+Un vecino no puede reportar dos veces el mismo contenedor mientras no se resuelva.
+
 ## Usuarios (usuarios.html)
 
 Además del CRUD, muestra el estado de cada usuario. Los vecinos que se registraron y verificaron su correo
 quedan **Pendiente** y el administrador los aprueba o rechaza con los botones ✔ y ✖.
+Con el botón **🔑 Rol** el administrador le cambia el rol a cualquier usuario (por ejemplo, hacer Operario o
+Administrador a otra persona). No se puede cambiar su propio rol.
 
 ## Panel de control (panel.html)
 
@@ -86,14 +96,12 @@ Mapa de Montevideo hecho con [Leaflet](https://leafletjs.com) (guardado en `js/l
 | Centros de acopio y vertederos | Administrador, Operario, Recolector |
 | Camiones (posición simulada, los que están "En ruta" se mueven) | Administrador, Operario, Recolector |
 | Recorridos: contenedores numerados en orden y la línea del recorrido | Administrador y Operario ven todos, el Recolector ve el de su cuadrilla |
-| Botones "Vaciado" y "Reportar problema" en cada contenedor | Administrador, Operario, Recolector |
+| Botón "Vaciado" en cada contenedor | Administrador, Operario, Recolector |
+| Botón "⚠️ Reportar incidencia" en cada contenedor (abre el formulario de Incidencias con ese contenedor) | Todos |
 | Zonas críticas: municipios pintados según sus incidencias abiertas, y resumen por municipio | Administrador, Operario, Recolector |
 | ➕ Agregar un contenedor tocando el mapa (el municipio se elige solo) | Administrador y Operario |
-| 📣 Avisar un problema en un contenedor (desbordado, roto o falta de recolección) y ver "Mis avisos" con su estado | Vecino |
-| Tabla "Avisos de vecinos" con todos los avisos | Administrador y Operario |
 
-Cada aviso de un vecino se guarda como **notificación** y genera una **incidencia** abierta (relaciones
-*Realizan* y *Genera2* del MER). Un vecino no puede avisar dos veces del mismo contenedor mientras no se resuelva.
+Las incidencias se reportan siempre con el mismo formulario (en Incidencias), lo haga un vecino o el personal.
 
 ### Límites de los municipios
 

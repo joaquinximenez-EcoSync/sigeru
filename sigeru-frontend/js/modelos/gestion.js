@@ -136,12 +136,3 @@ function obtenerEstadisticas(mes) {
 function obtenerAlertas() {
     return pedirAlServidor(API_GESTION + "/alertas");
 }
-
-// ----- Avisos de los vecinos -----
-function avisarProblema(datos) {
-    return pedirAlServidor(API_GESTION + "/notificaciones", "POST", datos);
-}
-
-function obtenerAvisos() {
-    return pedirAlServidor(API_GESTION + "/notificaciones");
-}
