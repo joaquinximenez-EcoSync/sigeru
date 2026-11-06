@@ -60,6 +60,8 @@ PK = clave primaria, FK = clave foránea, UQ = único.
 | estado | ENUM('Operativo','En mantenimiento','Fuera de servicio') | NOT NULL |
 | disponibilidad | ENUM('Disponible','En ruta','No disponible') | NOT NULL |
 | capacidad_carga | DECIMAL(10,2) | |
+| latitud | DECIMAL(9,6) | Ubicación en el mapa (simulada) |
+| longitud | DECIMAL(9,6) | Ubicación en el mapa (simulada) |
 
 **recorridos** (agregación Cuadrilla *recorre* Ruta + relación *Utilizan* con Camión)
 
@@ -98,10 +100,14 @@ UQ (id_cuadrilla, id_ruta)
 |---------|------|---------------|
 | id_contenedor | INT | PK, AUTO_INCREMENT |
 | calle | VARCHAR(100) | NOT NULL |
-| zona | VARCHAR(100) | NOT NULL |
+| zona | VARCHAR(100) | NOT NULL (barrio) |
+| municipio | ENUM('A','B','C','CH','D','E','F','G') | Municipio de Montevideo |
 | estado | ENUM('Funcional','Roto','Desbordado') | NOT NULL |
 | capacidad | DECIMAL(10,2) | |
 | id_residuo | INT | FK → tipos_residuo, NOT NULL |
+| latitud | DECIMAL(9,6) | Ubicación en el mapa |
+| longitud | DECIMAL(9,6) | Ubicación en el mapa |
+| ultima_recoleccion | DATETIME | Cuándo se vació por última vez |
 
 **incidencias** (relaciones *Genera1* y *Resuelven*)
 
@@ -130,7 +136,7 @@ UQ (id_cuadrilla, id_ruta)
 
 ### Instalaciones
 
-**instalaciones** (supertipo, relación *Centro_Asignado*) — `id_instalacion` PK, `nombre` VARCHAR(100) NOT NULL, `calle`, `zona`, `capacidad_actual` DECIMAL(10,2), `capacidad_max` DECIMAL(10,2), `id_operario` FK → operarios
+**instalaciones** (supertipo, relación *Centro_Asignado*) — `id_instalacion` PK, `nombre` VARCHAR(100) NOT NULL, `calle`, `zona`, `capacidad_actual` DECIMAL(10,2), `capacidad_max` DECIMAL(10,2), `id_operario` FK → operarios, `latitud` y `longitud` DECIMAL(9,6) (ubicación en el mapa)
 
 **centros_acopio** (subtipo) — `id_instalacion` PK y FK → instalaciones
 

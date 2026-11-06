@@ -75,7 +75,9 @@ CREATE TABLE camiones (
     matricula       VARCHAR(20) NOT NULL UNIQUE,
     estado          ENUM('Operativo', 'En mantenimiento', 'Fuera de servicio') NOT NULL DEFAULT 'Operativo',
     disponibilidad  ENUM('Disponible', 'En ruta', 'No disponible') NOT NULL DEFAULT 'Disponible',
-    capacidad_carga DECIMAL(10,2)
+    capacidad_carga DECIMAL(10,2),
+    latitud         DECIMAL(9,6),
+    longitud        DECIMAL(9,6)
 );
 
 -- Agregacion: Cuadrilla "recorre" Ruta (N:N).
@@ -126,13 +128,19 @@ CREATE TABLE tipos_residuo (
 );
 
 -- Relacion Almacena: cada contenedor guarda un solo tipo de residuo (RNE01)
+-- municipio: uno de los 8 municipios de Montevideo
+-- latitud y longitud: ubicacion en el mapa
 CREATE TABLE contenedores (
-    id_contenedor INT AUTO_INCREMENT PRIMARY KEY,
-    calle         VARCHAR(100) NOT NULL,
-    zona          VARCHAR(100) NOT NULL,
-    estado        ENUM('Funcional', 'Roto', 'Desbordado') NOT NULL DEFAULT 'Funcional',
-    capacidad     DECIMAL(10,2),
-    id_residuo    INT NOT NULL,
+    id_contenedor      INT AUTO_INCREMENT PRIMARY KEY,
+    calle              VARCHAR(100) NOT NULL,
+    zona               VARCHAR(100) NOT NULL,
+    municipio          ENUM('A', 'B', 'C', 'CH', 'D', 'E', 'F', 'G'),
+    estado             ENUM('Funcional', 'Roto', 'Desbordado') NOT NULL DEFAULT 'Funcional',
+    capacidad          DECIMAL(10,2),
+    id_residuo         INT NOT NULL,
+    latitud            DECIMAL(9,6),
+    longitud           DECIMAL(9,6),
+    ultima_recoleccion DATETIME,
     FOREIGN KEY (id_residuo) REFERENCES tipos_residuo(id_residuo)
 );
 
@@ -181,6 +189,8 @@ CREATE TABLE instalaciones (
     capacidad_actual DECIMAL(10,2),
     capacidad_max    DECIMAL(10,2),
     id_operario      INT,
+    latitud          DECIMAL(9,6),
+    longitud         DECIMAL(9,6),
     FOREIGN KEY (id_operario) REFERENCES operarios(id_usuario) ON DELETE SET NULL
 );
 

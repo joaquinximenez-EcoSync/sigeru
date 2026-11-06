@@ -34,6 +34,8 @@ CREATE TABLE `camiones` (
   `estado` enum('Operativo','En mantenimiento','Fuera de servicio') NOT NULL DEFAULT 'Operativo',
   `disponibilidad` enum('Disponible','En ruta','No disponible') NOT NULL DEFAULT 'Disponible',
   `capacidad_carga` decimal(10,2) DEFAULT NULL,
+  `latitud` decimal(9,6) DEFAULT NULL,
+  `longitud` decimal(9,6) DEFAULT NULL,
   PRIMARY KEY (`id_camion`),
   UNIQUE KEY `matricula` (`matricula`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -78,9 +80,13 @@ CREATE TABLE `contenedores` (
   `id_contenedor` int(11) NOT NULL AUTO_INCREMENT,
   `calle` varchar(100) NOT NULL,
   `zona` varchar(100) NOT NULL,
+  `municipio` enum('A','B','C','CH','D','E','F','G') DEFAULT NULL,
   `estado` enum('Funcional','Roto','Desbordado') NOT NULL DEFAULT 'Funcional',
   `capacidad` decimal(10,2) DEFAULT NULL,
   `id_residuo` int(11) NOT NULL,
+  `latitud` decimal(9,6) DEFAULT NULL,
+  `longitud` decimal(9,6) DEFAULT NULL,
+  `ultima_recoleccion` datetime DEFAULT NULL,
   PRIMARY KEY (`id_contenedor`),
   KEY `id_residuo` (`id_residuo`),
   CONSTRAINT `contenedores_ibfk_1` FOREIGN KEY (`id_residuo`) REFERENCES `tipos_residuo` (`id_residuo`)
@@ -138,6 +144,8 @@ CREATE TABLE `instalaciones` (
   `capacidad_actual` decimal(10,2) DEFAULT NULL,
   `capacidad_max` decimal(10,2) DEFAULT NULL,
   `id_operario` int(11) DEFAULT NULL,
+  `latitud` decimal(9,6) DEFAULT NULL,
+  `longitud` decimal(9,6) DEFAULT NULL,
   PRIMARY KEY (`id_instalacion`),
   KEY `id_operario` (`id_operario`),
   CONSTRAINT `instalaciones_ibfk_1` FOREIGN KEY (`id_operario`) REFERENCES `operarios` (`id_usuario`) ON DELETE SET NULL
