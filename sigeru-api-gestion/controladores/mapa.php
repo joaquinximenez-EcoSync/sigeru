@@ -1,42 +1,5 @@
 <?php
-// Controlador de las cosas que usa el mapa: incidencias y avisos de los vecinos
-
-// Devuelve la lista de incidencias (GET incidencias)
-function listarIncidencias($incidencia) {
-    responder($incidencia->obtenerTodas());
-}
-
-// Reportar un problema en un contenedor desde el mapa (POST incidencias)
-// Si el problema es "Roto" o "Desbordado", tambien se cambia el estado del contenedor.
-function reportarIncidencia($incidencia, $contenedor, $datos) {
-    $problemas = ["Roto", "Desbordado", "Falta de recolección"];
-    $prioridades = ["Baja", "Media", "Alta"];
-
-    $encontrado = $contenedor->obtenerPorId($datos['id_contenedor'] ?? 0);
-    if ($encontrado == null) {
-        responder(["error" => "Contenedor no encontrado"], 404);
-    }
-    if (!in_array($datos['problema'] ?? "", $problemas)) {
-        responder(["error" => "Elige qué problema tiene el contenedor"], 400);
-    }
-    if (!in_array($datos['prioridad'] ?? "", $prioridades)) {
-        responder(["error" => "La prioridad no es válida"], 400);
-    }
-
-    // La descripcion empieza con el problema, por ejemplo "Desbordado: hay bolsas en la vereda"
-    $descripcion = $datos['problema'];
-    if (!empty($datos['descripcion'])) {
-        $descripcion = $descripcion . ": " . trim($datos['descripcion']);
-    }
-
-    $nueva = $incidencia->agregar($encontrado['id'], $encontrado['zona'], $datos['prioridad'], $descripcion);
-
-    if ($datos['problema'] == "Roto" || $datos['problema'] == "Desbordado") {
-        $contenedor->cambiarEstado($encontrado['id'], $datos['problema']);
-    }
-
-    responder(["mensaje" => "Problema reportado correctamente", "incidencia" => $nueva], 201);
-}
+// Controlador de los avisos de los vecinos (los hacen desde el mapa)
 
 // Un vecino avisa que hay un problema en un contenedor (POST notificaciones)
 // Se guarda el aviso del vecino y se crea una incidencia abierta para que la vea el personal.
@@ -65,7 +28,7 @@ function avisarProblema($notificacion, $incidencia, $contenedor, $datos) {
         $descripcion = $descripcion . ": " . $comentario;
     }
 
-    $nueva = $incidencia->agregar($encontrado['id'], $encontrado['zona'], "Media", "Aviso de un vecino - " . $descripcion);
+    $nueva = $incidencia->agregar($encontrado['id'], $encontrado['zona'], $datos['problema'], "Media", "Aviso de un vecino - " . $descripcion);
     $notificacion->agregar($idVecino, $nueva['id'], $descripcion);
 
     responder(["mensaje" => "¡Gracias por avisar! El equipo de recolección ya lo puede ver."], 201);

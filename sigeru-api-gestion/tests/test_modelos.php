@@ -9,6 +9,8 @@ require_once __DIR__ . "/../modelos/Centro.php";
 require_once __DIR__ . "/../modelos/Maquinaria.php";
 require_once __DIR__ . "/../modelos/Incidencia.php";
 require_once __DIR__ . "/../modelos/Notificacion.php";
+require_once __DIR__ . "/../modelos/Estadistica.php";
+require_once __DIR__ . "/../modelos/Alerta.php";
 
 $conn = crearBaseDePrueba();
 
@@ -101,11 +103,11 @@ verificar($maquinaria->obtenerPorId($id) == null, "Borra la máquina");
 titulo("Incidencias y avisos de vecinos");
 
 $incidencia = new Incidencia($conn);
-verificar(count($incidencia->obtenerTodas()) == 8, "Hay 8 incidencias de prueba");
+verificar(count($incidencia->obtenerTodas()) == 9, "Hay 9 incidencias de prueba");
 
-$nueva = $incidencia->agregar(7, "Punta Carretas", "Alta", "Desbordado");
+$nueva = $incidencia->agregar(7, "Punta Carretas", "Desbordado", "Alta", "Desbordado");
 verificar($nueva['estado'] == "Abierta" && $nueva['fecha'] == date("Y-m-d"), "Una incidencia nueva queda Abierta y con la fecha de hoy");
-verificar($nueva['municipio'] == "CH", "Trae el municipio de su contenedor");
+verificar($nueva['municipio'] == "CH" && $nueva['tipo'] == "Desbordado", "Trae el tipo y el municipio de su contenedor");
 
 $notificacion = new Notificacion($conn);
 verificar(count($notificacion->obtenerDelVecino(4)) == 1, "La vecina de prueba tiene 1 aviso");
@@ -114,7 +116,56 @@ verificar($numero == 2, "El aviso nuevo de la vecina es el número 2 (entidad d�
 verificar($notificacion->yaAviso(4, 7), "Detecta que ya avisó de ese contenedor");
 verificar(!$notificacion->yaAviso(4, 8), "En otro contenedor todavía no avisó");
 
-mysqli_query($conn, "UPDATE incidencias SET estado = 'Resuelta' WHERE id_incidencia = " . $nueva['id']);
+$incidencia->modificarSeguimiento($nueva['id'], "Resuelta", "Alta", null);
 verificar(!$notificacion->yaAviso(4, 7), "Cuando la incidencia se resuelve puede volver a avisar");
+
+// ---------------------------------------------------------------
+titulo("Seguimiento de incidencias");
+
+verificar(count($incidencia->obtenerTodas("Resuelta")) == 4, "Filtra por estado: 4 resueltas");
+verificar(count($incidencia->obtenerTodas("", 2)) == 3, "Historial del contenedor 2: 3 incidencias");
+verificar(count($incidencia->obtenerTodas("", "", "2026-10-01", "2026-10-31")) == 4, "Filtra por fechas: 4 en octubre");
+
+$modificada = $incidencia->modificarSeguimiento(5, "En proceso", "Alta", 1);
+verificar($modificada['estado'] == "En proceso" && $modificada['prioridad'] == "Alta" && $modificada['cuadrilla'] != null, "Cambia estado, prioridad y cuadrilla");
+verificar($modificada['fecha_resolucion'] == null, "Mientras no se resuelve no tiene fecha de resolución");
+
+$modificada = $incidencia->modificarSeguimiento(5, "Resuelta", "Alta", 1);
+verificar($modificada['fecha_resolucion'] == date("Y-m-d"), "Al resolverla guarda la fecha de resolución");
+verificar($incidencia->contarSinResolver(10) == 0 && $incidencia->contarSinResolver(11) == 1, "Cuenta las incidencias sin resolver de un contenedor");
+
+verificar($incidencia->esRecorridoDelRecolector(1, 3) && !$incidencia->esRecorridoDelRecolector(2, 3), "Sabe qué recorridos son de la cuadrilla del recolector");
+verificar($incidencia->existeRecorrido(1) && !$incidencia->existeRecorrido(999), "Sabe si un recorrido existe");
+
+$notificacion->cambiarEstado(1, "En proceso");
+$resultado = mysqli_query($conn, "SELECT estado FROM notificaciones WHERE id_incidencia = 1");
+verificar(mysqli_fetch_assoc($resultado)['estado'] == "En proceso", "El aviso del vecino cambia de estado con su incidencia");
+
+// ---------------------------------------------------------------
+titulo("Estadísticas");
+
+$estadistica = new Estadistica($conn);
+$top = $estadistica->topDesbordados("2026-11");
+verificar($top[0]['id'] == 2 && $top[0]['cantidad'] == 2, "El contenedor que más se desbordó en noviembre es el 2 (2 veces)");
+verificar(count($estadistica->topDesbordados("2020-01")) == 0, "En un mes sin datos el top está vacío");
+
+$porEstado = $estadistica->incidenciasPorEstado();
+$total = 0;
+foreach ($porEstado as $fila) {
+    $total = $total + $fila['cantidad'];
+}
+verificar($total == 10, "Las incidencias por estado suman el total (10)");
+verificar($estadistica->promedioDiasResolucion() !== null, "Calcula el promedio de días de resolución");
+verificar(count($estadistica->sinResolverPorMunicipio()) > 0 && count($estadistica->porTipo("2026-11")) > 0, "Cuenta por municipio y por tipo");
+
+// ---------------------------------------------------------------
+titulo("Alertas");
+
+$alerta = new Alerta($conn);
+$llenas = $alerta->instalacionesCasiLlenas();
+verificar(count($llenas) == 1 && $llenas[0]['porcentaje'] == 85, "Avisa que el Centro de Acopio Oeste está al 85%");
+verificar(count($alerta->desbordadosSinAtender()) >= 1, "Encuentra contenedores desbordados sin atender");
+verificar(count($alerta->delRecolector(3)) == 1, "El recolector tiene 1 incidencia pendiente de su cuadrilla");
+verificar(count($alerta->avisosDelVecino(4)) == 1, "La vecina tiene novedades de su aviso");
 
 mostrarResumen();

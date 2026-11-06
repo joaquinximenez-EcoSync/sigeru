@@ -59,6 +59,18 @@ class Notificacion
         return $stmt->get_result()->fetch_assoc() != null;
     }
 
+    // Cuando el personal cambia el estado de una incidencia, el aviso del vecino cambia igual
+    // (Recibida -> En proceso -> Resuelta)
+    public function cambiarEstado($idIncidencia, $estado)
+    {
+        if ($estado == "Abierta") {
+            $estado = "Recibida";
+        }
+        $stmt = $this->conn->prepare("UPDATE notificaciones SET estado = ? WHERE id_incidencia = ?");
+        $stmt->bind_param("si", $estado, $idIncidencia);
+        $stmt->execute();
+    }
+
     // Guarda el aviso. Como es entidad debil, su numero es el siguiente de ese vecino (1, 2, 3...).
     public function agregar($idUsuario, $idIncidencia, $descripcion)
     {

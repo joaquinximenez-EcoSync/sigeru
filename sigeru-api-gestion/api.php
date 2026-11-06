@@ -1,6 +1,7 @@
 <?php
 // API RESTful de Gestion - SiGeRU
-// Se encarga de los elementos fijos: contenedores, centros de acopio, maquinaria e incidencias.
+// Se encarga de los elementos fijos: contenedores, centros de acopio, maquinaria e incidencias,
+// y de las estadisticas y alertas del panel.
 // (los camiones y los recorridos estan en la API de Recoleccion)
 //
 // Direcciones que tiene esta API (endpoints). Todas necesitan la sesion iniciada.
@@ -17,7 +18,12 @@
 //   GET    api.php/instalaciones      instalaciones con su ubicacion   (administrador, operario y recolector)
 //   POST   api.php/vaciar?id=1        marcar un contenedor como vaciado (administrador, operario y recolector)
 //   GET    api.php/incidencias        lista de incidencias             (administrador, operario y recolector)
+//                                     filtros: ?estado=Abierta ?contenedor=2 ?desde=2026-11-01&hasta=2026-11-30
 //   POST   api.php/incidencias        reportar un problema             (administrador, operario y recolector)
+//   PUT    api.php/incidencias?id=1   seguimiento: estado, prioridad y cuadrilla (administrador y operario;
+//                                     el recolector solo cambia el estado de las de su cuadrilla)
+//   GET    api.php/estadisticas       numeros para el panel de control (administrador, operario y recolector)
+//   GET    api.php/alertas            alertas de cada rol              (todos los roles)
 //   GET    api.php/notificaciones     avisos de los vecinos            (vecino ve los suyos, administrador y operario ven todos)
 //   POST   api.php/notificaciones     un vecino avisa un problema      (vecino)
 // Con ?id=1 en un GET se pide uno solo.
@@ -31,10 +37,14 @@ require_once "modelos/Centro.php";
 require_once "modelos/Maquinaria.php";
 require_once "modelos/Incidencia.php";
 require_once "modelos/Notificacion.php";
+require_once "modelos/Estadistica.php";
+require_once "modelos/Alerta.php";
 require_once "controladores/contenedores.php";
 require_once "controladores/centros.php";
 require_once "controladores/maquinaria.php";
+require_once "controladores/incidencias.php";
 require_once "controladores/mapa.php";
+require_once "controladores/alertas.php";
 
 // Tipo de pedido: GET (pedir), POST (crear), PUT (modificar) o DELETE (borrar)
 $metodo = $_SERVER['REQUEST_METHOD'];
@@ -59,6 +69,8 @@ $centro = new Centro($conn);
 $maquinaria = new Maquinaria($conn);
 $incidencia = new Incidencia($conn);
 $notificacion = new Notificacion($conn);
+$estadistica = new Estadistica($conn);
+$alerta = new Alerta($conn);
 
 switch ($endpoint) {
     case "contenedores":
@@ -128,8 +140,25 @@ switch ($endpoint) {
 
     case "incidencias":
         verificarRol($personal);
-        if ($metodo == "GET") listarIncidencias($incidencia);
+        if ($metodo == "GET") {
+            if ($id != null) {
+                obtenerIncidencia($incidencia, $id);
+            } else {
+                listarIncidencias($incidencia);
+            }
+        }
         if ($metodo == "POST") reportarIncidencia($incidencia, $contenedor, $datos);
+        if ($metodo == "PUT") seguimientoIncidencia($incidencia, $contenedor, $notificacion, $id, $datos);
+        break;
+
+    case "estadisticas":
+        verificarRol($personal);
+        if ($metodo == "GET") obtenerEstadisticas($estadistica);
+        break;
+
+    case "alertas":
+        verificarRol($todos);
+        if ($metodo == "GET") listarAlertas($alerta);
         break;
 
     case "notificaciones":

@@ -134,6 +134,82 @@ verificar($r['codigo'] == 200, "El vecino ve sus avisos");
 $r = pedir("POST", $api . "/vaciar?id=99999", null, "recolector");
 verificar($r['codigo'] == 404, "Vaciar un contenedor que no existe devuelve 404");
 
+// ---------------------------------------------------------------
+titulo("Seguimiento de incidencias");
+
+$r = pedir("POST", $api . "/incidencias", ["id_contenedor" => 5, "problema" => "Roto", "prioridad" => "Baja", "descripcion" => "Prueba del test"], "operario");
+verificar($r['codigo'] == 201 && $r['json']['incidencia']['tipo'] == "Roto", "Registra una incidencia con su tipo");
+$idIncidencia = $r['json']['incidencia']['id'];
+
+$r = pedir("GET", $api . "/contenedores?id=5", null, "operario");
+verificar($r['json']['estado'] == "Roto", "El contenedor queda Roto");
+
+$r = pedir("GET", $api . "/incidencias?id=" . $idIncidencia, null, "recolector");
+verificar($r['codigo'] == 200 && $r['json']['estado'] == "Abierta", "La busca por su id");
+
+$r = pedir("GET", $api . "/incidencias?contenedor=5", null, "operario");
+verificar($r['codigo'] == 200 && count($r['json']) == 1, "Historial del contenedor 5");
+
+$r = pedir("GET", $api . "/incidencias?estado=Cualquiera", null, "operario");
+verificar($r['codigo'] == 400, "Con un estado que no existe devuelve 400");
+
+$r = pedir("GET", $api . "/incidencias?desde=2026-11-30&hasta=2026-11-01", null, "operario");
+verificar($r['codigo'] == 400, "Si la fecha desde es después de la fecha hasta devuelve 400");
+
+$r = pedir("PUT", $api . "/incidencias?id=" . $idIncidencia, ["estado" => "En proceso"], "recolector");
+verificar($r['codigo'] == 403, "El recolector no puede cambiar una incidencia que no es de su cuadrilla (403)");
+
+$r = pedir("PUT", $api . "/incidencias?id=" . $idIncidencia, ["estado" => "En proceso", "prioridad" => "Alta", "id_recorrido" => 999], "operario");
+verificar($r['codigo'] == 400, "Con un recorrido que no existe devuelve 400");
+
+$r = pedir("PUT", $api . "/incidencias?id=" . $idIncidencia, ["estado" => "En proceso", "prioridad" => "Alta", "id_recorrido" => 1], "operario");
+verificar($r['codigo'] == 200 && $r['json']['incidencia']['estado'] == "En proceso" && $r['json']['incidencia']['prioridad'] == "Alta", "El operario la pasa a En proceso y le asigna una cuadrilla");
+
+$r = pedir("GET", $api . "/alertas", null, "recolector");
+$encontrada = false;
+foreach ($r['json'] as $a) {
+    if (str_contains($a['texto'], "#" . $idIncidencia)) $encontrada = true;
+}
+verificar($r['codigo'] == 200 && $encontrada, "Al recolector le aparece la alerta de la incidencia de su cuadrilla");
+
+$r = pedir("PUT", $api . "/incidencias?id=" . $idIncidencia, ["estado" => "Resuelta", "prioridad" => "Baja"], "recolector");
+verificar($r['codigo'] == 200 && $r['json']['incidencia']['estado'] == "Resuelta" && $r['json']['incidencia']['prioridad'] == "Alta", "Ahora el recolector la resuelve (pero no le cambia la prioridad)");
+verificar($r['json']['incidencia']['fecha_resolucion'] == date("Y-m-d"), "Guarda la fecha de resolución");
+
+$r = pedir("GET", $api . "/contenedores?id=5", null, "operario");
+verificar($r['json']['estado'] == "Funcional", "El contenedor vuelve a estar Funcional");
+
+$r = pedir("PUT", $api . "/incidencias?id=" . $idIncidencia, ["estado" => "Abierta", "prioridad" => "Alta"], "operario");
+verificar($r['codigo'] == 409, "Una incidencia resuelta ya no se puede cambiar (409)");
+
+$r = pedir("PUT", $api . "/incidencias?id=" . $idIncidencia, ["estado" => "Abierta"], "vecino");
+verificar($r['codigo'] == 403, "El vecino no puede hacer el seguimiento (403)");
+
+// Borramos la incidencia de prueba (la API no tiene para borrar incidencias)
+$base = conectarBaseReal();
+mysqli_query($base, "DELETE FROM incidencias WHERE id_incidencia = " . $idIncidencia);
+
+// ---------------------------------------------------------------
+titulo("Estadísticas y alertas");
+
+$r = pedir("GET", $api . "/estadisticas?mes=2026-11", null, "operario");
+verificar($r['codigo'] == 200 && isset($r['json']['top_desbordados']) && isset($r['json']['por_estado']), "El operario ve las estadísticas");
+
+$r = pedir("GET", $api . "/estadisticas?mes=noviembre", null, "operario");
+verificar($r['codigo'] == 400, "Con un mes mal escrito devuelve 400");
+
+$r = pedir("GET", $api . "/estadisticas", null, "vecino");
+verificar($r['codigo'] == 403, "El vecino no ve las estadísticas (403)");
+
+$r = pedir("GET", $api . "/alertas", null, "admin");
+verificar($r['codigo'] == 200 && count($r['json']) > 0, "El administrador tiene alertas");
+
+$r = pedir("GET", $api . "/alertas", null, "vecino");
+verificar($r['codigo'] == 200, "El vecino puede pedir sus alertas");
+
+$r = pedir("GET", $api . "/alertas", null, "nadie");
+verificar($r['codigo'] == 401, "Sin sesión no hay alertas (401)");
+
 $r = pedir("GET", $api . "/no-existe", null, "admin");
 verificar($r['codigo'] == 404, "Un endpoint que no existe devuelve 404");
 
