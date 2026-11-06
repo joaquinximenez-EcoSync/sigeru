@@ -102,6 +102,17 @@ function contarFilas($conn, $sql) {
 
 // ---------- Para los tests de la API ----------
 
+// Se conecta a la base de datos real "sigeru". Los tests de la API la usan solo para
+// borrar al final lo que crearon y que la API no deja borrar (las notificaciones).
+function conectarBaseReal() {
+    $hostname = "localhost";
+    if (getenv("DB_HOST")) {
+        $hostname = getenv("DB_HOST");
+    }
+    mysqli_report(MYSQLI_REPORT_OFF);
+    return mysqli_connect($hostname, "root", "", "sigeru");
+}
+
 // Hace un pedido a la API como lo haria el navegador.
 // $usuario es el nombre del archivo donde se guarda la cookie de la sesion (uno por cada usuario).
 // Devuelve el codigo HTTP y la respuesta en JSON.

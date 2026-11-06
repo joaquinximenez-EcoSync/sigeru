@@ -24,6 +24,7 @@ require_once "seguridad.php";
 require_once "modelos/Camion.php";
 require_once "modelos/Mantenimiento.php";
 require_once "modelos/Recorrido.php";
+require_once "modelos/Mensaje.php";
 require_once "controladores/camiones.php";
 require_once "controladores/mantenimientos.php";
 require_once "controladores/recorridos.php";
@@ -48,6 +49,7 @@ $gestores = ["Administrador", "Operario"];
 
 // Modelos que usan la base de datos
 $camion = new Camion($conn);
+$mensaje = new Mensaje($conn);
 $mantenimiento = new Mantenimiento($conn);
 $recorrido = new Recorrido($conn);
 
@@ -88,8 +90,8 @@ switch ($endpoint) {
             }
         }
         verificarRol($gestores);
-        if ($metodo == "POST") registrarRecorrido($recorrido, $camion, $datos);
-        if ($metodo == "PUT") modificarRecorrido($recorrido, $camion, $id, $datos);
+        if ($metodo == "POST") registrarRecorrido($recorrido, $camion, $mensaje, $datos);
+        if ($metodo == "PUT") modificarRecorrido($recorrido, $camion, $mensaje, $id, $datos);
         if ($metodo == "DELETE") eliminarRecorrido($recorrido, $id);
         break;
 

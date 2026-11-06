@@ -20,38 +20,53 @@ class Alerta
     }
 
     // Incidencias de prioridad Alta que todavia estan Abiertas (nadie las tomo).
-    // No se incluyen los desbordados de 2 dias o mas, porque esos ya salen en desbordadosSinAtender.
-    public function prioridadAltaAbiertas()
+    // No se incluyen los desbordados viejos, porque esos ya salen en desbordadosSinAtender.
+    // $dias viene del parametro "dias_alerta_desborde".
+    public function prioridadAltaAbiertas($dias)
     {
-        $result = mysqli_query($this->conn, "SELECT i.id_incidencia AS id, c.calle, c.zona
-                                             FROM incidencias i
-                                             JOIN contenedores c ON i.id_contenedor = c.id_contenedor
-                                             WHERE i.prioridad = 'Alta' AND i.estado = 'Abierta'
-                                               AND NOT (i.tipo = 'Desbordado' AND DATEDIFF(CURDATE(), i.fecha_deteccion) >= 2)
-                                             ORDER BY i.fecha_deteccion");
-        return $this->hacerLista($result);
+        $stmt = $this->conn->prepare("SELECT i.id_incidencia AS id, c.calle, c.zona
+                                      FROM incidencias i
+                                      JOIN contenedores c ON i.id_contenedor = c.id_contenedor
+                                      WHERE i.prioridad = 'Alta' AND i.estado = 'Abierta'
+                                        AND NOT (i.tipo = 'Desbordado' AND DATEDIFF(CURDATE(), i.fecha_deteccion) >= ?)
+                                      ORDER BY i.fecha_deteccion");
+        $stmt->bind_param("i", $dias);
+        $stmt->execute();
+        return $this->hacerLista($stmt->get_result());
     }
 
-    // Contenedores desbordados que llevan 2 dias o mas sin que nadie los atienda
-    public function desbordadosSinAtender()
+    // Contenedores desbordados que llevan $dias dias o mas sin que nadie los atienda
+    public function desbordadosSinAtender($dias)
     {
-        $result = mysqli_query($this->conn, "SELECT i.id_incidencia AS id, c.calle, c.zona,
-                                                    DATEDIFF(CURDATE(), i.fecha_deteccion) AS dias
-                                             FROM incidencias i
-                                             JOIN contenedores c ON i.id_contenedor = c.id_contenedor
-                                             WHERE i.tipo = 'Desbordado' AND i.estado = 'Abierta'
-                                               AND DATEDIFF(CURDATE(), i.fecha_deteccion) >= 2
-                                             ORDER BY dias DESC");
-        return $this->hacerLista($result);
+        $stmt = $this->conn->prepare("SELECT i.id_incidencia AS id, c.calle, c.zona,
+                                             DATEDIFF(CURDATE(), i.fecha_deteccion) AS dias
+                                      FROM incidencias i
+                                      JOIN contenedores c ON i.id_contenedor = c.id_contenedor
+                                      WHERE i.tipo = 'Desbordado' AND i.estado = 'Abierta'
+                                        AND DATEDIFF(CURDATE(), i.fecha_deteccion) >= ?
+                                      ORDER BY dias DESC");
+        $stmt->bind_param("i", $dias);
+        $stmt->execute();
+        return $this->hacerLista($stmt->get_result());
     }
 
-    // Centros de acopio y vertederos que estan al 80% o mas de su capacidad
-    public function instalacionesCasiLlenas()
+    // Centros de acopio y vertederos que estan al $porcentaje% o mas de su capacidad
+    public function instalacionesCasiLlenas($porcentaje)
     {
-        $result = mysqli_query($this->conn, "SELECT id_instalacion AS id, nombre,
-                                                    ROUND(capacidad_actual * 100 / capacidad_max) AS porcentaje
-                                             FROM instalaciones
-                                             WHERE capacidad_max > 0 AND capacidad_actual >= capacidad_max * 0.8");
+        $stmt = $this->conn->prepare("SELECT id_instalacion AS id, nombre,
+                                             ROUND(capacidad_actual * 100 / capacidad_max) AS porcentaje
+                                      FROM instalaciones
+                                      WHERE capacidad_max > 0 AND capacidad_actual * 100 >= capacidad_max * ?");
+        $stmt->bind_param("d", $porcentaje);
+        $stmt->execute();
+        return $this->hacerLista($stmt->get_result());
+    }
+
+    // Repuestos que estan en la cantidad minima o menos
+    public function repuestosConPocoStock()
+    {
+        $result = mysqli_query($this->conn, "SELECT id_repuesto AS id, nombre, cantidad, cantidad_minima
+                                             FROM repuestos WHERE cantidad <= cantidad_minima ORDER BY nombre");
         return $this->hacerLista($result);
     }
 

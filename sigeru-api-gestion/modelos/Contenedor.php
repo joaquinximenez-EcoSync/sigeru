@@ -92,6 +92,14 @@ class Contenedor
     }
 
     // El recolector lo vacio: queda Funcional y se guarda la fecha y hora de ahora
+    // Guarda cuantos kilos se sacaron al vaciar el contenedor (datos simulados)
+    public function registrarRecoleccion($id, $kilos)
+    {
+        $stmt = $this->conn->prepare("INSERT INTO recolecciones (id_contenedor, fecha, kilos) VALUES (?, NOW(), ?)");
+        $stmt->bind_param("id", $id, $kilos);
+        $stmt->execute();
+    }
+
     public function vaciar($id)
     {
         $stmt = $this->conn->prepare("UPDATE contenedores SET estado = 'Funcional', ultima_recoleccion = NOW() WHERE id_contenedor = ?");

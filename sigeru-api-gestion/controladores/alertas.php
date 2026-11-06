@@ -2,22 +2,29 @@
 // Controlador de las alertas (GET alertas). Cada rol ve las alertas que le sirven.
 // Cada alerta tiene: nivel (alta, media o info), texto y enlace (la pagina donde se resuelve).
 
-function listarAlertas($alerta) {
+function listarAlertas($alerta, $parametro) {
     $usuario = $_SESSION['usuario_logueado'];
     $alertas = [];
 
+    // Los limites salen de los parametros del sistema (los puede cambiar el administrador)
+    $dias = intval($parametro->obtener("dias_alerta_desborde", "2"));
+    $porcentaje = floatval($parametro->obtener("porcentaje_centro_lleno", "80"));
+
     if ($usuario['rol'] == "Administrador" || $usuario['rol'] == "Operario") {
-        foreach ($alerta->desbordadosSinAtender() as $a) {
+        foreach ($alerta->desbordadosSinAtender($dias) as $a) {
             $alertas[] = ["nivel" => "alta", "texto" => "El contenedor de " . $a['calle'] . " (" . $a['zona'] . ") está desbordado hace " . $a['dias'] . " días y nadie lo atendió", "enlace" => "incidencias.html"];
         }
-        foreach ($alerta->prioridadAltaAbiertas() as $a) {
+        foreach ($alerta->prioridadAltaAbiertas($dias) as $a) {
             $alertas[] = ["nivel" => "alta", "texto" => "La incidencia #" . $a['id'] . " en " . $a['calle'] . " es de prioridad alta y sigue abierta", "enlace" => "incidencias.html"];
         }
         foreach ($alerta->avisosSinAtender() as $a) {
             $alertas[] = ["nivel" => "media", "texto" => "Hay un aviso de un vecino sin atender en " . $a['calle'], "enlace" => "incidencias.html"];
         }
-        foreach ($alerta->instalacionesCasiLlenas() as $a) {
+        foreach ($alerta->instalacionesCasiLlenas($porcentaje) as $a) {
             $alertas[] = ["nivel" => "media", "texto" => $a['nombre'] . " está al " . $a['porcentaje'] . "% de su capacidad", "enlace" => "centros.html"];
+        }
+        foreach ($alerta->repuestosConPocoStock() as $a) {
+            $alertas[] = ["nivel" => "media", "texto" => "Quedan pocos repuestos de " . $a['nombre'] . ": " . $a['cantidad'] . " (mínimo " . $a['cantidad_minima'] . ")", "enlace" => "repuestos.html"];
         }
     }
 

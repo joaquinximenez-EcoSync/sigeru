@@ -86,22 +86,38 @@ function listarZonas($recorrido) {
     responder($recorrido->obtenerZonas());
 }
 
+// Le avisa a los recolectores de la cuadrilla que tienen un recorrido asignado
+function avisarACuadrilla($mensaje, $r, $esNuevo) {
+    $horario = "";
+    if (!empty($r['hora_inicio']) && !empty($r['hora_fin'])) {
+        $horario = " de " . substr($r['hora_inicio'], 0, 5) . " a " . substr($r['hora_fin'], 0, 5);
+    }
+    if ($esNuevo) {
+        $texto = "🛣️ A tu cuadrilla le asignaron la " . $r['ruta'] . " el " . $r['fecha_asignacion'] . $horario . " (camión " . $r['camion'] . ")";
+    } else {
+        $texto = "🛣️ Cambió el recorrido de tu cuadrilla: " . $r['ruta'] . " el " . $r['fecha_asignacion'] . $horario . " (camión " . $r['camion'] . ")";
+    }
+    $mensaje->enviarACuadrilla($r['id_cuadrilla'], $texto, "recorridos.html");
+}
+
 // Asigna una ruta a una cuadrilla (POST recorridos)
-function registrarRecorrido($recorrido, $camion, $datos) {
+function registrarRecorrido($recorrido, $camion, $mensaje, $datos) {
     validarRecorrido($recorrido, $camion, $datos, null);
 
     $nuevo = $recorrido->agregar($datos);
+    avisarACuadrilla($mensaje, $nuevo, true);
     responder(["mensaje" => "Recorrido asignado correctamente", "recorrido" => $nuevo], 201);
 }
 
 // Modifica un recorrido (PUT recorridos?id=1)
-function modificarRecorrido($recorrido, $camion, $id, $datos) {
+function modificarRecorrido($recorrido, $camion, $mensaje, $id, $datos) {
     if ($recorrido->obtenerPorId($id) == null) {
         responder(["error" => "Recorrido no encontrado"], 404);
     }
     validarRecorrido($recorrido, $camion, $datos, $id);
 
     $modificado = $recorrido->modificar($id, $datos);
+    avisarACuadrilla($mensaje, $modificado, false);
     responder(["mensaje" => "Recorrido modificado correctamente", "recorrido" => $modificado]);
 }
 

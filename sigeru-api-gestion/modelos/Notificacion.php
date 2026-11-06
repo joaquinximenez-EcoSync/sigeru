@@ -71,6 +71,20 @@ class Notificacion
         $stmt->execute();
     }
 
+    // Devuelve el id del vecino que aviso de esa incidencia (o null si la registro el personal)
+    public function vecinoDeLaIncidencia($idIncidencia)
+    {
+        $stmt = $this->conn->prepare("SELECT id_usuario FROM notificaciones WHERE id_incidencia = ?");
+        $stmt->bind_param("i", $idIncidencia);
+        $stmt->execute();
+        $fila = $stmt->get_result()->fetch_assoc();
+
+        if ($fila == null) {
+            return null;
+        }
+        return $fila['id_usuario'];
+    }
+
     // Guarda el aviso. Como es entidad debil, su numero es el siguiente de ese vecino (1, 2, 3...).
     public function agregar($idUsuario, $idIncidencia, $descripcion)
     {

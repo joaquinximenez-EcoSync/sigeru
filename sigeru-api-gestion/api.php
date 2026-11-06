@@ -22,6 +22,10 @@
 //   POST   api.php/incidencias        reportar un problema             (administrador, operario y recolector)
 //   PUT    api.php/incidencias?id=1   seguimiento: estado, prioridad y cuadrilla (administrador y operario;
 //                                     el recolector solo cambia el estado de las de su cuadrilla)
+//   GET    api.php/repuestos          inventario de repuestos          (administrador, operario y recolector)
+//   POST / PUT / DELETE repuestos                                      (administrador y operario)
+//   POST   api.php/stock?id=1         usar o reponer unidades {"cambio": -1} (administrador, operario y recolector)
+//   GET    api.php/volumen?desde=2026-11-01&hasta=2026-11-30   kilos recolectados (administrador, operario y recolector)
 //   GET    api.php/estadisticas       numeros para el panel de control (administrador, operario y recolector)
 //   GET    api.php/alertas            alertas de cada rol              (todos los roles)
 //   GET    api.php/notificaciones     avisos de los vecinos            (vecino ve los suyos, administrador y operario ven todos)
@@ -39,12 +43,16 @@ require_once "modelos/Incidencia.php";
 require_once "modelos/Notificacion.php";
 require_once "modelos/Estadistica.php";
 require_once "modelos/Alerta.php";
+require_once "modelos/Mensaje.php";
+require_once "modelos/Repuesto.php";
+require_once "modelos/Parametro.php";
 require_once "controladores/contenedores.php";
 require_once "controladores/centros.php";
 require_once "controladores/maquinaria.php";
 require_once "controladores/incidencias.php";
 require_once "controladores/mapa.php";
 require_once "controladores/alertas.php";
+require_once "controladores/repuestos.php";
 
 // Tipo de pedido: GET (pedir), POST (crear), PUT (modificar) o DELETE (borrar)
 $metodo = $_SERVER['REQUEST_METHOD'];
@@ -71,6 +79,9 @@ $incidencia = new Incidencia($conn);
 $notificacion = new Notificacion($conn);
 $estadistica = new Estadistica($conn);
 $alerta = new Alerta($conn);
+$mensaje = new Mensaje($conn);
+$repuesto = new Repuesto($conn);
+$parametro = new Parametro($conn);
 
 switch ($endpoint) {
     case "contenedores":
@@ -135,7 +146,7 @@ switch ($endpoint) {
 
     case "vaciar":
         verificarRol($personal);
-        if ($metodo == "POST") vaciarContenedor($contenedor, $id);
+        if ($metodo == "POST") vaciarContenedor($contenedor, $parametro, $id);
         break;
 
     case "incidencias":
@@ -147,8 +158,33 @@ switch ($endpoint) {
                 listarIncidencias($incidencia);
             }
         }
-        if ($metodo == "POST") reportarIncidencia($incidencia, $contenedor, $datos);
-        if ($metodo == "PUT") seguimientoIncidencia($incidencia, $contenedor, $notificacion, $id, $datos);
+        if ($metodo == "POST") reportarIncidencia($incidencia, $contenedor, $mensaje, $datos);
+        if ($metodo == "PUT") seguimientoIncidencia($incidencia, $contenedor, $notificacion, $mensaje, $id, $datos);
+        break;
+
+    case "repuestos":
+        if ($metodo == "GET") {
+            verificarRol($personal);
+            if ($id != null) {
+                obtenerRepuesto($repuesto, $id);
+            } else {
+                listarRepuestos($repuesto);
+            }
+        }
+        verificarRol($gestores);
+        if ($metodo == "POST") registrarRepuesto($repuesto, $contenedor, $maquinaria, $datos);
+        if ($metodo == "PUT") modificarRepuesto($repuesto, $contenedor, $maquinaria, $id, $datos);
+        if ($metodo == "DELETE") eliminarRepuesto($repuesto, $id);
+        break;
+
+    case "stock":
+        verificarRol($personal);
+        if ($metodo == "POST") cambiarStock($repuesto, $mensaje, $id, $datos);
+        break;
+
+    case "volumen":
+        verificarRol($personal);
+        if ($metodo == "GET") obtenerVolumen($estadistica);
         break;
 
     case "estadisticas":
@@ -158,7 +194,7 @@ switch ($endpoint) {
 
     case "alertas":
         verificarRol($todos);
-        if ($metodo == "GET") listarAlertas($alerta);
+        if ($metodo == "GET") listarAlertas($alerta, $parametro);
         break;
 
     case "notificaciones":
@@ -167,7 +203,7 @@ switch ($endpoint) {
             listarAvisos($notificacion);
         }
         verificarRol(["Vecino"]);
-        if ($metodo == "POST") avisarProblema($notificacion, $incidencia, $contenedor, $datos);
+        if ($metodo == "POST") avisarProblema($notificacion, $incidencia, $contenedor, $mensaje, $datos);
         break;
 }
 

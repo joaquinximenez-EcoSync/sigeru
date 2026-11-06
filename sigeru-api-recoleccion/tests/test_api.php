@@ -26,6 +26,10 @@ entrar($apiUsuarios, "operario", "operario@sigeru.uy", "123456");
 entrar($apiUsuarios, "recolector", "recolector@sigeru.uy", "123456");
 entrar($apiUsuarios, "vecino", "vecino@sigeru.uy", "123456");
 
+// Guardamos el ultimo mensaje, para borrar al final las notificaciones que creen los tests
+$base = conectarBaseReal();
+$ultimoMensaje = mysqli_fetch_assoc(mysqli_query($base, "SELECT COALESCE(MAX(id_mensaje), 0) AS id FROM mensajes"))['id'];
+
 // Matricula distinta cada vez, para que no choque con otros camiones
 $matricula = "TST " . rand(1000, 9999);
 
@@ -149,6 +153,15 @@ titulo("Borrar el camión de prueba");
 
 $r = pedir("DELETE", $api . "/camiones?id=" . $idCamion, null, "admin");
 verificar($r['codigo'] == 200, "Borra el camión de prueba");
+
+// Al asignar o cambiar recorridos se notifico a la cuadrilla de la recolectora
+$r = pedir("GET", $apiUsuarios . "/mensajes", null, "recolector");
+$llegaron = 0;
+foreach ($r['json']['mensajes'] as $m) {
+    if (str_contains($m['texto'], "recorrido") || str_contains($m['texto'], "asignaron la Ruta")) $llegaron++;
+}
+verificar($llegaron > 0, "A la recolectora le llegaron notificaciones de los recorridos de su cuadrilla");
+mysqli_query($base, "DELETE FROM mensajes WHERE id_mensaje > " . $ultimoMensaje);
 
 $r = pedir("GET", $api . "/no-existe", null, "admin");
 verificar($r['codigo'] == 404, "Un endpoint que no existe devuelve 404");

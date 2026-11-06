@@ -25,12 +25,16 @@ modelos/Incidencia.php           Modelo (clase) de incidencias
 modelos/Notificacion.php         Modelo (clase) de avisos de los vecinos
 modelos/Estadistica.php          Modelo (clase) de las estadísticas del panel
 modelos/Alerta.php               Modelo (clase) de las alertas de cada rol
+modelos/Repuesto.php             Modelo (clase) del inventario de repuestos
+modelos/Parametro.php            Modelo (clase) que lee los parámetros del sistema
+modelos/Mensaje.php              Modelo (clase) que manda notificaciones a los usuarios
 controladores/contenedores.php   Controlador de contenedores
 controladores/centros.php        Controlador de centros de acopio
 controladores/maquinaria.php     Controlador de maquinaria
 controladores/incidencias.php    Controlador de incidencias (registro y seguimiento) y estadísticas
 controladores/mapa.php           Controlador de los avisos de los vecinos (los hacen desde el mapa)
 controladores/alertas.php        Controlador de las alertas
+controladores/repuestos.php      Controlador del inventario de repuestos
 vistas/respuesta.php             Vista: devuelve la respuesta en JSON
 ```
 
@@ -48,6 +52,9 @@ Para ver, modificar o borrar uno solo se agrega `?id=1` a la dirección.
 | `api.php/operarios` | Administrador y Operario | - |
 | `api.php/instalaciones` | Administrador, Operario y Recolector | - |
 | `api.php/incidencias` | Administrador, Operario y Recolector | POST (registrar un problema): Administrador, Operario y Recolector<br>PUT (seguimiento): Administrador y Operario; el Recolector solo cambia el estado de las de su cuadrilla |
+| `api.php/repuestos` | Administrador, Operario y Recolector | Administrador y Operario |
+| `api.php/stock?id=1` | - | POST (usar o reponer unidades, `{"cambio": -1}`): Administrador, Operario y Recolector |
+| `api.php/volumen?desde=...&hasta=...` | Administrador, Operario y Recolector (kilos recolectados) | - |
 | `api.php/estadisticas` | Administrador, Operario y Recolector | - |
 | `api.php/alertas` | Todos los roles (cada uno ve las suyas) | - |
 | `api.php/vaciar?id=1` | - | POST (marcar un contenedor como vaciado): Administrador, Operario y Recolector |

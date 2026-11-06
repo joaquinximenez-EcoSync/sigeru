@@ -26,6 +26,11 @@ entrar($apiUsuarios, "operario", "operario@sigeru.uy", "123456");
 entrar($apiUsuarios, "recolector", "recolector@sigeru.uy", "123456");
 entrar($apiUsuarios, "vecino", "vecino@sigeru.uy", "123456");
 
+// Guardamos el ultimo mensaje y la ultima recoleccion, para borrar al final lo que creen los tests
+$base = conectarBaseReal();
+$ultimoMensaje = mysqli_fetch_assoc(mysqli_query($base, "SELECT COALESCE(MAX(id_mensaje), 0) AS id FROM mensajes"))['id'];
+$ultimaRecoleccion = mysqli_fetch_assoc(mysqli_query($base, "SELECT COALESCE(MAX(id_recoleccion), 0) AS id FROM recolecciones"))['id'];
+
 // ---------------------------------------------------------------
 titulo("Permisos por rol");
 
@@ -165,6 +170,12 @@ verificar($r['codigo'] == 400, "Con un recorrido que no existe devuelve 400");
 $r = pedir("PUT", $api . "/incidencias?id=" . $idIncidencia, ["estado" => "En proceso", "prioridad" => "Alta", "id_recorrido" => 1], "operario");
 verificar($r['codigo'] == 200 && $r['json']['incidencia']['estado'] == "En proceso" && $r['json']['incidencia']['prioridad'] == "Alta", "El operario la pasa a En proceso y le asigna una cuadrilla");
 
+$r = pedir("GET", $apiUsuarios . "/mensajes", null, "recolector");
+verificar(str_contains($r['json']['mensajes'][0]['texto'], "#" . $idIncidencia), "A la recolectora le llega la notificación de la incidencia asignada");
+
+$r = pedir("GET", $apiUsuarios . "/mensajes", null, "admin");
+verificar(str_contains($r['json']['mensajes'][0]['texto'], "registró una incidencia"), "Al administrador le llega que el operario registró una incidencia");
+
 $r = pedir("GET", $api . "/alertas", null, "recolector");
 $encontrada = false;
 foreach ($r['json'] as $a) {
@@ -186,7 +197,6 @@ $r = pedir("PUT", $api . "/incidencias?id=" . $idIncidencia, ["estado" => "Abier
 verificar($r['codigo'] == 403, "El vecino no puede hacer el seguimiento (403)");
 
 // Borramos la incidencia de prueba (la API no tiene para borrar incidencias)
-$base = conectarBaseReal();
 mysqli_query($base, "DELETE FROM incidencias WHERE id_incidencia = " . $idIncidencia);
 
 // ---------------------------------------------------------------
@@ -209,6 +219,77 @@ verificar($r['codigo'] == 200, "El vecino puede pedir sus alertas");
 
 $r = pedir("GET", $api . "/alertas", null, "nadie");
 verificar($r['codigo'] == 401, "Sin sesión no hay alertas (401)");
+
+// ---------------------------------------------------------------
+titulo("Repuestos");
+
+$r = pedir("GET", $api . "/repuestos", null, "recolector");
+verificar($r['codigo'] == 200 && count($r['json']) == 5, "El recolector ve los 5 repuestos");
+
+$r = pedir("GET", $api . "/repuestos", null, "vecino");
+verificar($r['codigo'] == 403, "El vecino no ve los repuestos (403)");
+
+$r = pedir("POST", $api . "/repuestos", ["nombre" => "Repuesto de prueba", "tipo" => "Rueda", "cantidad" => 3, "cantidad_minima" => 2], "recolector");
+verificar($r['codigo'] == 403, "El recolector no puede agregar repuestos (403)");
+
+$r = pedir("POST", $api . "/repuestos", ["nombre" => "Repuesto de prueba", "tipo" => "Cohete", "cantidad" => 3, "cantidad_minima" => 2], "operario");
+verificar($r['codigo'] == 400, "Con un tipo que no existe devuelve 400");
+
+$r = pedir("POST", $api . "/repuestos", ["nombre" => "Repuesto de prueba", "tipo" => "Rueda", "cantidad" => "tres", "cantidad_minima" => 2], "operario");
+verificar($r['codigo'] == 400, "Si la cantidad no es un número devuelve 400");
+
+$r = pedir("POST", $api . "/repuestos", ["nombre" => "Repuesto de prueba", "tipo" => "Rueda", "cantidad" => 3, "cantidad_minima" => 2, "id_instalacion" => 1], "operario");
+verificar($r['codigo'] == 201, "El operario agrega un repuesto");
+$idRepuesto = $r['json']['repuesto']['id'];
+
+$r = pedir("POST", $api . "/stock?id=" . $idRepuesto, ["cambio" => -1], "recolector");
+verificar($r['codigo'] == 200 && $r['json']['repuesto']['cantidad'] == 2, "El recolector usa uno y quedan 2");
+
+$r = pedir("GET", $apiUsuarios . "/mensajes", null, "operario");
+verificar(str_contains($r['json']['mensajes'][0]['texto'], "Repuesto de prueba"), "Al quedar en el mínimo le llega la notificación al operario");
+
+$r = pedir("POST", $api . "/stock?id=" . $idRepuesto, ["cambio" => -5], "recolector");
+verificar($r['codigo'] == 409, "No deja usar más de los que hay (409)");
+
+$r = pedir("POST", $api . "/stock?id=" . $idRepuesto, ["cambio" => 0], "recolector");
+verificar($r['codigo'] == 400, "Un cambio de 0 devuelve 400");
+
+$r = pedir("PUT", $api . "/repuestos?id=" . $idRepuesto, ["nombre" => "Repuesto de prueba", "tipo" => "Rueda", "cantidad" => 9, "cantidad_minima" => 2], "operario");
+verificar($r['codigo'] == 200 && $r['json']['repuesto']['cantidad'] == 9, "Lo modifica");
+
+$r = pedir("DELETE", $api . "/repuestos?id=" . $idRepuesto, null, "operario");
+verificar($r['codigo'] == 200, "Lo borra");
+
+// ---------------------------------------------------------------
+titulo("Volumen recolectado y avisos de vecinos");
+
+$r = pedir("GET", $api . "/volumen?desde=2026-11-01&hasta=2026-11-30", null, "operario");
+verificar($r['codigo'] == 200 && $r['json']['total']['vaciados'] > 0 && count($r['json']['por_contenedor']) == 16, "Devuelve el volumen recolectado del mes");
+
+$r = pedir("GET", $api . "/volumen?desde=2026-11-30&hasta=2026-11-01", null, "operario");
+verificar($r['codigo'] == 400, "Con las fechas al revés devuelve 400");
+
+$r = pedir("GET", $api . "/volumen", null, "vecino");
+verificar($r['codigo'] == 403, "El vecino no ve el volumen (403)");
+
+$r = pedir("POST", $api . "/vaciar?id=4", null, "recolector");
+verificar($r['codigo'] == 200 && $r['json']['kilos'] > 0, "Al vaciar un contenedor se guardan los kilos recolectados (" . ($r['json']['kilos'] ?? 0) . " kg)");
+
+$r = pedir("POST", $api . "/notificaciones", ["id_contenedor" => 13, "problema" => "Roto", "comentario" => "Prueba del test"], "vecino");
+verificar($r['codigo'] == 201, "La vecina avisa un problema");
+$r = pedir("GET", $apiUsuarios . "/mensajes", null, "recolector");
+verificar(str_contains($r['json']['mensajes'][0]['texto'], "avisó que el contenedor"), "A la recolectora le llega el aviso de la vecina");
+$r = pedir("GET", $apiUsuarios . "/mensajes", null, "admin");
+verificar(str_contains($r['json']['mensajes'][0]['texto'], "avisó que el contenedor"), "Al administrador también");
+$r = pedir("GET", $apiUsuarios . "/mensajes", null, "vecino");
+verificar(str_contains($r['json']['mensajes'][0]['texto'], "Recibimos tu aviso"), "Y la vecina recibe la confirmación");
+
+// Borramos lo que crearon los tests: el aviso (y su incidencia), las notificaciones y la recoleccion
+mysqli_query($base, "DELETE FROM notificaciones WHERE descripcion LIKE '%Prueba del test%'");
+mysqli_query($base, "DELETE FROM incidencias WHERE id_contenedor = 13 AND descripcion LIKE '%Prueba del test%'");
+mysqli_query($base, "UPDATE contenedores SET estado = 'Funcional' WHERE id_contenedor = 13");
+mysqli_query($base, "DELETE FROM mensajes WHERE id_mensaje > " . $ultimoMensaje);
+mysqli_query($base, "DELETE FROM recolecciones WHERE id_recoleccion > " . $ultimaRecoleccion);
 
 $r = pedir("GET", $api . "/no-existe", null, "admin");
 verificar($r['codigo'] == 404, "Un endpoint que no existe devuelve 404");

@@ -94,6 +94,15 @@ class Incidencia
         return $stmt->get_result()->fetch_assoc() != null;
     }
 
+    // Devuelve la cuadrilla de un recorrido
+    public function cuadrillaDelRecorrido($idRecorrido)
+    {
+        $stmt = $this->conn->prepare("SELECT id_cuadrilla FROM recorridos WHERE id_recorrido = ?");
+        $stmt->bind_param("i", $idRecorrido);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc()['id_cuadrilla'];
+    }
+
     // Devuelve true si ese recorrido es de la cuadrilla del recolector
     public function esRecorridoDelRecolector($idRecorrido, $idUsuario)
     {

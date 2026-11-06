@@ -11,6 +11,9 @@ require_once __DIR__ . "/../modelos/Incidencia.php";
 require_once __DIR__ . "/../modelos/Notificacion.php";
 require_once __DIR__ . "/../modelos/Estadistica.php";
 require_once __DIR__ . "/../modelos/Alerta.php";
+require_once __DIR__ . "/../modelos/Repuesto.php";
+require_once __DIR__ . "/../modelos/Parametro.php";
+require_once __DIR__ . "/../modelos/Mensaje.php";
 
 $conn = crearBaseDePrueba();
 
@@ -162,10 +165,56 @@ verificar(count($estadistica->sinResolverPorMunicipio()) > 0 && count($estadisti
 titulo("Alertas");
 
 $alerta = new Alerta($conn);
-$llenas = $alerta->instalacionesCasiLlenas();
+$llenas = $alerta->instalacionesCasiLlenas(80);
 verificar(count($llenas) == 1 && $llenas[0]['porcentaje'] == 85, "Avisa que el Centro de Acopio Oeste está al 85%");
-verificar(count($alerta->desbordadosSinAtender()) >= 1, "Encuentra contenedores desbordados sin atender");
+verificar(count($alerta->instalacionesCasiLlenas(90)) == 0, "Si el límite es 90% ya no avisa (es un parámetro)");
+verificar(count($alerta->desbordadosSinAtender(2)) >= 1, "Encuentra contenedores desbordados sin atender");
+verificar(count($alerta->desbordadosSinAtender(2)) > count($alerta->desbordadosSinAtender(500)), "Con más días de límite avisa de menos contenedores");
+verificar(count($alerta->repuestosConPocoStock()) == 2, "Avisa de los 2 repuestos que están en el mínimo o menos");
 verificar(count($alerta->delRecolector(3)) == 1, "El recolector tiene 1 incidencia pendiente de su cuadrilla");
 verificar(count($alerta->avisosDelVecino(4)) == 1, "La vecina tiene novedades de su aviso");
+
+// ---------------------------------------------------------------
+titulo("Repuestos");
+
+$repuesto = new Repuesto($conn);
+verificar(count($repuesto->obtenerTodos()) == 5, "Hay 5 repuestos de prueba");
+verificar(count($repuesto->obtenerConPocoStock()) == 2, "2 tienen poco stock");
+$nuevo = $repuesto->agregar(["nombre" => "Contenedor de prueba", "tipo" => "Contenedor", "id_residuo" => "2", "cantidad" => 4, "cantidad_minima" => 2, "id_instalacion" => ""]);
+verificar($nuevo['residuo'] == "Reciclable" && $nuevo['instalacion'] == null, "Agrega un repuesto (sin instalación queda NULL)");
+$nuevo = $repuesto->cambiarCantidad($nuevo['id'], -2);
+verificar($nuevo['cantidad'] == 2, "Usar 2 deja 2");
+verificar(count($repuesto->obtenerConPocoStock()) == 3, "Ahora está en el mínimo y aparece con poco stock");
+$nuevo = $repuesto->modificar($nuevo['id'], ["nombre" => "Contenedor de prueba", "tipo" => "Contenedor", "id_residuo" => "", "cantidad" => 10, "cantidad_minima" => 2, "id_instalacion" => "1"]);
+verificar($nuevo['cantidad'] == 10 && $nuevo['residuo'] == null && $nuevo['instalacion'] == "Centro de Acopio Norte", "Lo modifica");
+$repuesto->eliminar($nuevo['id']);
+verificar($repuesto->obtenerPorId($nuevo['id']) == null, "Lo borra");
+
+// ---------------------------------------------------------------
+titulo("Volumen recolectado");
+
+verificar(contarFilas($conn, "SELECT * FROM recolecciones") == 192, "Hay 192 recolecciones simuladas");
+$total = $estadistica->totalRecolectado("2026-11-01", "2026-11-30");
+verificar($total['vaciados'] == 26 && $total['contenedores'] == 16 && $total['kilos'] > 0, "En noviembre se vaciaron contenedores 26 veces");
+$total = $estadistica->totalRecolectado("2020-01-01", "2020-01-31");
+verificar($total['vaciados'] == 0 && $total['kilos'] == 0, "En un mes sin datos da 0");
+verificar(count($estadistica->kilosPorMunicipio("2026-10-01", "2026-11-30")) == 8, "Kilos de los 8 municipios");
+verificar(count($estadistica->kilosPorResiduo("2026-10-01", "2026-11-30")) > 0, "Kilos por tipo de residuo");
+verificar(count($estadistica->vaciadosPorContenedor("2026-11-01", "2026-11-30")) == 16, "Cuántas veces se vació cada uno de los 16 contenedores");
+$contenedor->registrarRecoleccion(1, 150.5);
+verificar(contarFilas($conn, "SELECT * FROM recolecciones WHERE kilos = 150.5") == 1, "Guarda una recolección nueva");
+
+// ---------------------------------------------------------------
+titulo("Parámetros y mensajes");
+
+$parametro = new Parametro($conn);
+verificar($parametro->obtener("dias_alerta_desborde", "0") == "2", "Lee un parámetro");
+verificar($parametro->obtener("no_existe", "7") == "7", "Si no existe usa el valor por defecto");
+
+$mensaje = new Mensaje($conn);
+$mensaje->enviarACuadrilla(1, "Prueba a la cuadrilla", "recorridos.html");
+verificar(contarFilas($conn, "SELECT * FROM mensajes WHERE texto = 'Prueba a la cuadrilla' AND id_usuario = 3") == 1, "Mandar a una cuadrilla le llega a su recolectora");
+$mensaje->enviarARol("Operario", "Prueba al operario", "panel.html", 2);
+verificar(contarFilas($conn, "SELECT * FROM mensajes WHERE texto = 'Prueba al operario'") == 0, "El que hizo la acción no se manda el mensaje a sí mismo");
 
 mostrarResumen();

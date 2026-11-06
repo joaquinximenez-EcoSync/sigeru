@@ -7,6 +7,7 @@ require_once __DIR__ . "/funciones_test.php";
 require_once __DIR__ . "/../modelos/Camion.php";
 require_once __DIR__ . "/../modelos/Mantenimiento.php";
 require_once __DIR__ . "/../modelos/Recorrido.php";
+require_once __DIR__ . "/../modelos/Mensaje.php";
 
 $conn = crearBaseDePrueba();
 
@@ -86,5 +87,14 @@ verificar($modificado['fecha_asignacion'] == "2026-11-11" && $modificado['hora_f
 $recorrido->eliminar($id);
 verificar($recorrido->obtenerPorId($id) == null, "Borra el recorrido");
 verificar(contarFilas($conn, "SELECT * FROM zonas WHERE id_recorrido IS NULL") == 2, "Sus zonas quedan sin recorrido (ON DELETE SET NULL)");
+
+titulo("Mensajes");
+
+$mensaje = new Mensaje($conn);
+$mensaje->enviarACuadrilla(1, "Prueba a la cuadrilla", "recorridos.html");
+verificar(contarFilas($conn, "SELECT * FROM mensajes WHERE texto = 'Prueba a la cuadrilla' AND id_usuario = 3") == 1, "Mandar a una cuadrilla le llega a su recolectora");
+verificar(contarFilas($conn, "SELECT * FROM mensajes WHERE texto = 'Prueba a la cuadrilla'") == 1, "Y a nadie más");
+$mensaje->enviarARol("Administrador", "Prueba al admin", "panel.html");
+verificar(contarFilas($conn, "SELECT * FROM mensajes WHERE texto = 'Prueba al admin'") == 1, "Mandar a un rol le llega al administrador");
 
 mostrarResumen();

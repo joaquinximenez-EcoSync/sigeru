@@ -91,11 +91,20 @@ function eliminarContenedor($contenedor, $id) {
 }
 
 // El recolector marca que vacio el contenedor (POST vaciar?id=1)
-function vaciarContenedor($contenedor, $id) {
-    if ($contenedor->obtenerPorId($id) == null) {
+// Al vaciarlo se guarda una recoleccion con los kilos que se sacaron.
+// Como no tenemos balanza, los kilos se simulan: capacidad (litros) x kilos por litro (parametro)
+// x cuanto estaba lleno (un numero al azar entre 50% y 100%).
+function vaciarContenedor($contenedor, $parametro, $id) {
+    $encontrado = $contenedor->obtenerPorId($id);
+    if ($encontrado == null) {
         responder(["error" => "Contenedor no encontrado"], 404);
     }
 
+    $kilosPorLitro = floatval($parametro->obtener("kilos_por_litro", "0.18"));
+    $lleno = rand(50, 100) / 100;
+    $kilos = round($encontrado['capacidad'] * $kilosPorLitro * $lleno, 2);
+    $contenedor->registrarRecoleccion($id, $kilos);
+
     $vaciado = $contenedor->vaciar($id);
-    responder(["mensaje" => "Contenedor marcado como vaciado", "contenedor" => $vaciado]);
+    responder(["mensaje" => "Contenedor marcado como vaciado (se recolectaron " . $kilos . " kg)", "contenedor" => $vaciado, "kilos" => $kilos]);
 }
