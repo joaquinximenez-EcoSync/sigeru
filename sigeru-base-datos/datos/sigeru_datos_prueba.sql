@@ -38,7 +38,7 @@ INSERT INTO rutas (id_ruta, nombre, descripcion, distancia) VALUES
 INSERT INTO camiones (id_camion, matricula, estado, disponibilidad, capacidad_carga, latitud, longitud) VALUES
 (1, 'SBA 1234', 'Operativo', 'Disponible', 10000, -34.874000, -56.169000),
 (2, 'SBC 5678', 'En mantenimiento', 'No disponible', 8000, -34.872000, -56.172000),
-(3, 'SBD 9012', 'Operativo', 'En ruta', 12000, -34.901000, -56.118000),
+(3, 'SBD 9012', 'Operativo', 'En ruta', 12000, -34.887000, -56.131000),
 (4, 'SBF 3344', 'Operativo', 'En ruta', 10000, -34.905500, -56.195000);
 
 INSERT INTO mantenimientos (id_camion, nro_mantenimiento, tipo, costo, descripcion, fecha) VALUES

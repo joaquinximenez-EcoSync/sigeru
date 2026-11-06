@@ -12,4 +12,8 @@ Cómo se usan:
 2. **Importar** → elegir el archivo de actualización → **Importar**.
 3. Se importa cada archivo una sola vez, en orden.
 
-Hasta ahora no hay actualizaciones: la base que se creó con `ddl/sigeru_ddl.sql` ya está al día.
+| Archivo | Qué hace |
+|---------|----------|
+| `001_sacar_datos_inventados.sql` | Borra las incidencias de prueba que venían inventadas (sin tocar las que cargaron ustedes), agrega a incidencias el lugar exacto y el tipo "Basura en la calle", y saca del agua al camión SBD 9012 |
+
+Si la base se creó después de esta actualización, no hace falta importarla (pero si se importa no rompe nada).
