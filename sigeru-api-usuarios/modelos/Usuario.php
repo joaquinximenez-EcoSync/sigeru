@@ -7,7 +7,7 @@ class Usuario
 
     // Consulta que trae los datos del usuario y los de su rol (vecino u operario)
     private $consulta = "SELECT u.id_usuario AS id, u.primer_nombre, u.segundo_nombre, u.primer_apellido,
-                                u.segundo_apellido, u.email, u.telefono, u.rol,
+                                u.segundo_apellido, u.email, u.telefono, u.rol, u.estado, u.fecha_registro,
                                 v.calle, v.zona, o.especialidad
                          FROM usuarios u
                          LEFT JOIN vecinos v ON u.id_usuario = v.id_usuario
@@ -55,8 +55,10 @@ class Usuario
         return $stmt->get_result()->fetch_assoc();
     }
 
-    // Guarda un usuario nuevo y devuelve sus datos
-    public function agregar($datos)
+    // Guarda un usuario nuevo y devuelve sus datos.
+    // $estado es "Activo" cuando lo crea el administrador, o "Sin verificar" cuando se registra desde la landing
+    // (en ese caso tambien se guarda el codigo que va en el enlace del correo).
+    public function agregar($datos, $estado = "Activo", $codigo = null)
     {
         $nombre = $datos['primer_nombre'];
         $apellido = $datos['primer_apellido'];
@@ -70,8 +72,9 @@ class Usuario
             $telefono = null;
         }
 
-        $stmt = $this->conn->prepare("INSERT INTO usuarios (primer_nombre, primer_apellido, email, telefono, contrasena, rol) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssss", $nombre, $apellido, $email, $telefono, $contrasena, $rol);
+        $stmt = $this->conn->prepare("INSERT INTO usuarios (primer_nombre, primer_apellido, email, telefono, contrasena, rol, estado, codigo_verificacion)
+                                      VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssssss", $nombre, $apellido, $email, $telefono, $contrasena, $rol, $estado, $codigo);
         $stmt->execute();
 
         // Numero de id que le dio la base de datos al usuario nuevo
@@ -133,6 +136,24 @@ class Usuario
         }
 
         return $this->obtenerPorId($id);
+    }
+
+    // Busca al usuario que tiene ese codigo de verificacion (el que va en el enlace del correo)
+    public function buscarPorCodigo($codigo)
+    {
+        $stmt = $this->conn->prepare("SELECT * FROM usuarios WHERE codigo_verificacion = ? AND estado = 'Sin verificar'");
+        $stmt->bind_param("s", $codigo);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc();
+    }
+
+    // Cambia el estado del usuario (Sin verificar, Pendiente, Activo o Rechazado).
+    // El codigo de verificacion se borra porque ya no sirve.
+    public function cambiarEstado($id, $estado)
+    {
+        $stmt = $this->conn->prepare("UPDATE usuarios SET estado = ?, codigo_verificacion = NULL WHERE id_usuario = ?");
+        $stmt->bind_param("si", $estado, $id);
+        $stmt->execute();
     }
 
     // Borra un usuario (sus datos del rol se borran solos por el ON DELETE CASCADE)

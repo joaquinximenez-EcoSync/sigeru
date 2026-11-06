@@ -1,0 +1,4 @@
+PHPMailer 6.9.1 (https://github.com/PHPMailer/PHPMailer)
+Libreria para mandar correos por SMTP (la usamos con Gmail).
+Se copiaron solo los 3 archivos que hacen falta: PHPMailer.php, SMTP.php y Exception.php.
+Licencia: LGPL 2.1 (archivo LICENSE).

@@ -59,7 +59,52 @@ $r = pedir("POST", $api . "/registro", [
 ], "landing");
 verificar($r['codigo'] == 201, "Registro correcto devuelve 201");
 verificar($r['json']['usuario']['rol'] == "Vecino", "El que se registra solo queda como Vecino aunque mande otro rol");
+verificar($r['json']['usuario']['estado'] == "Sin verificar", "Queda Sin verificar hasta que abra el enlace del correo");
 $idRegistrado = $r['json']['usuario']['id'];
+$enlace = $r['json']['enlace_verificacion'] ?? "";
+
+$r = entrar($api, "registrado", "registro" . $correoPrueba, "123456");
+verificar($r['codigo'] == 403 && str_contains($r['json']['error'], "verificaste"), "Sin verificar el correo no puede iniciar sesión (403)");
+
+$r = pedir("GET", $api . "/verificar?codigo=codigo-falso", null, "landing");
+verificar($r['codigo'] == 404, "Con un código falso devuelve 404");
+
+// Si Gmail no esta configurado (modo prueba), la API devuelve el enlace y lo usamos
+if ($enlace == "") {
+    echo "  (Gmail está configurado: no se prueba la verificación porque el enlace llegó por correo)\n";
+} else {
+    $codigo = substr($enlace, strpos($enlace, "codigo=") + 7);
+    $r = pedir("GET", $api . "/verificar?codigo=" . $codigo, null, "landing");
+    verificar($r['codigo'] == 200 && $r['json']['estado'] == "Pendiente", "Con el enlace del correo queda verificado y Pendiente de aprobación");
+
+    $r = pedir("GET", $api . "/verificar?codigo=" . $codigo, null, "landing");
+    verificar($r['codigo'] == 404, "El mismo enlace no sirve dos veces");
+
+    $r = entrar($api, "registrado", "registro" . $correoPrueba, "123456");
+    verificar($r['codigo'] == 403 && str_contains($r['json']['error'], "apruebe"), "Mientras no lo aprueban no puede entrar (403)");
+
+    $r = pedir("GET", $api . "/mensajes", null, "admin");
+    verificar(str_contains($r['json']['mensajes'][0]['texto'], "Prueba Registro"), "Al administrador le llega la notificación de la solicitud");
+
+    $r = pedir("POST", $api . "/aprobar?id=" . $idRegistrado, ["aprobado" => true], "operario");
+    verificar($r['codigo'] == 403, "El operario no puede aprobar registros (403)");
+
+    $r = pedir("POST", $api . "/aprobar?id=" . $idRegistrado, ["aprobado" => true], "admin");
+    verificar($r['codigo'] == 200, "El administrador aprueba el registro");
+
+    $r = pedir("POST", $api . "/aprobar?id=" . $idRegistrado, ["aprobado" => true], "admin");
+    verificar($r['codigo'] == 409, "No se puede aprobar dos veces (409)");
+
+    $r = entrar($api, "registrado", "registro" . $correoPrueba, "123456");
+    verificar($r['codigo'] == 200, "Ahora sí puede iniciar sesión");
+
+    $r = pedir("GET", $api . "/mensajes", null, "registrado");
+    verificar($r['codigo'] == 200 && $r['json']['sin_leer'] == 1 && str_contains($r['json']['mensajes'][0]['texto'], "Bienvenido"), "Y tiene la notificación de bienvenida");
+
+    $r = pedir("PUT", $api . "/mensajes", null, "registrado");
+    $r = pedir("GET", $api . "/mensajes", null, "registrado");
+    verificar($r['json']['sin_leer'] == 0, "Marca todas sus notificaciones como leídas");
+}
 
 $r = pedir("POST", $api . "/registro", ["primer_nombre" => "A", "primer_apellido" => "B", "email" => "admin@sigeru.uy", "contrasena" => "123456"], "landing");
 verificar($r['codigo'] == 409, "Con un correo que ya existe devuelve 409");
@@ -69,6 +114,29 @@ verificar($r['codigo'] == 400, "Con un correo mal escrito devuelve 400");
 
 $r = pedir("POST", $api . "/registro", ["primer_nombre" => "A", "primer_apellido" => "B", "email" => "x" . $correoPrueba, "contrasena" => "123"], "landing");
 verificar($r['codigo'] == 400, "Con una contraseña de menos de 6 caracteres devuelve 400");
+
+titulo("Parámetros");
+
+$r = pedir("GET", $api . "/parametros", null, "operario");
+verificar($r['codigo'] == 200 && count($r['json']) == 5, "Cualquier usuario puede leer los parámetros");
+
+$r = pedir("PUT", $api . "/parametros", ["idioma" => "en"], "operario");
+verificar($r['codigo'] == 403, "Solo el administrador los cambia (403)");
+
+$r = pedir("PUT", $api . "/parametros", ["idioma" => "fr"], "admin");
+verificar($r['codigo'] == 400, "Un idioma que no existe devuelve 400");
+
+$r = pedir("PUT", $api . "/parametros", ["dias_alerta_desborde" => "-3"], "admin");
+verificar($r['codigo'] == 400, "Un número negativo devuelve 400");
+
+$r = pedir("PUT", $api . "/parametros", ["inventado" => "1"], "admin");
+verificar($r['codigo'] == 400, "Un parámetro que no existe devuelve 400");
+
+$r = pedir("PUT", $api . "/parametros", ["dias_alerta_desborde" => "3", "idioma" => "en"], "admin");
+verificar($r['codigo'] == 200, "El administrador cambia dos parámetros juntos");
+
+// Los dejamos como estaban
+pedir("PUT", $api . "/parametros", ["dias_alerta_desborde" => "2", "idioma" => "es"], "admin");
 
 titulo("CRUD de usuarios (administrador)");
 
@@ -124,6 +192,10 @@ verificar($r['codigo'] == 200, "Cierra la sesión");
 
 $r = pedir("GET", $api . "/usuarios", null, "admin");
 verificar($r['codigo'] == 401, "Después de cerrar sesión ya no puede ver los usuarios");
+
+// Borramos las notificaciones que crearon los tests
+$base = conectarBaseReal();
+mysqli_query($base, "DELETE FROM mensajes WHERE texto LIKE '%Prueba Registro%'");
 
 $r = pedir("GET", $api . "/no-existe", null, "admin");
 verificar($r['codigo'] == 404, "Un endpoint que no existe devuelve 404");

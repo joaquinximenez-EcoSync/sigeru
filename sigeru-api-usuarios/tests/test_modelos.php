@@ -5,6 +5,8 @@
 
 require_once __DIR__ . "/funciones_test.php";
 require_once __DIR__ . "/../modelos/Usuario.php";
+require_once __DIR__ . "/../modelos/Parametro.php";
+require_once __DIR__ . "/../modelos/Mensaje.php";
 
 $conn = crearBaseDePrueba();
 $usuario = new Usuario($conn);
@@ -76,5 +78,42 @@ $usuario->eliminar($id);
 verificar($usuario->obtenerPorId($id) == null, "El usuario ya no existe");
 verificar(contarFilas($conn, "SELECT * FROM operarios WHERE id_usuario = $id") == 0, "Sus datos de operario se borran solos (ON DELETE CASCADE)");
 verificar(count($usuario->obtenerTodos()) == 4, "Quedan los 4 usuarios de prueba");
+
+titulo("Registro con verificación de correo");
+
+$vecino = $usuario->agregar(["primer_nombre" => "Ana", "primer_apellido" => "Rodríguez", "email" => "ana@mail.com", "contrasena" => "123456", "rol" => "Vecino"], "Sin verificar", "codigo123");
+verificar($vecino['estado'] == "Sin verificar", "El vecino que se registra queda Sin verificar");
+verificar($usuario->buscarPorCodigo("codigo123")['id_usuario'] == $vecino['id'], "Lo encuentra por el código del enlace");
+verificar($usuario->buscarPorCodigo("otro") == null, "Con otro código no encuentra a nadie");
+$usuario->cambiarEstado($vecino['id'], "Pendiente");
+verificar($usuario->obtenerPorId($vecino['id'])['estado'] == "Pendiente", "Cambia el estado a Pendiente");
+verificar($usuario->buscarPorCodigo("codigo123") == null, "El código ya no sirve una segunda vez");
+$admin = $usuario->agregar(["primer_nombre" => "Otro", "primer_apellido" => "Admin", "email" => "otro@mail.com", "contrasena" => "123456", "rol" => "Administrador"]);
+verificar($admin['estado'] == "Activo", "Un usuario que crea el administrador queda Activo");
+
+titulo("Parámetros");
+
+$parametro = new Parametro($conn);
+verificar(count($parametro->obtenerTodos()) == 5, "Hay 5 parámetros");
+verificar($parametro->obtener("aprobar_registros", "x") == "si", "Lee un parámetro");
+verificar($parametro->obtener("no_existe", "por defecto") == "por defecto", "Si no existe devuelve el valor por defecto");
+$parametro->modificar("idioma", "en");
+verificar($parametro->obtener("idioma", "") == "en", "Modifica un parámetro");
+
+titulo("Mensajes (notificaciones)");
+
+$mensaje = new Mensaje($conn);
+verificar($mensaje->contarSinLeer(1) == 1, "El administrador de prueba tiene 1 mensaje sin leer");
+$mensaje->enviarARol("Administrador", "Mensaje de prueba", "panel.html");
+verificar($mensaje->contarSinLeer(1) == 2 && $mensaje->contarSinLeer($admin['id']) == 1, "Mandar a un rol le llega a todos los administradores activos");
+verificar($mensaje->contarSinLeer(2) == 1, "Al operario no le llega");
+$lista = $mensaje->obtenerDelUsuario(1);
+verificar($lista[0]['texto'] == "Mensaje de prueba", "El más nuevo aparece primero");
+$mensaje->marcarLeido($lista[0]['id'], 2);
+verificar($mensaje->contarSinLeer(1) == 2, "Un usuario no puede marcar como leído un mensaje de otro");
+$mensaje->marcarLeido($lista[0]['id'], 1);
+verificar($mensaje->contarSinLeer(1) == 1, "Marca un mensaje como leído");
+$mensaje->marcarTodosLeidos(1);
+verificar($mensaje->contarSinLeer(1) == 0, "Marca todos como leídos");
 
 mostrarResumen();

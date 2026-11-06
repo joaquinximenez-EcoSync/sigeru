@@ -1,6 +1,7 @@
 # SiGeRU - API de Usuarios
 
-API RESTful encargada del registro, la autenticación y la gestión de usuarios del
+API RESTful encargada del registro (con verificación por correo y aprobación), la autenticación,
+la gestión de usuarios, las notificaciones y los parámetros del
 Sistema de Gestión de Residuos Urbanos (SiGeRU), desarrollado por **EcoSync**.
 
 Los datos se guardan en la base de datos MySQL `sigeru` (ver `sigeru-base-datos`).
@@ -16,8 +17,14 @@ api.php                       Punto de entrada: recibe la solicitud, revisa el r
 config.php                    Sesión y formato de respuesta
 conexion.php                  Conexión a la base de datos MySQL
 seguridad.php                 Revisa que haya sesión iniciada y que el rol tenga permiso
+correo.php                    Manda los correos con Gmail (usa la libreria PHPMailer)
+config_correo.php             Cuenta de Gmail que manda los correos (hay que completarla)
+libs/PHPMailer/               Libreria PHPMailer 6.9.1 (solo los 3 archivos que se usan)
 modelos/Usuario.php           Modelo (clase): guarda, busca, modifica y borra usuarios
-controladores/usuarios.php    Controlador: valida los datos y usa el modelo
+modelos/Parametro.php         Modelo (clase): parametros del sistema
+modelos/Mensaje.php           Modelo (clase): notificaciones de cada usuario
+controladores/usuarios.php    Controlador: registro, verificacion, aprobacion, login y CRUD de usuarios
+controladores/mensajes.php    Controlador: notificaciones y parametros
 vistas/respuesta.php          Vista: devuelve la respuesta en JSON
 ```
 
@@ -25,7 +32,13 @@ vistas/respuesta.php          Vista: devuelve la respuesta en JSON
 
 | Método | Endpoint | Descripción | Quién puede |
 |--------|----------|-------------|-------------|
-| POST | `api.php/registro` | Registro de un vecino (desde la landing) | Cualquiera |
+| POST | `api.php/registro` | Registro de un vecino (desde la landing). Le manda un correo para verificar | Cualquiera |
+| GET | `api.php/verificar?codigo=...` | El vecino abre el enlace del correo | Cualquiera |
+| POST | `api.php/aprobar?id=5` | Aprobar (`{"aprobado": true}`) o rechazar el registro de un vecino | Administrador |
+| GET | `api.php/mensajes` | Notificaciones del usuario y cuántas no leyó | Con sesión iniciada |
+| PUT | `api.php/mensajes?id=3` | Marcar una notificación como leída (sin id: todas) | Con sesión iniciada |
+| GET | `api.php/parametros` | Parámetros del sistema | Con sesión iniciada |
+| PUT | `api.php/parametros` | Cambiar parámetros (`{"idioma": "en"}`) | Administrador |
 | POST | `api.php/login` | Inicio de sesión | Cualquiera |
 | POST | `api.php/logout` | Cierre de sesión | Cualquiera |
 | GET | `api.php/sesion` | Usuario que inició sesión | Con sesión iniciada |
@@ -36,6 +49,16 @@ vistas/respuesta.php          Vista: devuelve la respuesta en JSON
 | DELETE | `api.php/usuarios?id=1` | Borrar un usuario (no se puede borrar a sí mismo) | Administrador |
 
 Según la RNE04, solo el administrador puede crear, modificar o eliminar usuarios.
+
+Estados de un usuario: **Sin verificar** (se registró y no abrió el correo) → **Pendiente** (espera que lo apruebe
+un administrador) → **Activo**. Si lo rechazan queda **Rechazado**. Solo los usuarios activos pueden iniciar sesión.
+
+### Correo (Gmail)
+
+Completar `config_correo.php` con una cuenta de Gmail y una **contraseña de aplicación**
+(Cuenta de Google → Seguridad → Verificación en dos pasos → Contraseñas de aplicaciones).
+Si se deja vacío, la API no manda correos y devuelve el enlace de verificación en la respuesta (modo prueba).
+No subir a GitHub ese archivo con la contraseña escrita.
 
 Ejemplo:
 

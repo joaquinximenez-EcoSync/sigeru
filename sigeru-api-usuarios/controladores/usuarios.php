@@ -51,12 +51,103 @@ function obtenerUsuario($usuario, $id) {
 }
 
 // Registro desde la landing: las personas que se registran solas son vecinos (POST registro)
+// El vecino queda "Sin verificar" y se le manda un correo con un enlace para verificar su cuenta.
 function registrarUsuario($usuario, $datos) {
+    global $direccionSitio;
+
     $datos['rol'] = "Vecino";
     validarUsuario($usuario, $datos, null);
 
-    $nuevo = $usuario->agregar($datos);
-    responder(["mensaje" => "Registro realizado correctamente", "usuario" => $nuevo], 201);
+    // Codigo al azar que va en el enlace del correo (32 letras y numeros)
+    $codigo = bin2hex(random_bytes(16));
+    $nuevo = $usuario->agregar($datos, "Sin verificar", $codigo);
+
+    $enlace = $direccionSitio . "/sigeru-landing/verificar.html?codigo=" . $codigo;
+    $texto = "<p>Hola " . htmlspecialchars($nuevo['primer_nombre']) . ", gracias por registrarte en SiGeRU.</p>
+              <p>Para terminar el registro, confirma que este correo es tuyo:</p>"
+              . botonCorreo("Verificar mi correo", $enlace) .
+              "<p style='color: #6b7280; font-size: 13px'>Si no te registraste, ignora este mensaje.</p>";
+    $seMando = enviarCorreo($nuevo['email'], $nuevo['primer_nombre'], "Verifica tu correo", $texto);
+
+    $respuesta = [
+        "mensaje" => "¡Ya casi! Te mandamos un correo a " . $nuevo['email'] . ". Abre el enlace del correo para verificar tu cuenta.",
+        "usuario" => $nuevo
+    ];
+    // Si el correo no esta configurado (modo prueba), devolvemos el enlace para poder probar igual
+    if (!$seMando) {
+        $respuesta['mensaje'] = "Registro recibido. El correo de Gmail no está configurado en la API, así que no se pudo mandar el mail (modo prueba): usa el enlace de abajo para verificar la cuenta.";
+        $respuesta['enlace_verificacion'] = $enlace;
+    }
+    responder($respuesta, 201);
+}
+
+// El vecino abre el enlace del correo (GET verificar?codigo=...)
+// Si hay que aprobar los registros queda "Pendiente" y se avisa a los administradores; si no, queda "Activo".
+function verificarCorreo($usuario, $parametro, $mensaje, $codigo) {
+    global $direccionSitio;
+
+    $encontrado = null;
+    if ($codigo != "") {
+        $encontrado = $usuario->buscarPorCodigo($codigo);
+    }
+    if ($encontrado == null) {
+        responder(["error" => "El enlace no es válido o ya se usó"], 404);
+    }
+
+    $nombre = $encontrado['primer_nombre'] . " " . $encontrado['primer_apellido'];
+
+    if ($parametro->obtener("aprobar_registros", "si") == "si") {
+        $usuario->cambiarEstado($encontrado['id_usuario'], "Pendiente");
+        $mensaje->enviarARol("Administrador", "🆕 " . $nombre . " se registró y espera que apruebes su cuenta", "usuarios.html");
+
+        $texto = "<p>Hola " . htmlspecialchars($encontrado['primer_nombre']) . ", ¡te registraste correctamente!</p>
+                  <p>Tu correo ya está verificado. Ahora un administrador tiene que aprobar tu cuenta: te vamos a avisar por correo cuando esté lista.</p>";
+        enviarCorreo($encontrado['email'], $encontrado['primer_nombre'], "Te registraste correctamente", $texto);
+
+        responder(["mensaje" => "¡Te registraste correctamente! Tu correo ya está verificado. Cuando un administrador apruebe tu cuenta te avisamos por correo.", "estado" => "Pendiente"]);
+    }
+
+    $usuario->cambiarEstado($encontrado['id_usuario'], "Activo");
+    $mensaje->enviarAUsuario($encontrado['id_usuario'], "👋 ¡Bienvenido a SiGeRU! Desde el mapa puedes avisar si un contenedor está lleno o roto", "mapa.html");
+
+    $texto = "<p>Hola " . htmlspecialchars($encontrado['primer_nombre']) . ", ¡te registraste correctamente!</p>
+              <p>Ya puedes iniciar sesión y avisar desde el mapa si un contenedor está lleno o roto.</p>"
+              . botonCorreo("Iniciar sesión", $direccionSitio . "/sigeru-frontend/index.html");
+    enviarCorreo($encontrado['email'], $encontrado['primer_nombre'], "Te registraste correctamente", $texto);
+
+    responder(["mensaje" => "¡Te registraste correctamente! Ya puedes iniciar sesión.", "estado" => "Activo"]);
+}
+
+// El administrador aprueba o rechaza el registro de un vecino (POST aprobar?id=5 con {"aprobado": true})
+function aprobarRegistro($usuario, $mensaje, $id, $datos) {
+    global $direccionSitio;
+
+    $encontrado = $usuario->obtenerPorId($id);
+    if ($encontrado == null) {
+        responder(["error" => "Usuario no encontrado"], 404);
+    }
+    if ($encontrado['estado'] != "Pendiente") {
+        responder(["error" => "Ese usuario no está esperando aprobación"], 409);
+    }
+
+    if (($datos['aprobado'] ?? false) == true) {
+        $usuario->cambiarEstado($id, "Activo");
+        $mensaje->enviarAUsuario($id, "👋 ¡Bienvenido a SiGeRU! Desde el mapa puedes avisar si un contenedor está lleno o roto", "mapa.html");
+
+        $texto = "<p>Hola " . htmlspecialchars($encontrado['primer_nombre']) . ", ¡tu cuenta fue aprobada!</p>
+                  <p>Ya puedes iniciar sesión en SiGeRU.</p>"
+                  . botonCorreo("Iniciar sesión", $direccionSitio . "/sigeru-frontend/index.html");
+        enviarCorreo($encontrado['email'], $encontrado['primer_nombre'], "Tu cuenta fue aprobada", $texto);
+
+        responder(["mensaje" => "Cuenta de " . $encontrado['primer_nombre'] . " aprobada. Le avisamos por correo."]);
+    }
+
+    $usuario->cambiarEstado($id, "Rechazado");
+    $texto = "<p>Hola " . htmlspecialchars($encontrado['primer_nombre']) . ", tu registro en SiGeRU no fue aprobado.</p>
+              <p>Si crees que es un error, comunícate con la Intendencia.</p>";
+    enviarCorreo($encontrado['email'], $encontrado['primer_nombre'], "Tu registro no fue aprobado", $texto);
+
+    responder(["mensaje" => "Registro de " . $encontrado['primer_nombre'] . " rechazado."]);
 }
 
 // Crea un usuario desde el formulario del frontend, con cualquier rol (POST usuarios)
@@ -106,6 +197,17 @@ function iniciarSesion($usuario, $datos) {
     // password_verify compara la contraseña escrita con la encriptada
     if ($encontrado == null || !password_verify($contrasena, $encontrado['contrasena'])) {
         responder(["error" => "Correo o contraseña incorrectos"], 401);
+    }
+
+    // Solo pueden entrar los usuarios activos
+    if ($encontrado['estado'] == "Sin verificar") {
+        responder(["error" => "Todavía no verificaste tu correo. Revisa tu bandeja de entrada (y la carpeta de spam)."], 403);
+    }
+    if ($encontrado['estado'] == "Pendiente") {
+        responder(["error" => "Tu cuenta está esperando que un administrador la apruebe. Te avisamos por correo."], 403);
+    }
+    if ($encontrado['estado'] == "Rechazado") {
+        responder(["error" => "Tu registro no fue aprobado."], 403);
     }
 
     // Guardamos en la sesion quien inicio sesion
