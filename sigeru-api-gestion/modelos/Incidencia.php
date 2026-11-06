@@ -5,16 +5,20 @@ class Incidencia
 {
     private $conn;
 
-    // Consulta que trae la incidencia con los datos de su contenedor y del recorrido (cuadrilla) asignado
+    // Consulta que trae la incidencia con los datos de su contenedor, del recorrido (cuadrilla) asignado
+    // y del vecino que la reporto (si la reporto un vecino; la relacion esta en la tabla notificaciones)
     private $consulta = "SELECT i.id_incidencia AS id, i.id_contenedor, i.tipo, i.estado, i.prioridad,
-                                i.fecha_deteccion, i.fecha, i.fecha_resolucion, i.descripcion, i.zona_incidencia,
-                                i.id_recorrido, c.calle, c.municipio, c.latitud, c.longitud,
-                                cu.nombre AS cuadrilla, ru.nombre AS ruta
+                                i.fecha_deteccion, i.fecha, i.fecha_resolucion, i.descripcion, i.referencia,
+                                i.zona_incidencia, i.id_recorrido, c.calle, c.municipio, c.latitud, c.longitud,
+                                cu.nombre AS cuadrilla, ru.nombre AS ruta,
+                                n.id_usuario AS id_vecino, CONCAT(uv.primer_nombre, ' ', uv.primer_apellido) AS vecino
                          FROM incidencias i
                          JOIN contenedores c ON i.id_contenedor = c.id_contenedor
                          LEFT JOIN recorridos r ON i.id_recorrido = r.id_recorrido
                          LEFT JOIN cuadrillas cu ON r.id_cuadrilla = cu.id_cuadrilla
-                         LEFT JOIN rutas ru ON r.id_ruta = ru.id_ruta";
+                         LEFT JOIN rutas ru ON r.id_ruta = ru.id_ruta
+                         LEFT JOIN notificaciones n ON n.id_incidencia = i.id_incidencia
+                         LEFT JOIN usuarios uv ON n.id_usuario = uv.id_usuario";
 
     public function __construct($conn)
     {
@@ -22,9 +26,9 @@ class Incidencia
     }
 
     // Lista de incidencias, de la mas nueva a la mas vieja.
-    // Se puede filtrar por estado, por contenedor y por fecha de deteccion (desde / hasta).
-    // Si un filtro viene vacio no se usa.
-    public function obtenerTodas($estado = "", $idContenedor = "", $desde = "", $hasta = "")
+    // Se puede filtrar por estado, por contenedor, por fecha de deteccion (desde / hasta)
+    // y por el vecino que las reporto. Si un filtro viene vacio no se usa.
+    public function obtenerTodas($estado = "", $idContenedor = "", $desde = "", $hasta = "", $idVecino = "")
     {
         $result = mysqli_query($this->conn, $this->consulta . " ORDER BY i.fecha_deteccion DESC, i.id_incidencia DESC");
 
@@ -35,6 +39,7 @@ class Incidencia
             if ($idContenedor != "" && $row['id_contenedor'] != $idContenedor) continue;
             if ($desde != "" && $row['fecha_deteccion'] < $desde) continue;
             if ($hasta != "" && $row['fecha_deteccion'] > $hasta) continue;
+            if ($idVecino != "" && $row['id_vecino'] != $idVecino) continue;
 
             $incidencias[] = $row;
         }
@@ -50,11 +55,15 @@ class Incidencia
     }
 
     // Registra una incidencia nueva. Queda Abierta y con la fecha de hoy.
-    public function agregar($idContenedor, $zona, $tipo, $prioridad, $descripcion)
+    // $referencia es donde esta exactamente el problema (puede venir vacia)
+    public function agregar($idContenedor, $zona, $tipo, $prioridad, $descripcion, $referencia = "")
     {
-        $stmt = $this->conn->prepare("INSERT INTO incidencias (id_contenedor, fecha_deteccion, zona_incidencia, tipo, estado, prioridad, fecha, descripcion)
-                                      VALUES (?, CURDATE(), ?, ?, 'Abierta', ?, CURDATE(), ?)");
-        $stmt->bind_param("issss", $idContenedor, $zona, $tipo, $prioridad, $descripcion);
+        if ($referencia == "") {
+            $referencia = null;
+        }
+        $stmt = $this->conn->prepare("INSERT INTO incidencias (id_contenedor, fecha_deteccion, zona_incidencia, tipo, estado, prioridad, fecha, descripcion, referencia)
+                                      VALUES (?, CURDATE(), ?, ?, 'Abierta', ?, CURDATE(), ?, ?)");
+        $stmt->bind_param("isssss", $idContenedor, $zona, $tipo, $prioridad, $descripcion, $referencia);
         $stmt->execute();
 
         return $this->obtenerPorId($this->conn->insert_id);

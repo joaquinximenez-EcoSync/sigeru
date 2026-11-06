@@ -17,9 +17,9 @@
 //   GET    api.php/operarios          lista de operarios               (administrador y operario)
 //   GET    api.php/instalaciones      instalaciones con su ubicacion   (administrador, operario y recolector)
 //   POST   api.php/vaciar?id=1        marcar un contenedor como vaciado (administrador, operario y recolector)
-//   GET    api.php/incidencias        lista de incidencias             (administrador, operario y recolector)
+//   GET    api.php/incidencias        lista de incidencias             (todos; el vecino ve solo las que reporto)
 //                                     filtros: ?estado=Abierta ?contenedor=2 ?desde=2026-11-01&hasta=2026-11-30
-//   POST   api.php/incidencias        reportar un problema             (administrador, operario y recolector)
+//   POST   api.php/incidencias        reportar una incidencia          (todos los roles)
 //   PUT    api.php/incidencias?id=1   seguimiento: estado, prioridad y cuadrilla (administrador y operario;
 //                                     el recolector solo cambia el estado de las de su cuadrilla)
 //   GET    api.php/repuestos          inventario de repuestos          (administrador, operario y recolector)
@@ -28,8 +28,6 @@
 //   GET    api.php/volumen?desde=2026-11-01&hasta=2026-11-30   kilos recolectados (administrador, operario y recolector)
 //   GET    api.php/estadisticas       numeros para el panel de control (administrador, operario y recolector)
 //   GET    api.php/alertas            alertas de cada rol              (todos los roles)
-//   GET    api.php/notificaciones     avisos de los vecinos            (vecino ve los suyos, administrador y operario ven todos)
-//   POST   api.php/notificaciones     un vecino avisa un problema      (vecino)
 // Con ?id=1 en un GET se pide uno solo.
 
 require_once "config.php";
@@ -50,7 +48,6 @@ require_once "controladores/contenedores.php";
 require_once "controladores/centros.php";
 require_once "controladores/maquinaria.php";
 require_once "controladores/incidencias.php";
-require_once "controladores/mapa.php";
 require_once "controladores/alertas.php";
 require_once "controladores/repuestos.php";
 
@@ -150,7 +147,7 @@ switch ($endpoint) {
         break;
 
     case "incidencias":
-        verificarRol($personal);
+        verificarRol($todos);
         if ($metodo == "GET") {
             if ($id != null) {
                 obtenerIncidencia($incidencia, $id);
@@ -158,7 +155,8 @@ switch ($endpoint) {
                 listarIncidencias($incidencia);
             }
         }
-        if ($metodo == "POST") reportarIncidencia($incidencia, $contenedor, $mensaje, $datos);
+        if ($metodo == "POST") reportarIncidencia($incidencia, $contenedor, $notificacion, $mensaje, $datos);
+        verificarRol($personal);
         if ($metodo == "PUT") seguimientoIncidencia($incidencia, $contenedor, $notificacion, $mensaje, $id, $datos);
         break;
 
@@ -197,14 +195,6 @@ switch ($endpoint) {
         if ($metodo == "GET") listarAlertas($alerta, $parametro);
         break;
 
-    case "notificaciones":
-        if ($metodo == "GET") {
-            verificarRol(["Vecino", "Administrador", "Operario"]);
-            listarAvisos($notificacion);
-        }
-        verificarRol(["Vecino"]);
-        if ($metodo == "POST") avisarProblema($notificacion, $incidencia, $contenedor, $mensaje, $datos);
-        break;
 }
 
 // Si llega hasta aca es porque se pidio algo que la API no tiene

@@ -73,7 +73,7 @@ class Alerta
     // Avisos de vecinos cuya incidencia sigue Abierta
     public function avisosSinAtender()
     {
-        $result = mysqli_query($this->conn, "SELECT n.id_notificacion AS id, c.calle
+        $result = mysqli_query($this->conn, "SELECT i.id_incidencia AS id, c.calle
                                              FROM notificaciones n
                                              JOIN incidencias i ON n.id_incidencia = i.id_incidencia
                                              JOIN contenedores c ON i.id_contenedor = c.id_contenedor
@@ -99,7 +99,7 @@ class Alerta
     // Avisos del vecino que cambiaron de estado en los ultimos 7 dias (en proceso o resueltos)
     public function avisosDelVecino($idUsuario)
     {
-        $stmt = $this->conn->prepare("SELECT n.id_notificacion AS id, i.estado, c.calle
+        $stmt = $this->conn->prepare("SELECT i.id_incidencia AS id, i.estado, c.calle
                                       FROM notificaciones n
                                       JOIN incidencias i ON n.id_incidencia = i.id_incidencia
                                       JOIN contenedores c ON i.id_contenedor = c.id_contenedor

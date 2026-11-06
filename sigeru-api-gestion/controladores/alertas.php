@@ -18,7 +18,7 @@ function listarAlertas($alerta, $parametro) {
             $alertas[] = ["nivel" => "alta", "texto" => "La incidencia #" . $a['id'] . " en " . $a['calle'] . " es de prioridad alta y sigue abierta", "enlace" => "incidencias.html"];
         }
         foreach ($alerta->avisosSinAtender() as $a) {
-            $alertas[] = ["nivel" => "media", "texto" => "Hay un aviso de un vecino sin atender en " . $a['calle'], "enlace" => "incidencias.html"];
+            $alertas[] = ["nivel" => "media", "texto" => "La incidencia #" . $a['id'] . " que reportó un vecino en " . $a['calle'] . " sigue sin atender", "enlace" => "incidencias.html"];
         }
         foreach ($alerta->instalacionesCasiLlenas($porcentaje) as $a) {
             $alertas[] = ["nivel" => "media", "texto" => $a['nombre'] . " está al " . $a['porcentaje'] . "% de su capacidad", "enlace" => "centros.html"];
@@ -41,11 +41,11 @@ function listarAlertas($alerta, $parametro) {
     if ($usuario['rol'] == "Vecino") {
         foreach ($alerta->avisosDelVecino($usuario['id']) as $a) {
             if ($a['estado'] == "Resuelta") {
-                $texto = "¡Tu aviso sobre el contenedor de " . $a['calle'] . " ya fue resuelto!";
+                $texto = "¡Tu incidencia #" . $a['id'] . " en el contenedor de " . $a['calle'] . " ya fue resuelta!";
             } else {
-                $texto = "Tu aviso sobre el contenedor de " . $a['calle'] . " está en proceso";
+                $texto = "Tu incidencia #" . $a['id'] . " en el contenedor de " . $a['calle'] . " está en proceso";
             }
-            $alertas[] = ["nivel" => "info", "texto" => $texto, "enlace" => "mapa.html"];
+            $alertas[] = ["nivel" => "info", "texto" => $texto, "enlace" => "incidencias.html"];
         }
     }
 

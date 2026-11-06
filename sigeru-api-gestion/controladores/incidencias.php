@@ -3,7 +3,14 @@
 
 // Lista de incidencias (GET incidencias). Se puede filtrar con
 // ?estado=Abierta  ?contenedor=2  ?desde=2026-11-01&hasta=2026-11-30
+// El vecino solo ve las incidencias que reporto el.
 function listarIncidencias($incidencia) {
+    $usuario = $_SESSION['usuario_logueado'];
+    $idVecino = "";
+    if ($usuario['rol'] == "Vecino") {
+        $idVecino = $usuario['id'];
+    }
+
     $estado = $_GET['estado'] ?? "";
     $contenedor = $_GET['contenedor'] ?? "";
     $desde = $_GET['desde'] ?? "";
@@ -23,7 +30,7 @@ function listarIncidencias($incidencia) {
         responder(["error" => "La fecha desde no puede ser después de la fecha hasta"], 400);
     }
 
-    responder($incidencia->obtenerTodas($estado, $contenedor, $desde, $hasta));
+    responder($incidencia->obtenerTodas($estado, $contenedor, $desde, $hasta, $idVecino));
 }
 
 function obtenerIncidencia($incidencia, $id) {
@@ -31,45 +38,84 @@ function obtenerIncidencia($incidencia, $id) {
     if ($encontrada == null) {
         responder(["error" => "Incidencia no encontrada"], 404);
     }
+    // El vecino solo puede ver las suyas
+    $usuario = $_SESSION['usuario_logueado'];
+    if ($usuario['rol'] == "Vecino" && $encontrada['id_vecino'] != $usuario['id']) {
+        responder(["error" => "No tienes permiso para ver esta incidencia"], 403);
+    }
     responder($encontrada);
 }
 
-// Registrar un problema en un contenedor (POST incidencias), desde el mapa o desde la pagina de incidencias.
-// Si el problema es "Roto" o "Desbordado", tambien se cambia el estado del contenedor.
-function reportarIncidencia($incidencia, $contenedor, $mensaje, $datos) {
-    $problemas = ["Desbordado", "Roto", "Falta de recolección"];
+// Reportar una incidencia (POST incidencias). La reportan el personal y los vecinos, con el mismo formulario.
+// Datos: id_contenedor, problema (el tipo), descripcion (que paso, con detalle), referencia (donde exactamente)
+// y prioridad (solo el personal; la de los vecinos queda Media hasta que el personal la revise).
+function reportarIncidencia($incidencia, $contenedor, $notificacion, $mensaje, $datos) {
+    $problemas = ["Desbordado", "Roto", "Falta de recolección", "Basura en la calle"];
     $prioridades = ["Baja", "Media", "Alta"];
+    $usuario = $_SESSION['usuario_logueado'];
+    $esVecino = $usuario['rol'] == "Vecino";
 
     $encontrado = $contenedor->obtenerPorId($datos['id_contenedor'] ?? 0);
     if ($encontrado == null) {
-        responder(["error" => "Contenedor no encontrado"], 404);
+        responder(["error" => "Elige el contenedor donde está el problema"], 404);
     }
     if (!in_array($datos['problema'] ?? "", $problemas)) {
-        responder(["error" => "Elige qué problema tiene el contenedor"], 400);
-    }
-    if (!in_array($datos['prioridad'] ?? "", $prioridades)) {
-        responder(["error" => "La prioridad no es válida"], 400);
+        responder(["error" => "Elige qué problema hay"], 400);
     }
 
-    // La descripcion empieza con el problema, por ejemplo "Desbordado: hay bolsas en la vereda"
-    $descripcion = $datos['problema'];
-    if (!empty($datos['descripcion'])) {
-        $descripcion = $descripcion . ": " . trim($datos['descripcion']);
+    $descripcion = trim($datos['descripcion'] ?? "");
+    if (strlen($descripcion) < 10) {
+        responder(["error" => "Cuenta con detalle qué pasó (al menos 10 letras)"], 400);
+    }
+    if (strlen($descripcion) > 500) {
+        responder(["error" => "La descripción puede tener hasta 500 letras"], 400);
+    }
+    $referencia = trim($datos['referencia'] ?? "");
+    if (strlen($referencia) > 200) {
+        responder(["error" => "El lugar puede tener hasta 200 letras"], 400);
     }
 
-    $nueva = $incidencia->agregar($encontrado['id'], $encontrado['zona'], $datos['problema'], $datos['prioridad'], $descripcion);
+    if ($esVecino) {
+        $prioridad = "Media";
+        // Un vecino no puede reportar dos veces el mismo contenedor mientras no se resuelva
+        if ($notificacion->yaAviso($usuario['id'], $encontrado['id'])) {
+            responder(["error" => "Ya reportaste una incidencia en este contenedor y todavía no se resolvió. Puedes ver cómo va en Mis incidencias."], 409);
+        }
+    } else {
+        $prioridad = $datos['prioridad'] ?? "";
+        if (!in_array($prioridad, $prioridades)) {
+            responder(["error" => "La prioridad no es válida"], 400);
+        }
+    }
 
+    $nueva = $incidencia->agregar($encontrado['id'], $encontrado['zona'], $datos['problema'], $prioridad, $descripcion, $referencia);
+
+    if ($esVecino) {
+        // Se guarda que la reporto este vecino (relacion Genera2 del MER: tabla notificaciones)
+        $notificacion->agregar($usuario['id'], $nueva['id'], $descripcion);
+
+        // Le llega una notificacion a todo el personal, y al vecino la confirmacion
+        $texto = "📣 " . $usuario['nombre'] . " reportó una incidencia en el contenedor de " . $encontrado['calle'] . ": " . $datos['problema'];
+        $mensaje->enviarARol("Administrador", $texto, "incidencias.html");
+        $mensaje->enviarARol("Operario", $texto, "incidencias.html");
+        $mensaje->enviarARol("Recolector", $texto, "incidencias.html");
+        $mensaje->enviarAUsuario($usuario['id'], "✅ Recibimos tu incidencia #" . $nueva['id'] . " en el contenedor de " . $encontrado['calle'] . ". Te avisamos cuando la atiendan.", "incidencias.html");
+
+        $nueva = $incidencia->obtenerPorId($nueva['id']);
+        responder(["mensaje" => "¡Gracias! Tu incidencia #" . $nueva['id'] . " quedó registrada y el equipo de recolección ya la puede ver.", "incidencia" => $nueva], 201);
+    }
+
+    // Si la reporta el personal y el contenedor esta roto o desbordado, se cambia su estado
     if ($datos['problema'] == "Roto" || $datos['problema'] == "Desbordado") {
         $contenedor->cambiarEstado($encontrado['id'], $datos['problema']);
     }
 
     // Le avisamos al administrador y a los operarios (menos al que la registro)
-    $usuario = $_SESSION['usuario_logueado'];
-    $texto = "⚠️ " . $usuario['nombre'] . " registró una incidencia: contenedor de " . $encontrado['calle'] . " (" . $datos['problema'] . ", prioridad " . $datos['prioridad'] . ")";
+    $texto = "⚠️ " . $usuario['nombre'] . " registró una incidencia: contenedor de " . $encontrado['calle'] . " (" . $datos['problema'] . ", prioridad " . $prioridad . ")";
     $mensaje->enviarARol("Administrador", $texto, "incidencias.html", $usuario['id']);
     $mensaje->enviarARol("Operario", $texto, "incidencias.html", $usuario['id']);
 
-    responder(["mensaje" => "Problema reportado correctamente", "incidencia" => $nueva], 201);
+    responder(["mensaje" => "Incidencia registrada correctamente", "incidencia" => $nueva], 201);
 }
 
 // Seguimiento de una incidencia (PUT incidencias?id=1)
@@ -120,14 +166,14 @@ function seguimientoIncidencia($incidencia, $contenedor, $notificacion, $mensaje
 
     $modificada = $incidencia->modificarSeguimiento($id, $estado, $prioridad, $idRecorrido);
 
-    // El aviso del vecino (si hay) cambia de estado igual que la incidencia, y le avisamos
+    // Si la reporto un vecino, su registro cambia de estado igual que la incidencia, y le avisamos
     $notificacion->cambiarEstado($id, $estado);
     $idVecino = $notificacion->vecinoDeLaIncidencia($id);
     if ($idVecino != null && $estado != $actual['estado']) {
         if ($estado == "Resuelta") {
-            $mensaje->enviarAUsuario($idVecino, "✅ ¡Listo! Se resolvió el problema que avisaste en el contenedor de " . $actual['calle'] . ". Gracias por avisar.", "mapa.html");
+            $mensaje->enviarAUsuario($idVecino, "✅ ¡Listo! Se resolvió tu incidencia #" . $id . " en el contenedor de " . $actual['calle'] . ". Gracias por avisar.", "incidencias.html");
         } else if ($estado == "En proceso") {
-            $mensaje->enviarAUsuario($idVecino, "🔧 Tu aviso sobre el contenedor de " . $actual['calle'] . " está en proceso: una cuadrilla ya lo está atendiendo.", "mapa.html");
+            $mensaje->enviarAUsuario($idVecino, "🔧 Tu incidencia #" . $id . " en el contenedor de " . $actual['calle'] . " está en proceso: una cuadrilla ya la está atendiendo.", "incidencias.html");
         }
     }
 
