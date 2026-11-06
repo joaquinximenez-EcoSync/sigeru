@@ -52,3 +52,12 @@ curl -X POST http://localhost/sigeru-api-usuarios/api.php/login -H "Content-Type
 
 Usuario de prueba: **admin@sigeru.uy** / **admin123**
 
+
+## Tests
+
+En la carpeta `tests/`:
+
+- `test_modelos.php`: tests unitarios de los modelos (usan la base de datos de prueba `sigeru_test`).
+- `test_api.php`: tests de los endpoints (necesitan Apache y MySQL prendidos).
+
+Se corren con `php tests/test_modelos.php` y `php tests/test_api.php`. Ver el README general para más detalles.

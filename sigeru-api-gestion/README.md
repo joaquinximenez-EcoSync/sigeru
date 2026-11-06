@@ -67,3 +67,12 @@ Respuestas de error:
 3. Crear la base de datos importando en phpMyAdmin `sigeru-base-datos/ddl/sigeru_ddl.sql` y después `sigeru-base-datos/datos/sigeru_datos_prueba.sql`.
 4. La API queda en http://localhost/sigeru-api-gestion/api.php
 
+
+## Tests
+
+En la carpeta `tests/`:
+
+- `test_modelos.php`: tests unitarios de los modelos (usan la base de datos de prueba `sigeru_test`).
+- `test_api.php`: tests de los endpoints (necesitan Apache y MySQL prendidos).
+
+Se corren con `php tests/test_modelos.php` y `php tests/test_api.php`. Ver el README general para más detalles.
