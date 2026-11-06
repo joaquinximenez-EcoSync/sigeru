@@ -62,10 +62,18 @@ class Notificacion
     // Guarda el aviso. Como es entidad debil, su numero es el siguiente de ese vecino (1, 2, 3...).
     public function agregar($idUsuario, $idIncidencia, $descripcion)
     {
-        $stmt = $this->conn->prepare("SELECT IFNULL(MAX(id_notificacion), 0) + 1 AS siguiente FROM notificaciones WHERE id_usuario = ?");
+        // Buscamos el numero mas alto de los avisos de ese vecino
+        $stmt = $this->conn->prepare("SELECT MAX(id_notificacion) AS ultimo FROM notificaciones WHERE id_usuario = ?");
         $stmt->bind_param("i", $idUsuario);
         $stmt->execute();
-        $numero = $stmt->get_result()->fetch_assoc()['siguiente'];
+        $ultimo = $stmt->get_result()->fetch_assoc()['ultimo'];
+
+        // Si es su primer aviso, el numero es 1
+        if ($ultimo == null) {
+            $numero = 1;
+        } else {
+            $numero = $ultimo + 1;
+        }
 
         $stmt = $this->conn->prepare("INSERT INTO notificaciones (id_usuario, id_notificacion, estado, descripcion, fecha, id_incidencia)
                                       VALUES (?, ?, 'Recibida', ?, CURDATE(), ?)");

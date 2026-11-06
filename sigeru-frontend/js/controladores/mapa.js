@@ -112,9 +112,9 @@ function pasaFiltros(c) {
     return true;
 }
 
+// Devuelve true si la casilla de esa capa esta marcada
 function capaVisible(idCasilla) {
-    const casilla = document.getElementById(idCasilla);
-    return casilla != null && casilla.checked && casilla.offsetParent != null;
+    return document.getElementById(idCasilla).checked;
 }
 
 function dibujarContenedores() {
@@ -223,25 +223,37 @@ function dibujarRecorridos() {
 // Ordena los contenedores para recorrerlos: empieza por el primero y
 // siempre va al mas cercano que todavia no visito
 function ordenarPorCercania(lista) {
-    const pendientes = lista.slice();
     const ordenados = [];
-    if (pendientes.length == 0) return ordenados;
+    if (lista.length == 0) return ordenados;
 
-    let actual = pendientes.shift();
-    ordenados.push(actual);
+    // visitado[i] es true cuando el contenedor i ya esta en el recorrido
+    const visitado = [];
+    for (let i = 0; i < lista.length; i++) {
+        visitado.push(false);
+    }
 
-    while (pendientes.length > 0) {
-        let masCercano = 0;
-        let menorDistancia = Infinity;
-        for (let i = 0; i < pendientes.length; i++) {
-            const d = distanciaEnMetros(actual.latitud, actual.longitud, pendientes[i].latitud, pendientes[i].longitud);
-            if (d < menorDistancia) {
+    // Empezamos por el primero
+    let actual = 0;
+    visitado[0] = true;
+    ordenados.push(lista[0]);
+
+    while (ordenados.length < lista.length) {
+        // Buscamos el mas cercano al actual que todavia no visitamos
+        let masCercano = -1;
+        let menorDistancia = 0;
+        for (let i = 0; i < lista.length; i++) {
+            if (visitado[i]) continue;
+
+            const d = distanciaEnMetros(lista[actual].latitud, lista[actual].longitud, lista[i].latitud, lista[i].longitud);
+            if (masCercano == -1 || d < menorDistancia) {
                 menorDistancia = d;
                 masCercano = i;
             }
         }
-        actual = pendientes.splice(masCercano, 1)[0];
-        ordenados.push(actual);
+
+        visitado[masCercano] = true;
+        ordenados.push(lista[masCercano]);
+        actual = masCercano;
     }
     return ordenados;
 }

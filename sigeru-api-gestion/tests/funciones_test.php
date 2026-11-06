@@ -70,23 +70,28 @@ function crearBaseDePrueba() {
     return $conn;
 }
 
-// Ejecuta un archivo .sql entero (tiene muchas consultas)
+// Ejecuta un archivo .sql entero (tiene muchas consultas separadas por ;)
 function ejecutarScript($conn, $sql) {
-    if (!mysqli_multi_query($conn, $sql)) {
-        echo "Error en el script SQL: " . mysqli_error($conn) . "\n";
-        exit(1);
-    }
-    // Hay que recorrer todos los resultados para que termine de ejecutar
-    do {
-        $resultado = mysqli_store_result($conn);
-        if ($resultado) {
-            mysqli_free_result($resultado);
+    // Sacamos las lineas de comentarios (empiezan con --)
+    $lineas = explode("\n", $sql);
+    $sinComentarios = "";
+    foreach ($lineas as $linea) {
+        if (substr(trim($linea), 0, 2) != "--") {
+            $sinComentarios = $sinComentarios . $linea . "\n";
         }
-        if (mysqli_errno($conn)) {
+    }
+
+    // Separamos las consultas por el ; y las ejecutamos una por una
+    $consultas = explode(";", $sinComentarios);
+    foreach ($consultas as $consulta) {
+        if (trim($consulta) == "") {
+            continue;
+        }
+        if (!mysqli_query($conn, $consulta)) {
             echo "Error en el script SQL: " . mysqli_error($conn) . "\n";
             exit(1);
         }
-    } while (mysqli_more_results($conn) && mysqli_next_result($conn));
+    }
 }
 
 // Cuenta las filas de una consulta (para revisar la base de datos en los tests)

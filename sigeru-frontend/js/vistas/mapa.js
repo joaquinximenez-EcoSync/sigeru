@@ -116,18 +116,32 @@ function municipioDelLimite(limite) {
     return null;
 }
 
-// Devuelve true si el punto esta adentro del poligono (metodo del rayo:
-// se cuentan cuantas veces una linea horizontal desde el punto cruza el borde)
+// Devuelve true si el punto esta adentro del poligono.
+// Se traza una linea horizontal desde el punto y se cuenta cuantas veces cruza el borde:
+// si lo cruza una cantidad impar de veces, el punto esta adentro.
 function puntoEnPoligono(lat, lng, poligono) {
-    let adentro = false;
     const borde = poligono[0];
-    for (let i = 0, j = borde.length - 1; i < borde.length; j = i++) {
-        const lng1 = borde[i][0], lat1 = borde[i][1];
-        const lng2 = borde[j][0], lat2 = borde[j][1];
-        const cruza = (lat1 > lat) != (lat2 > lat) && lng < (lng2 - lng1) * (lat - lat1) / (lat2 - lat1) + lng1;
-        if (cruza) {
-            adentro = !adentro;
+    let adentro = false;
+
+    // Recorremos cada lado del borde: va desde el punto anterior hasta el punto actual
+    let anterior = borde.length - 1;
+    for (let actual = 0; actual < borde.length; actual++) {
+        const lng1 = borde[actual][0];
+        const lat1 = borde[actual][1];
+        const lng2 = borde[anterior][0];
+        const lat2 = borde[anterior][1];
+
+        // El lado tiene un extremo arriba del punto y otro abajo
+        const pasaPorLaAltura = (lat1 > lat) != (lat2 > lat);
+
+        if (pasaPorLaAltura) {
+            // Donde el lado corta la altura del punto
+            const lngDelCorte = lng1 + (lng2 - lng1) * (lat - lat1) / (lat2 - lat1);
+            if (lng < lngDelCorte) {
+                adentro = !adentro;
+            }
         }
+        anterior = actual;
     }
     return adentro;
 }
