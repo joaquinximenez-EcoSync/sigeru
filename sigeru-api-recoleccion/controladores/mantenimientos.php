@@ -6,7 +6,7 @@ function validarMantenimiento($datos) {
     $tipos = ["Preventivo", "Correctivo", "Revisión"];
 
     if (!in_array($datos['tipo'] ?? "", $tipos)) {
-        responder(["error" => "Elige el tipo de mantenimiento"], 400);
+        responder(["error" => "Elegí el tipo de mantenimiento"], 400);
     }
     // La fecha tiene que venir como 2026-11-06
     if (!preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $datos['fecha'] ?? "")) {

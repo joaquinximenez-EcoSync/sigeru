@@ -7,7 +7,7 @@ function validarUsuario($usuario, $datos, $id) {
     $rolesValidos = ["Administrador", "Operario", "Recolector", "Vecino"];
 
     if (empty($datos['primer_nombre']) || empty($datos['primer_apellido']) || empty($datos['email'])) {
-        responder(["error" => "Completa todos los campos obligatorios"], 400);
+        responder(["error" => "Completá todos los campos obligatorios"], 400);
     }
 
     $pattern = "/^[a-zA-Z0-9._-]+@[a-zA-Z0-9-]+\.[a-zA-Z.]{2,5}$/";
@@ -60,7 +60,7 @@ function registrarUsuario($usuario, $datos) {
 
     // Si el sistema no tiene configurado el Gmail, no se puede mandar el correo de verificacion
     if (!correoConfigurado()) {
-        responder(["error" => "El registro no está disponible: falta configurar el correo de SiGeRU (archivo sigeru_correo.php). Avísale al administrador."], 503);
+        responder(["error" => "El registro no está disponible: falta configurar el correo de SiGeRU (archivo sigeru_correo.php). Avisale al administrador."], 503);
     }
 
     // Codigo al azar que va en el enlace del correo (32 letras y numeros)
@@ -69,19 +69,19 @@ function registrarUsuario($usuario, $datos) {
 
     $enlace = $direccionSitio . "/sigeru-landing/verificar.html?codigo=" . $codigo;
     $texto = "<p>Hola " . htmlspecialchars($nuevo['primer_nombre']) . ", gracias por registrarte en SiGeRU.</p>
-              <p>Para terminar el registro, confirma que este correo es tuyo:</p>"
+              <p>Para terminar el registro, confirmá que este correo es tuyo:</p>"
               . botonCorreo("Verificar mi correo", $enlace) .
               "<p style='color: #6b7280; font-size: 13px'>Si no te registraste, ignora este mensaje.</p>";
-    $seMando = enviarCorreo($nuevo['email'], $nuevo['primer_nombre'], "Verifica tu correo", $texto);
+    $seMando = enviarCorreo($nuevo['email'], $nuevo['primer_nombre'], "Verificá tu correo", $texto);
 
     // Si no se pudo mandar el correo, no puede verificar la cuenta: borramos el registro para que lo intente de nuevo
     if (!$seMando) {
         $usuario->eliminar($nuevo['id']);
-        responder(["error" => "No pudimos mandarte el correo de verificación: Gmail no aceptó el envío. Inténtalo más tarde (si sigue pasando, avísale al administrador)."], 500);
+        responder(["error" => "No pudimos mandarte el correo de verificación: Gmail no aceptó el envío. Intentalo más tarde (si sigue pasando, avisale al administrador)."], 500);
     }
 
     responder([
-        "mensaje" => "¡Ya casi! Te mandamos un correo a " . $nuevo['email'] . ". Abre el enlace del correo para verificar tu cuenta (si no lo ves, revisa la carpeta de spam).",
+        "mensaje" => "¡Ya casi! Te mandamos un correo a " . $nuevo['email'] . ". Abrí el enlace del correo para verificar tu cuenta (si no lo ves, revisá la carpeta de spam).",
         "usuario" => $nuevo
     ], 201);
 }
@@ -113,14 +113,14 @@ function verificarCorreo($usuario, $parametro, $mensaje, $codigo) {
     }
 
     $usuario->cambiarEstado($encontrado['id_usuario'], "Activo");
-    $mensaje->enviarAUsuario($encontrado['id_usuario'], "👋 ¡Bienvenido a SiGeRU! Desde el mapa puedes avisar si un contenedor está lleno o roto", "mapa.html");
+    $mensaje->enviarAUsuario($encontrado['id_usuario'], "¡Bienvenido a SiGeRU! Desde Incidencias o desde el mapa podés avisar si un contenedor está lleno, roto o hay basura en la calle", "mapa.html");
 
     $texto = "<p>Hola " . htmlspecialchars($encontrado['primer_nombre']) . ", ¡te registraste correctamente!</p>
-              <p>Ya puedes iniciar sesión y avisar desde el mapa si un contenedor está lleno o roto.</p>"
+              <p>Ya podés iniciar sesión y avisar desde el mapa si un contenedor está lleno o roto.</p>"
               . botonCorreo("Iniciar sesión", $direccionSitio . "/sigeru-frontend/index.html");
     enviarCorreo($encontrado['email'], $encontrado['primer_nombre'], "Te registraste correctamente", $texto);
 
-    responder(["mensaje" => "¡Te registraste correctamente! Ya puedes iniciar sesión.", "estado" => "Activo"]);
+    responder(["mensaje" => "¡Te registraste correctamente! Ya podés iniciar sesión.", "estado" => "Activo"]);
 }
 
 // El administrador aprueba o rechaza el registro de un vecino (POST aprobar?id=5 con {"aprobado": true})
@@ -137,10 +137,10 @@ function aprobarRegistro($usuario, $mensaje, $id, $datos) {
 
     if (($datos['aprobado'] ?? false) == true) {
         $usuario->cambiarEstado($id, "Activo");
-        $mensaje->enviarAUsuario($id, "👋 ¡Bienvenido a SiGeRU! Desde el mapa puedes avisar si un contenedor está lleno o roto", "mapa.html");
+        $mensaje->enviarAUsuario($id, "¡Bienvenido a SiGeRU! Desde Incidencias o desde el mapa podés avisar si un contenedor está lleno, roto o hay basura en la calle", "mapa.html");
 
         $texto = "<p>Hola " . htmlspecialchars($encontrado['primer_nombre']) . ", ¡tu cuenta fue aprobada!</p>
-                  <p>Ya puedes iniciar sesión en SiGeRU.</p>"
+                  <p>Ya podés iniciar sesión en SiGeRU.</p>"
                   . botonCorreo("Iniciar sesión", $direccionSitio . "/sigeru-frontend/index.html");
         enviarCorreo($encontrado['email'], $encontrado['primer_nombre'], "Tu cuenta fue aprobada", $texto);
 
@@ -173,7 +173,7 @@ function modificarUsuario($usuario, $id, $datos) {
 
     // Un administrador no se puede sacar su propio rol (si no, podria quedar el sistema sin administrador)
     if ($id == $_SESSION['usuario_logueado']['id'] && $datos['rol'] != $anterior['rol']) {
-        responder(["error" => "No puedes cambiarte tu propio rol"], 400);
+        responder(["error" => "No podés cambiarte tu propio rol"], 400);
     }
 
     $modificado = $usuario->modificar($id, $datos);
@@ -187,7 +187,7 @@ function eliminarUsuario($usuario, $id) {
     }
     // Un administrador no se puede borrar a si mismo
     if ($id == $_SESSION['usuario_logueado']['id']) {
-        responder(["error" => "No puedes borrar tu propio usuario"], 400);
+        responder(["error" => "No podés borrar tu propio usuario"], 400);
     }
 
     $usuario->eliminar($id);
@@ -200,7 +200,7 @@ function iniciarSesion($usuario, $datos) {
     $contrasena = $datos['contrasena'] ?? "";
 
     if (empty($email) || empty($contrasena)) {
-        responder(["error" => "Completa el correo y la contraseña"], 400);
+        responder(["error" => "Completá el correo y la contraseña"], 400);
     }
 
     $encontrado = $usuario->buscarPorEmail($email);
@@ -212,7 +212,7 @@ function iniciarSesion($usuario, $datos) {
 
     // Solo pueden entrar los usuarios activos
     if ($encontrado['estado'] == "Sin verificar") {
-        responder(["error" => "Todavía no verificaste tu correo. Revisa tu bandeja de entrada (y la carpeta de spam)."], 403);
+        responder(["error" => "Todavía no verificaste tu correo. Revisá tu bandeja de entrada (y la carpeta de spam)."], 403);
     }
     if ($encontrado['estado'] == "Pendiente") {
         responder(["error" => "Tu cuenta está esperando que un administrador la apruebe. Te avisamos por correo."], 403);

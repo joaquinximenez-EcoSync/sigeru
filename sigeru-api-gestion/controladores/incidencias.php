@@ -41,7 +41,7 @@ function obtenerIncidencia($incidencia, $id) {
     // El vecino solo puede ver las suyas
     $usuario = $_SESSION['usuario_logueado'];
     if ($usuario['rol'] == "Vecino" && $encontrada['id_vecino'] != $usuario['id']) {
-        responder(["error" => "No tienes permiso para ver esta incidencia"], 403);
+        responder(["error" => "No tenés permiso para ver esta incidencia"], 403);
     }
     responder($encontrada);
 }
@@ -57,10 +57,10 @@ function reportarIncidencia($incidencia, $contenedor, $notificacion, $mensaje, $
 
     $encontrado = $contenedor->obtenerPorId($datos['id_contenedor'] ?? 0);
     if ($encontrado == null) {
-        responder(["error" => "Elige el contenedor donde está el problema"], 404);
+        responder(["error" => "Elegí el contenedor donde está el problema"], 404);
     }
     if (!in_array($datos['problema'] ?? "", $problemas)) {
-        responder(["error" => "Elige qué problema hay"], 400);
+        responder(["error" => "Elegí qué problema hay"], 400);
     }
 
     $descripcion = trim($datos['descripcion'] ?? "");
@@ -79,7 +79,7 @@ function reportarIncidencia($incidencia, $contenedor, $notificacion, $mensaje, $
         $prioridad = "Media";
         // Un vecino no puede reportar dos veces el mismo contenedor mientras no se resuelva
         if ($notificacion->yaAviso($usuario['id'], $encontrado['id'])) {
-            responder(["error" => "Ya reportaste una incidencia en este contenedor y todavía no se resolvió. Puedes ver cómo va en Mis incidencias."], 409);
+            responder(["error" => "Ya reportaste una incidencia en este contenedor y todavía no se resolvió. Podés ver cómo va en Mis incidencias."], 409);
         }
     } else {
         $prioridad = $datos['prioridad'] ?? "";
@@ -95,11 +95,11 @@ function reportarIncidencia($incidencia, $contenedor, $notificacion, $mensaje, $
         $notificacion->agregar($usuario['id'], $nueva['id'], $descripcion);
 
         // Le llega una notificacion a todo el personal, y al vecino la confirmacion
-        $texto = "📣 " . $usuario['nombre'] . " reportó una incidencia en el contenedor de " . $encontrado['calle'] . ": " . $datos['problema'];
+        $texto = $usuario['nombre'] . " reportó una incidencia en el contenedor de " . $encontrado['calle'] . ": " . $datos['problema'];
         $mensaje->enviarARol("Administrador", $texto, "incidencias.html");
         $mensaje->enviarARol("Operario", $texto, "incidencias.html");
         $mensaje->enviarARol("Recolector", $texto, "incidencias.html");
-        $mensaje->enviarAUsuario($usuario['id'], "✅ Recibimos tu incidencia #" . $nueva['id'] . " en el contenedor de " . $encontrado['calle'] . ". Te avisamos cuando la atiendan.", "incidencias.html");
+        $mensaje->enviarAUsuario($usuario['id'], "Recibimos tu incidencia #" . $nueva['id'] . " en el contenedor de " . $encontrado['calle'] . ". Te avisamos cuando la atiendan.", "incidencias.html");
 
         $nueva = $incidencia->obtenerPorId($nueva['id']);
         responder(["mensaje" => "¡Gracias! Tu incidencia #" . $nueva['id'] . " quedó registrada y el equipo de recolección ya la puede ver.", "incidencia" => $nueva], 201);
@@ -111,7 +111,7 @@ function reportarIncidencia($incidencia, $contenedor, $notificacion, $mensaje, $
     }
 
     // Le avisamos al administrador y a los operarios (menos al que la registro)
-    $texto = "⚠️ " . $usuario['nombre'] . " registró una incidencia: contenedor de " . $encontrado['calle'] . " (" . $datos['problema'] . ", prioridad " . $prioridad . ")";
+    $texto = $usuario['nombre'] . " registró una incidencia: contenedor de " . $encontrado['calle'] . " (" . $datos['problema'] . ", prioridad " . $prioridad . ")";
     $mensaje->enviarARol("Administrador", $texto, "incidencias.html", $usuario['id']);
     $mensaje->enviarARol("Operario", $texto, "incidencias.html", $usuario['id']);
 
@@ -147,7 +147,7 @@ function seguimientoIncidencia($incidencia, $contenedor, $notificacion, $mensaje
         $idRecorrido = $actual['id_recorrido'];
 
         if ($idRecorrido == null || !$incidencia->esRecorridoDelRecolector($idRecorrido, $usuario['id'])) {
-            responder(["error" => "Solo puedes cambiar las incidencias asignadas a tu cuadrilla"], 403);
+            responder(["error" => "Solo podés cambiar las incidencias asignadas a tu cuadrilla"], 403);
         }
     } else {
         $prioridad = $datos['prioridad'] ?? "";
@@ -171,21 +171,21 @@ function seguimientoIncidencia($incidencia, $contenedor, $notificacion, $mensaje
     $idVecino = $notificacion->vecinoDeLaIncidencia($id);
     if ($idVecino != null && $estado != $actual['estado']) {
         if ($estado == "Resuelta") {
-            $mensaje->enviarAUsuario($idVecino, "✅ ¡Listo! Se resolvió tu incidencia #" . $id . " en el contenedor de " . $actual['calle'] . ". Gracias por avisar.", "incidencias.html");
+            $mensaje->enviarAUsuario($idVecino, "¡Listo! Se resolvió tu incidencia #" . $id . " en el contenedor de " . $actual['calle'] . ". Gracias por avisar.", "incidencias.html");
         } else if ($estado == "En proceso") {
-            $mensaje->enviarAUsuario($idVecino, "🔧 Tu incidencia #" . $id . " en el contenedor de " . $actual['calle'] . " está en proceso: una cuadrilla ya la está atendiendo.", "incidencias.html");
+            $mensaje->enviarAUsuario($idVecino, "Tu incidencia #" . $id . " en el contenedor de " . $actual['calle'] . " está en proceso: una cuadrilla ya la está atendiendo.", "incidencias.html");
         }
     }
 
     // Si le asignaron una cuadrilla nueva, les avisamos a sus recolectores
     if ($modificada['id_recorrido'] != null && $modificada['id_recorrido'] != $actual['id_recorrido']) {
         $mensaje->enviarACuadrilla($incidencia->cuadrillaDelRecorrido($modificada['id_recorrido']),
-            "🚛 A tu cuadrilla le asignaron la incidencia #" . $id . ": contenedor de " . $actual['calle'] . " (" . $actual['tipo'] . ", prioridad " . $modificada['prioridad'] . ")", "incidencias.html");
+            "A tu cuadrilla le asignaron la incidencia #" . $id . ": contenedor de " . $actual['calle'] . " (" . $actual['tipo'] . ", prioridad " . $modificada['prioridad'] . ")", "incidencias.html");
     }
 
     // Si la resolvio un recolector, le avisamos al administrador y a los operarios
     if ($estado == "Resuelta" && $usuario['rol'] == "Recolector") {
-        $texto = "✅ " . $usuario['nombre'] . " resolvió la incidencia #" . $id . " en " . $actual['calle'];
+        $texto = $usuario['nombre'] . " resolvió la incidencia #" . $id . " en " . $actual['calle'];
         $mensaje->enviarARol("Administrador", $texto, "incidencias.html");
         $mensaje->enviarARol("Operario", $texto, "incidencias.html");
     }
@@ -203,7 +203,7 @@ function obtenerVolumen($estadistica) {
     $desde = $_GET['desde'] ?? "";
     $hasta = $_GET['hasta'] ?? "";
     if (!preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $desde) || !preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $hasta)) {
-        responder(["error" => "Elige las dos fechas"], 400);
+        responder(["error" => "Elegí las dos fechas"], 400);
     }
     if ($desde > $hasta) {
         responder(["error" => "La fecha desde no puede ser después de la fecha hasta"], 400);

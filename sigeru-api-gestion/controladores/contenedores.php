@@ -12,7 +12,7 @@ function validarContenedor($contenedor, $datos) {
         responder(["error" => "El estado no es válido"], 400);
     }
     if (empty($datos['id_residuo']) || !$contenedor->existeResiduo($datos['id_residuo'])) {
-        responder(["error" => "Elige un tipo de residuo"], 400);
+        responder(["error" => "Elegí un tipo de residuo"], 400);
     }
     if (!empty($datos['capacidad']) && !is_numeric($datos['capacidad'])) {
         responder(["error" => "La capacidad debe ser un número"], 400);

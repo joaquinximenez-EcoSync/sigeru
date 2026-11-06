@@ -5,10 +5,10 @@
 // $id es el recorrido que se esta modificando (null si es uno nuevo).
 function validarRecorrido($recorrido, $camion, $datos, $id) {
     if (empty($datos['id_cuadrilla']) || !$recorrido->existeCuadrilla($datos['id_cuadrilla'])) {
-        responder(["error" => "Elige una cuadrilla"], 400);
+        responder(["error" => "Elegí una cuadrilla"], 400);
     }
     if (empty($datos['id_ruta']) || !$recorrido->existeRuta($datos['id_ruta'])) {
-        responder(["error" => "Elige una ruta"], 400);
+        responder(["error" => "Elegí una ruta"], 400);
     }
 
     // Cada cuadrilla puede tener una sola vez cada ruta
@@ -20,7 +20,7 @@ function validarRecorrido($recorrido, $camion, $datos, $id) {
     // RNE06: una cuadrilla solo puede ser asignada a rutas si tiene camion disponible
     $elegido = $camion->obtenerPorId($datos['id_camion'] ?? 0);
     if ($elegido == null) {
-        responder(["error" => "Elige un camión"], 400);
+        responder(["error" => "Elegí un camión"], 400);
     }
     // Si se esta modificando y el camion es el mismo que ya tenia, se deja aunque este en ruta
     $mismoCamion = false;
@@ -93,9 +93,9 @@ function avisarACuadrilla($mensaje, $r, $esNuevo) {
         $horario = " de " . substr($r['hora_inicio'], 0, 5) . " a " . substr($r['hora_fin'], 0, 5);
     }
     if ($esNuevo) {
-        $texto = "🛣️ A tu cuadrilla le asignaron la " . $r['ruta'] . " el " . $r['fecha_asignacion'] . $horario . " (camión " . $r['camion'] . ")";
+        $texto = "A tu cuadrilla le asignaron la " . $r['ruta'] . " el " . $r['fecha_asignacion'] . $horario . " (camión " . $r['camion'] . ")";
     } else {
-        $texto = "🛣️ Cambió el recorrido de tu cuadrilla: " . $r['ruta'] . " el " . $r['fecha_asignacion'] . $horario . " (camión " . $r['camion'] . ")";
+        $texto = "Cambió el recorrido de tu cuadrilla: " . $r['ruta'] . " el " . $r['fecha_asignacion'] . $horario . " (camión " . $r['camion'] . ")";
     }
     $mensaje->enviarACuadrilla($r['id_cuadrilla'], $texto, "recorridos.html");
 }

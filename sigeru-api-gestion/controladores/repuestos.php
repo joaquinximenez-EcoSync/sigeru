@@ -79,7 +79,7 @@ function cambiarStock($repuesto, $mensaje, $id, $datos) {
 
     // Si estaba bien y ahora quedo en el minimo o menos, avisamos para reponer
     if ($cambio < 0 && $modificado['cantidad'] <= $modificado['cantidad_minima'] && $actual['cantidad'] > $actual['cantidad_minima']) {
-        $texto = "📦 Quedan pocos repuestos de " . $modificado['nombre'] . ": " . $modificado['cantidad'] . " (mínimo " . $modificado['cantidad_minima'] . ")";
+        $texto = "Quedan pocos repuestos de " . $modificado['nombre'] . ": " . $modificado['cantidad'] . " (mínimo " . $modificado['cantidad_minima'] . ")";
         $mensaje->enviarARol("Administrador", $texto, "repuestos.html");
         $mensaje->enviarARol("Operario", $texto, "repuestos.html");
     }
