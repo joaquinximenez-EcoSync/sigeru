@@ -9,12 +9,13 @@ Proyecto de pasaje de grado de **EcoSync** - ESI 2026.
 | `sigeru-landing` | Página principal y registro de vecinos |
 | `sigeru-frontend` | Inicio de sesión, panel, mapa interactivo de Montevideo y CRUD de usuarios, contenedores, camiones, centros de acopio y maquinaria |
 | `sigeru-api-usuarios` | API de registro, inicio de sesión y usuarios |
-| `sigeru-api-gestion` | API de contenedores, camiones, centros de acopio y maquinaria |
+| `sigeru-api-gestion` | API de contenedores, centros de acopio, maquinaria, incidencias y avisos de vecinos |
+| `sigeru-api-recoleccion` | API de la flota de camiones, mantenimientos y recorridos (rutas asignadas a cuadrillas) |
 | `sigeru-base-datos` | MER, modelo físico, DDL y dump de la base de datos |
 
 ## Cómo ejecutarlo (XAMPP)
 
-1. Copiar las carpetas `sigeru-landing`, `sigeru-frontend`, `sigeru-api-usuarios` y `sigeru-api-gestion` dentro de `C:\xampp\htdocs\`.
+1. Copiar las carpetas `sigeru-landing`, `sigeru-frontend`, `sigeru-api-usuarios`, `sigeru-api-gestion` y `sigeru-api-recoleccion` dentro de `C:\xampp\htdocs\`.
 2. Prender **Apache** y **MySQL** en XAMPP.
 3. Entrar a http://localhost/phpmyadmin → **Importar** → `sigeru-base-datos/ddl/sigeru_ddl.sql`.
 4. Otra vez **Importar** → `sigeru-base-datos/datos/sigeru_datos_prueba.sql` (datos de prueba).
@@ -41,7 +42,7 @@ Contenedores:
 | Contenedor | Qué tiene |
 |------------|-----------|
 | `sigeru-mysql` | MySQL 8. La primera vez ejecuta el DDL y los datos de prueba de `sigeru-base-datos` |
-| `sigeru-web` | Apache con PHP 8.2 (`docker/Dockerfile`) con las 4 aplicaciones |
+| `sigeru-web` | Apache con PHP 8.2 (`docker/Dockerfile`) con las 5 aplicaciones |
 | `sigeru-phpmyadmin` | phpMyAdmin para ver la base de datos |
 
 Para apagarlo: `docker compose down`. Para borrar también la base de datos y empezar de cero: `docker compose down -v`.
@@ -62,6 +63,8 @@ C:\xampp\php\php.exe sigeru-api-usuarios/tests/test_modelos.php
 C:\xampp\php\php.exe sigeru-api-usuarios/tests/test_api.php
 C:\xampp\php\php.exe sigeru-api-gestion/tests/test_modelos.php
 C:\xampp\php\php.exe sigeru-api-gestion/tests/test_api.php
+C:\xampp\php\php.exe sigeru-api-recoleccion/tests/test_modelos.php
+C:\xampp\php\php.exe sigeru-api-recoleccion/tests/test_api.php
 ```
 
 Con Docker:
@@ -71,6 +74,8 @@ docker exec sigeru-web php /var/www/html/sigeru-api-usuarios/tests/test_modelos.
 docker exec sigeru-web php /var/www/html/sigeru-api-usuarios/tests/test_api.php
 docker exec sigeru-web php /var/www/html/sigeru-api-gestion/tests/test_modelos.php
 docker exec sigeru-web php /var/www/html/sigeru-api-gestion/tests/test_api.php
+docker exec sigeru-web php /var/www/html/sigeru-api-recoleccion/tests/test_modelos.php
+docker exec sigeru-web php /var/www/html/sigeru-api-recoleccion/tests/test_api.php
 ```
 
 Cada test muestra `OK` o `FALLA` y al final cuántos pasaron:
@@ -79,8 +84,10 @@ Cada test muestra `OK` o `FALLA` y al final cuántos pasaron:
 |-------|----------|
 | Modelo de usuarios | 21 |
 | Endpoints de la API de usuarios | 26 |
-| Modelos de gestión (contenedores, camiones, centros, maquinaria, incidencias, avisos, recorridos) | 48 |
-| Endpoints de la API de gestión | 42 |
+| Modelos de gestión (contenedores, centros, maquinaria, incidencias, avisos) | 37 |
+| Endpoints de la API de gestión | 31 |
+| Modelos de recolección (camiones, mantenimientos, recorridos) | 32 |
+| Endpoints de la API de recolección | 34 |
 
 ## Usuarios de prueba
 

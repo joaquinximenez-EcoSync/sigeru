@@ -47,6 +47,7 @@ services:
       - ./sigeru-frontend:/var/www/html/sigeru-frontend
       - ./sigeru-api-usuarios:/var/www/html/sigeru-api-usuarios
       - ./sigeru-api-gestion:/var/www/html/sigeru-api-gestion
+      - ./sigeru-api-recoleccion:/var/www/html/sigeru-api-recoleccion
       # Los tests de los modelos usan los archivos de la base de datos
       - ./sigeru-base-datos:/var/www/html/sigeru-base-datos
       - ./docker/index.html:/var/www/html/index.html
