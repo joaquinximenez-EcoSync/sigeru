@@ -18,6 +18,13 @@ async function pedirAlServidor(url, metodo = "GET", datos = null) {
     }
 
     const json = await respuesta.json();
+
+    // Si la sesion se cerro sola por no usar el sistema, avisamos y volvemos al inicio de sesion
+    if (respuesta.status == 401 && json.error.includes("se cerró") && !location.pathname.endsWith("index.html")) {
+        alert(json.error);
+        location.href = "index.html";
+    }
+
     if (!respuesta.ok) {
         throw new Error(json.error);
     }

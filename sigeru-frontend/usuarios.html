@@ -37,6 +37,7 @@
             <a href="informes.html" class="no-vecino"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#informes"></use></svg><span>Informes</span></a>
             <a href="usuarios.html" class="activo solo-admin"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#usuarios"></use></svg><span>Usuarios</span></a>
             <a href="parametros.html" class="solo-admin"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#parametros"></use></svg><span>Parámetros</span></a>
+            <a href="seguridad.html" class="solo-admin"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#escudo"></use></svg><span>Seguridad</span></a>
         </nav>
         <div class="usuario">
             <div class="avatar"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#usuario"></use></svg></div>
@@ -99,8 +100,8 @@
                     </div>
                     <div class="form-group">
                         <label for="contrasena">Contraseña</label>
-                        <input id="contrasena" type="password" minlength="6">
-                        <small id="ayudaContrasena">Mínimo 6 caracteres.</small>
+                        <input id="contrasena" type="password" minlength="8" maxlength="72" pattern="(?=.*[A-Za-z])(?=.*[0-9]).(8, 72)" title="Al menos 8 caracteres, con letras y números">
+                        <small id="ayudaContrasena">Al menos 8 caracteres, con letras y números.</small>
                     </div>
                 </div>
                 <div class="form-row">

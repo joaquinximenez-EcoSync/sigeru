@@ -46,9 +46,9 @@ function mostrarSolicitudes() {
         aviso.style.display = "none";
         return;
     }
-    let texto = "🆕 Hay " + pendientes + " vecinos esperando que apruebes su registro.";
+    let texto = "Hay " + pendientes + " vecinos esperando que apruebes su registro.";
     if (pendientes == 1) {
-        texto = "🆕 Hay 1 vecino esperando que apruebes su registro.";
+        texto = "Hay 1 vecino esperando que apruebes su registro.";
     }
     aviso.innerHTML = `${texto} <button class="btn btn-secondary btn-sm" onclick="verPendientes()">Ver solicitudes</button>`;
     aviso.style.display = "block";

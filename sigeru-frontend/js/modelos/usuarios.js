@@ -47,6 +47,15 @@ function marcarMensajeLeido(id) {
     return pedirAlServidor(direccion, "PUT");
 }
 
+// ----- Auditoria (solo el administrador) -----
+function obtenerAuditoria(accion) {
+    let url = API_USUARIOS + "/auditoria";
+    if (accion != "") {
+        url += "?accion=" + encodeURIComponent(accion);
+    }
+    return pedirAlServidor(url);
+}
+
 // ----- Parametros del sistema -----
 function obtenerParametros() {
     return pedirAlServidor(API_USUARIOS + "/parametros");

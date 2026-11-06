@@ -226,6 +226,7 @@ td.stock .etiqueta { min-width: 34px; justify-content: center; margin: 0 4px; }
 .etiqueta .icono { width: 13px; height: 13px; }
 .etiqueta.alerta { background: var(--naranja-claro); color: #b45309; }
 .etiqueta.mal { background: var(--rojo-claro); color: #b42318; }
+.etiqueta.gris { background: #eef2f0; color: #4b5563; }
 
 /* Ventana mas ancha (mantenimientos, historial) */
 dialog.dialogo-ancho { max-width: 780px; }

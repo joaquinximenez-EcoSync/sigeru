@@ -120,7 +120,7 @@ Cada test muestra `OK` o `FALLA` y al final cuántos pasaron:
 | Tests | Cantidad |
 |-------|----------|
 | Modelos de usuarios (usuarios, verificación, parámetros, notificaciones) | 38 |
-| Endpoints de la API de usuarios | 47 |
+| Endpoints de la API de usuarios (incluye bloqueo por intentos fallidos y auditoría) | 60 |
 | Modelos de gestión (contenedores, centros, maquinaria, incidencias, estadísticas, alertas, repuestos, volumen) | 88 |
 | Endpoints de la API de gestión | 81 |
 | Modelos de recolección (camiones, mantenimientos, recorridos, notificaciones) | 35 |
@@ -156,6 +156,23 @@ La campana del menú muestra las notificaciones de cada usuario y se actualiza s
 | Se asigna o cambia un recorrido (ruta) de una cuadrilla | A los recolectores de esa cuadrilla |
 | Un vecino verifica su correo y espera aprobación | A los administradores |
 | Un repuesto queda en la cantidad mínima | A los administradores y operarios |
+
+## Seguridad
+
+La seguridad está pensada en capas, una complementa a la otra:
+
+| Capa | Qué tiene SiGeRU |
+|------|------------------|
+| Navegador (frontend) | Valida los formularios antes de mandarlos, escapa los textos para que no se pueda meter código (XSS), oculta lo que cada rol no puede usar, cabeceras de seguridad (`X-Frame-Options`, `nosniff`) |
+| Sesión | Cookie `HttpOnly` y `SameSite=Strict`, número de sesión nuevo al entrar, se cierra sola después de 30 minutos sin usar el sistema |
+| APIs | Cada endpoint revisa la sesión y el rol (`verificarRol`), valida todos los datos otra vez, consultas preparadas (evita inyección SQL), desde el navegador solo se puede abrir `api.php` |
+| Contraseñas | Guardadas con `password_hash` (bcrypt). Las nuevas tienen que tener al menos 8 caracteres, con letras y números |
+| Fuerza bruta | Después de 5 contraseñas equivocadas el correo se bloquea 15 minutos (se cambia en Parámetros) |
+| Auditoría | Página **Seguridad** (solo administrador): quién entró, intentos fallidos y bloqueados, usuarios creados o borrados, cambios de rol y de parámetros. Se exporta a Excel |
+| Base de datos | En el servidor las APIs usan el usuario `sigeru_app` con permisos mínimos (`sigeru-base-datos/seguridad/usuario_aplicacion.sql`), su contraseña va en las variables `DB_USER` / `DB_PASS` y no en el código |
+| Correo | Gmail por SMTP con STARTTLS (cifrado). La contraseña de aplicación está fuera del proyecto (`sigeru_correo.php`) y nunca se sube a GitHub |
+
+Si ya tenían la base cargada, importen `sigeru-base-datos/actualizaciones/002_seguridad.sql` (no borra nada).
 
 ## Datos de prueba
 

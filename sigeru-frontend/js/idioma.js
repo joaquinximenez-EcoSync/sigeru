@@ -8,7 +8,7 @@ const TRADUCCIONES = {
         "Inicio": "Home", "Mapa": "Map", "Incidencias": "Incidents", "Contenedores": "Containers",
         "Camiones": "Trucks", "Recorridos": "Routes", "Centros de acopio": "Collection centers",
         "Maquinaria": "Machinery", "Repuestos": "Spare parts", "Informes": "Reports",
-        "Usuarios": "Users", "Parámetros": "Settings", "Cerrar sesión": "Log out",
+        "Usuarios": "Users", "Parámetros": "Settings", "Seguridad": "Security", "Cerrar sesión": "Log out",
         "Notificaciones": "Notifications", "Marcar todas como leídas": "Mark all as read",
         // Titulos
         "Hola,": "Hello,", "Este es el resumen del sistema.": "This is the system summary.",

@@ -27,8 +27,8 @@ formulario.addEventListener("submit", async function (evento) {
     if (datos.primer_nombre == "" || datos.primer_apellido == "" || datos.email == "" || datos.contrasena == "") {
         mostrarMensaje("Completá todos los campos obligatorios", true);
         return;
-    } else if (datos.contrasena.length < 6) {
-        mostrarMensaje("La contraseña debe tener al menos 6 caracteres", true);
+    } else if (datos.contrasena.length < 8 || !/[a-zA-Z]/.test(datos.contrasena) || !/[0-9]/.test(datos.contrasena)) {
+        mostrarMensaje("La contraseña tiene que tener al menos 8 caracteres, con letras y números", true);
         return;
     } else if (datos.contrasena != contrasena2) {
         mostrarMensaje("Las contraseñas no coinciden", true);
