@@ -94,7 +94,7 @@ verificar($admin['estado'] == "Activo", "Un usuario que crea el administrador qu
 titulo("Parámetros");
 
 $parametro = new Parametro($conn);
-verificar(count($parametro->obtenerTodos()) == 5, "Hay 5 parámetros");
+verificar(count($parametro->obtenerTodos()) == 7, "Hay 7 parámetros");
 verificar($parametro->obtener("aprobar_registros", "x") == "si", "Lee un parámetro");
 verificar($parametro->obtener("no_existe", "por defecto") == "por defecto", "Si no existe devuelve el valor por defecto");
 $parametro->modificar("idioma", "en");

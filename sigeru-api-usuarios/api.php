@@ -17,6 +17,7 @@
 //   PUT    api.php/mensajes?id=3   marcar una como leida (sin id: todas)
 //   GET    api.php/parametros      parametros del sistema      (todos los roles)
 //   PUT    api.php/parametros      cambiar los parametros      (solo administrador)
+//   GET    api.php/auditoria       registro de lo que pasa en el sistema (solo administrador)
 
 require_once "config.php";
 require_once "conexion.php";
@@ -26,6 +27,7 @@ require_once "correo.php";
 require_once "modelos/Usuario.php";
 require_once "modelos/Parametro.php";
 require_once "modelos/Mensaje.php";
+require_once "modelos/Auditoria.php";
 require_once "controladores/usuarios.php";
 require_once "controladores/mensajes.php";
 
@@ -45,6 +47,7 @@ $datos = json_decode(file_get_contents("php://input"), true) ?? [];
 $usuario = new Usuario($conn);
 $parametro = new Parametro($conn);
 $mensaje = new Mensaje($conn);
+$auditoria = new Auditoria($conn);
 
 $todos = ["Administrador", "Operario", "Recolector", "Vecino"];
 
@@ -78,7 +81,7 @@ switch ($endpoint) {
         break;
 
     case "login":
-        if ($metodo == "POST") iniciarSesion($usuario, $datos);
+        if ($metodo == "POST") iniciarSesion($usuario, $parametro, $datos);
         break;
 
     case "logout":
@@ -87,6 +90,11 @@ switch ($endpoint) {
 
     case "sesion":
         if ($metodo == "GET") sesionActual();
+        break;
+
+    case "auditoria":
+        verificarRol(["Administrador"]);
+        if ($metodo == "GET") listarAuditoria($auditoria);
         break;
 
     case "usuarios":

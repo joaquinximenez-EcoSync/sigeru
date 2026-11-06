@@ -31,7 +31,7 @@ function listarParametros($parametro) {
 // El administrador cambia los parametros (PUT parametros con {"nombre": "valor", ...})
 function modificarParametros($parametro, $datos) {
     // Lo que puede valer cada parametro
-    $numeros = ["dias_alerta_desborde", "porcentaje_centro_lleno", "kilos_por_litro"];
+    $numeros = ["dias_alerta_desborde", "porcentaje_centro_lleno", "kilos_por_litro", "intentos_login", "minutos_bloqueo"];
     $opciones = [
         "aprobar_registros" => ["si", "no"],
         "idioma" => ["es", "en"]
@@ -52,8 +52,15 @@ function modificarParametros($parametro, $datos) {
         }
     }
 
+    $cambiados = [];
     foreach ($datos as $nombre => $valor) {
+        if ($parametro->obtener($nombre, null) != $valor) {
+            $cambiados[] = $nombre . " = " . $valor;
+        }
         $parametro->modificar($nombre, $valor);
+    }
+    if (count($cambiados) > 0) {
+        auditar("Parámetros modificados", implode(", ", $cambiados));
     }
     responder(["mensaje" => "Parámetros guardados correctamente", "parametros" => $parametro->obtenerTodos()]);
 }

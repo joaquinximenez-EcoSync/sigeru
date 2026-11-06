@@ -57,7 +57,7 @@ $r = pedir("POST", $api . "/registro", [
     "primer_nombre" => "Prueba",
     "primer_apellido" => "Registro",
     "email" => $correoRegistro,
-    "contrasena" => "123456",
+    "contrasena" => "clave1234",
     "rol" => "Administrador"
 ], "landing");
 
@@ -70,7 +70,7 @@ if ($r['codigo'] == 503 || $r['codigo'] == 500) {
     verificar($quedo == 0, "Y no deja creado el usuario, para que se pueda registrar de nuevo");
 
     // Creamos el vecino como si se hubiera mandado el correo
-    $clave = password_hash("123456", PASSWORD_DEFAULT);
+    $clave = password_hash("clave1234", PASSWORD_DEFAULT);
     mysqli_query($base, "INSERT INTO usuarios (primer_nombre, primer_apellido, email, contrasena, rol, estado, codigo_verificacion)
                          VALUES ('Prueba', 'Registro', '" . $correoRegistro . "', '" . $clave . "', 'Vecino', 'Sin verificar', 'codigo-del-test-" . time() . "')");
     $idRegistrado = mysqli_insert_id($base);
@@ -85,7 +85,7 @@ if ($r['codigo'] == 503 || $r['codigo'] == 500) {
 // El codigo del enlace del correo lo sacamos de la base (el correo no lo podemos leer desde el test)
 $codigo = mysqli_fetch_assoc(mysqli_query($base, "SELECT codigo_verificacion FROM usuarios WHERE id_usuario = " . $idRegistrado))['codigo_verificacion'];
 
-$r = entrar($api, "registrado", $correoRegistro, "123456");
+$r = entrar($api, "registrado", $correoRegistro, "clave1234");
 verificar($r['codigo'] == 403 && str_contains($r['json']['error'], "verificaste"), "Sin verificar el correo no puede iniciar sesión (403)");
 
 $r = pedir("GET", $api . "/verificar?codigo=codigo-falso", null, "landing");
@@ -97,7 +97,7 @@ verificar($r['codigo'] == 200 && $r['json']['estado'] == "Pendiente", "Con el en
 $r = pedir("GET", $api . "/verificar?codigo=" . $codigo, null, "landing");
 verificar($r['codigo'] == 404, "El mismo enlace no sirve dos veces");
 
-$r = entrar($api, "registrado", $correoRegistro, "123456");
+$r = entrar($api, "registrado", $correoRegistro, "clave1234");
 verificar($r['codigo'] == 403 && str_contains($r['json']['error'], "apruebe"), "Mientras no lo aprueban no puede entrar (403)");
 
 $r = pedir("GET", $api . "/mensajes", null, "admin");
@@ -112,7 +112,7 @@ verificar($r['codigo'] == 200, "El administrador aprueba el registro");
 $r = pedir("POST", $api . "/aprobar?id=" . $idRegistrado, ["aprobado" => true], "admin");
 verificar($r['codigo'] == 409, "No se puede aprobar dos veces (409)");
 
-$r = entrar($api, "registrado", $correoRegistro, "123456");
+$r = entrar($api, "registrado", $correoRegistro, "clave1234");
 verificar($r['codigo'] == 200, "Ahora sí puede iniciar sesión");
 
 $r = pedir("GET", $api . "/mensajes", null, "registrado");
@@ -122,19 +122,25 @@ $r = pedir("PUT", $api . "/mensajes", null, "registrado");
 $r = pedir("GET", $api . "/mensajes", null, "registrado");
 verificar($r['json']['sin_leer'] == 0, "Marca todas sus notificaciones como leídas");
 
-$r = pedir("POST", $api . "/registro", ["primer_nombre" => "A", "primer_apellido" => "B", "email" => "admin@sigeru.uy", "contrasena" => "123456"], "landing");
+$r = pedir("POST", $api . "/registro", ["primer_nombre" => "A", "primer_apellido" => "B", "email" => "admin@sigeru.uy", "contrasena" => "clave1234"], "landing");
 verificar($r['codigo'] == 409, "Con un correo que ya existe devuelve 409");
 
-$r = pedir("POST", $api . "/registro", ["primer_nombre" => "A", "primer_apellido" => "B", "email" => "correo-malo", "contrasena" => "123456"], "landing");
+$r = pedir("POST", $api . "/registro", ["primer_nombre" => "A", "primer_apellido" => "B", "email" => "correo-malo", "contrasena" => "clave1234"], "landing");
 verificar($r['codigo'] == 400, "Con un correo mal escrito devuelve 400");
 
 $r = pedir("POST", $api . "/registro", ["primer_nombre" => "A", "primer_apellido" => "B", "email" => "x" . $correoPrueba, "contrasena" => "123"], "landing");
-verificar($r['codigo'] == 400, "Con una contraseña de menos de 6 caracteres devuelve 400");
+verificar($r['codigo'] == 400, "Con una contraseña de menos de 8 caracteres devuelve 400");
+
+$r = pedir("POST", $api . "/registro", ["primer_nombre" => "A", "primer_apellido" => "B", "email" => "x" . $correoPrueba, "contrasena" => "soloLetras"], "landing");
+verificar($r['codigo'] == 400 && str_contains($r['json']['error'], "letras y números"), "Una contraseña sin números devuelve 400 (política de contraseñas)");
+
+$r = pedir("POST", $api . "/registro", ["primer_nombre" => "A", "primer_apellido" => "B", "email" => "x" . $correoPrueba, "contrasena" => "12345678"], "landing");
+verificar($r['codigo'] == 400, "Una contraseña sin letras devuelve 400");
 
 titulo("Parámetros");
 
 $r = pedir("GET", $api . "/parametros", null, "operario");
-verificar($r['codigo'] == 200 && count($r['json']) == 5, "Cualquier usuario puede leer los parámetros");
+verificar($r['codigo'] == 200 && count($r['json']) == 7, "Cualquier usuario puede leer los parámetros");
 
 $r = pedir("PUT", $api . "/parametros", ["idioma" => "en"], "operario");
 verificar($r['codigo'] == 403, "Solo el administrador los cambia (403)");
@@ -160,7 +166,7 @@ $r = pedir("POST", $api . "/usuarios", [
     "primer_nombre" => "Ana",
     "primer_apellido" => "Prueba",
     "email" => $correoPrueba,
-    "contrasena" => "123456",
+    "contrasena" => "clave1234",
     "rol" => "Recolector"
 ], "admin");
 verificar($r['codigo'] == 201 && $r['json']['usuario']['rol'] == "Recolector", "Crea un usuario con rol Recolector");
@@ -169,7 +175,7 @@ $idNuevo = $r['json']['usuario']['id'];
 $r = pedir("GET", $api . "/usuarios?id=" . $idNuevo, null, "admin");
 verificar($r['codigo'] == 200 && $r['json']['email'] == $correoPrueba, "Lo encuentra por su id");
 
-$r = pedir("POST", $api . "/usuarios", ["primer_nombre" => "Ana", "primer_apellido" => "Prueba", "email" => "y" . $correoPrueba, "contrasena" => "123456", "rol" => "Jefe"], "admin");
+$r = pedir("POST", $api . "/usuarios", ["primer_nombre" => "Ana", "primer_apellido" => "Prueba", "email" => "y" . $correoPrueba, "contrasena" => "clave1234", "rol" => "Jefe"], "admin");
 verificar($r['codigo'] == 400, "Con un rol que no existe devuelve 400");
 
 $r = pedir("PUT", $api . "/usuarios?id=" . $idNuevo, [
@@ -211,6 +217,48 @@ verificar($r['codigo'] == 200 && $r['json']['usuario']['rol'] == "Administrador"
 
 $r = pedir("DELETE", $api . "/usuarios?id=" . $idRegistrado, null, "admin");
 verificar($r['codigo'] == 200, "Borra el usuario que se registró en la prueba");
+
+titulo("Seguridad: bloqueo por intentos fallidos y auditoría");
+
+// Un correo de prueba que se equivoca de contraseña muchas veces
+$correoAtacado = "atacado" . $correoPrueba;
+for ($i = 1; $i <= 5; $i++) {
+    $r = entrar($api, "atacante", $correoAtacado, "mala" . $i);
+}
+verificar($r['codigo'] == 401, "Los primeros 5 intentos con contraseña mala devuelven 401");
+
+$r = entrar($api, "atacante", $correoAtacado, "otra-mala");
+verificar($r['codigo'] == 429 && str_contains($r['json']['error'], "demasiados intentos"), "Al sexto intento el correo queda bloqueado (429)");
+
+$r = entrar($api, "atacante", "vecino@sigeru.uy", "mala");
+verificar($r['codigo'] == 401, "El bloqueo es solo para ese correo: los demás pueden seguir intentando");
+
+$r = pedir("GET", $api . "/auditoria", null, "operario");
+verificar($r['codigo'] == 403, "El operario no puede ver la auditoría (403)");
+
+$r = pedir("GET", $api . "/auditoria?accion=" . urlencode("Login fallido"), null, "admin");
+$fallidos = 0;
+foreach ($r['json'] as $evento) {
+    if ($evento['email'] == $correoAtacado) $fallidos++;
+}
+verificar($r['codigo'] == 200 && $fallidos == 5, "La auditoría guarda los 5 intentos fallidos con el correo");
+verificar($r['json'][0]['ip'] != "", "Y la IP desde donde se intentó");
+
+$r = pedir("GET", $api . "/auditoria?accion=" . urlencode("Cambio de rol"), null, "admin");
+verificar(count($r['json']) >= 2 && str_contains($r['json'][0]['detalle'], "pasó de Operario a Administrador"), "Los cambios de rol quedan anotados con quién los hizo");
+verificar($r['json'][0]['usuario'] == "Usuario Administrador", "A nombre del administrador que lo cambió");
+
+$r = pedir("GET", $api . "/auditoria?accion=" . urlencode("Login bloqueado"), null, "admin");
+verificar(count($r['json']) >= 1, "El intento bloqueado también queda anotado");
+
+// Desde el navegador solo se puede usar api.php: los demas archivos devuelven 403
+$r = pedir("GET", str_replace("/api.php", "/conexion.php", $api), null, "landing");
+verificar($r['codigo'] == 403, "No se puede abrir conexion.php desde el navegador (403)");
+$r = pedir("GET", str_replace("/api.php", "/tests/test_api.php", $api), null, "landing");
+verificar($r['codigo'] == 403, "No se pueden correr los tests desde el navegador (403)");
+
+// Borramos lo que dejaron estas pruebas
+mysqli_query($base, "DELETE FROM auditoria WHERE email = '" . $correoAtacado . "'");
 
 titulo("Cerrar sesion");
 

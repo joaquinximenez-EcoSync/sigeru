@@ -10,6 +10,13 @@ if (getenv("DB_HOST")) {
     $hostname = getenv("DB_HOST");
 }
 
+// En el servidor de verdad las APIs usan un usuario de MySQL con permisos limitados (sigeru_app).
+// Su usuario y contraseña vienen en DB_USER y DB_PASS, asi la contraseña no queda escrita en el codigo.
+if (getenv("DB_USER")) {
+    $username = getenv("DB_USER");
+    $password = getenv("DB_PASS");
+}
+
 // Para que los errores los manejemos nosotros
 mysqli_report(MYSQLI_REPORT_OFF);
 
