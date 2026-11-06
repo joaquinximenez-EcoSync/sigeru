@@ -46,6 +46,15 @@ El celular tiene que estar conectado **al mismo WiFi** que la computadora que ti
 Los enlaces de los correos (verificar la cuenta) usan la misma dirección con la que se entró: si el vecino se
 registra desde el celular con la IP, el enlace del correo también abre en el celular.
 
+**Si la red no deja** (por ejemplo el WiFi de Ceibal, que aísla los aparatos) se puede usar un túnel de Cloudflare,
+que da una dirección de internet temporal y funciona desde cualquier red, también con los datos del celular:
+
+1. Descargar https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe y guardarlo en `C:\xampp`.
+2. Abrir `cmd` y escribir: `cd C:\xampp` y después `cloudflared-windows-amd64.exe tunnel --url http://localhost:80`
+3. Aparece una dirección como `https://palabras-al-azar.trycloudflare.com`. En el celular abrir esa dirección + `/sigeru-landing/`.
+4. Mientras la ventana de `cmd` esté abierta, cualquiera con esa dirección puede entrar. Al cerrarla se apaga.
+   Cada vez que se abre, la dirección es distinta.
+
 ## Cómo ejecutarlo con Docker
 
 Con [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado, desde esta carpeta:

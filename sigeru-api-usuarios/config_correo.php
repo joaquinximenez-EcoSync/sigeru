@@ -36,6 +36,11 @@ $host = $_SERVER['HTTP_HOST'] ?? "";
 if (preg_match("/^(localhost|127\.0\.0\.1|192\.168\.[0-9]{1,3}\.[0-9]{1,3}|10\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}|172\.(1[6-9]|2[0-9]|3[01])\.[0-9]{1,3}\.[0-9]{1,3})(:[0-9]{1,5})?$/", $host)) {
     $direccionSitio = "http://" . $host;
 }
+// Tambien se acepta la direccion del tunel de Cloudflare (para entrar desde el celular por internet).
+// Esas direcciones son con https y terminan en .trycloudflare.com
+if (preg_match("/^[a-z0-9-]+\.trycloudflare\.com$/", $host)) {
+    $direccionSitio = "https://" . $host;
+}
 
 // Leemos el archivo con la contraseña, que esta dos carpetas mas arriba:
 // C:\xampp\htdocs\sigeru-api-usuarios  ->  C:\xampp\htdocs  ->  C:\xampp
