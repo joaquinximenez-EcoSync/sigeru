@@ -7,9 +7,9 @@ Proyecto de pasaje de grado de **EcoSync** - ESI 2026.
 | Carpeta | Qué es |
 |---------|--------|
 | `sigeru-landing` | Página principal y registro de vecinos |
-| `sigeru-frontend` | Inicio de sesión, panel, mapa interactivo de Montevideo y CRUD de usuarios, contenedores, camiones, centros de acopio y maquinaria |
+| `sigeru-frontend` | Inicio de sesión, panel de control con estadísticas y alertas, mapa interactivo de Montevideo, seguimiento de incidencias, informes y CRUD de usuarios, contenedores, camiones, recorridos, centros de acopio y maquinaria |
 | `sigeru-api-usuarios` | API de registro, inicio de sesión y usuarios |
-| `sigeru-api-gestion` | API de contenedores, centros de acopio, maquinaria, incidencias y avisos de vecinos |
+| `sigeru-api-gestion` | API de contenedores, centros de acopio, maquinaria, incidencias (registro y seguimiento), avisos de vecinos, estadísticas y alertas |
 | `sigeru-api-recoleccion` | API de la flota de camiones, mantenimientos y recorridos (rutas asignadas a cuadrillas) |
 | `sigeru-base-datos` | MER, modelo físico, DDL y dump de la base de datos |
 
@@ -84,8 +84,8 @@ Cada test muestra `OK` o `FALLA` y al final cuántos pasaron:
 |-------|----------|
 | Modelo de usuarios | 21 |
 | Endpoints de la API de usuarios | 26 |
-| Modelos de gestión (contenedores, centros, maquinaria, incidencias, avisos) | 37 |
-| Endpoints de la API de gestión | 31 |
+| Modelos de gestión (contenedores, centros, maquinaria, incidencias, avisos, estadísticas, alertas) | 56 |
+| Endpoints de la API de gestión | 52 |
 | Modelos de recolección (camiones, mantenimientos, recorridos) | 32 |
 | Endpoints de la API de recolección | 34 |
 
