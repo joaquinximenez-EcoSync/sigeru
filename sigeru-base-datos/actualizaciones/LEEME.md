@@ -16,5 +16,6 @@ Cómo se usan:
 |---------|----------|
 | `001_sacar_datos_inventados.sql` | Borra las incidencias de prueba que venían inventadas (sin tocar las que cargaron ustedes), agrega a incidencias el lugar exacto y el tipo "Basura en la calle", y saca del agua al camión SBD 9012 |
 | `002_seguridad.sql` | Crea la tabla de auditoría (quién entró, intentos fallidos, cambios de usuarios y roles) y los parámetros del bloqueo por intentos fallidos |
+| `003_cifrado.sql` | Agranda la columna del teléfono (ahora se guarda cifrado) y guarda el código de verificación como resumen SHA-256 |
 
 Si la base se creó después de esta actualización, no hace falta importarla (pero si se importa no rompe nada).

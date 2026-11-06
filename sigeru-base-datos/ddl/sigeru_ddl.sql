@@ -30,11 +30,11 @@ CREATE TABLE usuarios (
     primer_apellido  VARCHAR(50)  NOT NULL,
     segundo_apellido VARCHAR(50),
     email            VARCHAR(120) NOT NULL UNIQUE,
-    telefono         VARCHAR(30),
+    telefono         VARCHAR(255),     -- cifrado con AES-256-GCM (ver sigeru-api-usuarios/cifrado.php)
     contrasena       VARCHAR(255) NOT NULL,
     rol              ENUM('Administrador', 'Operario', 'Recolector', 'Vecino') NOT NULL,
     estado           ENUM('Sin verificar', 'Pendiente', 'Activo', 'Rechazado') NOT NULL DEFAULT 'Activo',
-    codigo_verificacion VARCHAR(64),
+    codigo_verificacion VARCHAR(64),     -- resumen SHA-256 del codigo del enlace (no el codigo)
     fecha_registro   DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 -- estado: un vecino que se registra queda "Sin verificar" hasta que abre el enlace del correo.

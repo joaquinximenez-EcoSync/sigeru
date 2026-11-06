@@ -33,7 +33,7 @@ PK = clave primaria, FK = clave foránea, UQ = único.
 | primer_apellido | VARCHAR(50) | NOT NULL |
 | segundo_apellido | VARCHAR(50) | |
 | email | VARCHAR(120) | NOT NULL, UQ |
-| telefono | VARCHAR(30) | (opcional) |
+| telefono | VARCHAR(255) | (opcional) cifrado con AES-256-GCM |
 | contrasena | VARCHAR(255) | NOT NULL (se guarda encriptada) |
 | rol | ENUM('Administrador','Operario','Recolector','Vecino') | NOT NULL |
 | estado | ENUM('Sin verificar','Pendiente','Activo','Rechazado') | NOT NULL, por defecto 'Activo' (3ra entrega) |

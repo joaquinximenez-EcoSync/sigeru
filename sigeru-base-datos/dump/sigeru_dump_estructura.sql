@@ -356,7 +356,7 @@ CREATE TABLE `usuarios` (
   `primer_apellido` varchar(50) NOT NULL,
   `segundo_apellido` varchar(50) DEFAULT NULL,
   `email` varchar(120) NOT NULL,
-  `telefono` varchar(30) DEFAULT NULL,
+  `telefono` varchar(255) DEFAULT NULL,
   `contrasena` varchar(255) NOT NULL,
   `rol` enum('Administrador','Operario','Recolector','Vecino') NOT NULL,
   `estado` enum('Sin verificar','Pendiente','Activo','Rechazado') NOT NULL DEFAULT 'Activo',
