@@ -24,7 +24,7 @@ HTML5, CSS y JavaScript.
 
 El menú y los botones se muestran según el rol, y además cada API revisa el rol antes de responder.
 
-## Notificaciones (campana 🔔)
+## Notificaciones (campana )
 
 Todas las páginas tienen la campana arriba del menú: muestra cuántas notificaciones no se leyeron y se
 actualiza sola cada 15 segundos. Cuando llega una nueva aparece un cartel abajo a la derecha.
@@ -43,7 +43,7 @@ Con el idioma en inglés se traducen el menú, los títulos, las tablas y los bo
 
 ## Incidencias para el vecino
 
-El vecino entra a **⚠️ Incidencias** y la página se llama **Mis incidencias**. Ahí reporta una incidencia
+El vecino entra a **Incidencias** y la página se llama **Mis incidencias**. Ahí reporta una incidencia
 eligiendo el contenedor, qué pasa (está desbordado, está roto, no lo vinieron a vaciar o hay basura en la calle),
 **cuenta con detalle qué pasó** y **dónde exactamente** (por ejemplo "frente al 2510, al lado de la parada").
 Después ve el estado de cada una. El personal ve en cada incidencia qué vecino la reportó.
@@ -52,14 +52,14 @@ Un vecino no puede reportar dos veces el mismo contenedor mientras no se resuelv
 ## Usuarios (usuarios.html)
 
 Además del CRUD, muestra el estado de cada usuario. Los vecinos que se registraron y verificaron su correo
-quedan **Pendiente** y el administrador los aprueba o rechaza con los botones ✔ y ✖.
-Con el botón **🔑 Rol** el administrador le cambia el rol a cualquier usuario (por ejemplo, hacer Operario o
+quedan **Pendiente** y el administrador los aprueba o rechaza con los botones y .
+Con el botón **Rol** el administrador le cambia el rol a cualquier usuario (por ejemplo, hacer Operario o
 Administrador a otra persona). No se puede cambiar su propio rol.
 
 ## Panel de control (panel.html)
 
-- **🔔 Alertas** para cada rol. El número de alertas se ve en el menú, al lado de Inicio.
-- **📊 Estadísticas** del mes elegido (no las ve el vecino): incidencias abiertas y en proceso, resueltas en el mes,
+- **Alertas** para cada rol. El número de alertas se ve en el menú, al lado de Inicio.
+- **Estadísticas** del mes elegido (no las ve el vecino): incidencias abiertas y en proceso, resueltas en el mes,
   tiempo promedio de resolución, top de contenedores desbordados, incidencias sin resolver por municipio y por tipo.
 
 ## Incidencias (incidencias.html)
@@ -74,14 +74,14 @@ El botón **Historial** muestra todas las incidencias que tuvo ese contenedor.
 Listado de incidencias abiertas y cerradas entre dos fechas, con el total, cuántas siguen abiertas,
 cuántas se cerraron y el tiempo promedio de resolución. También el **volumen recolectado** (kilos por
 municipio y por tipo de residuo, y cada cuántos días se vacía un contenedor; datos simulados).
-El botón **🖨️ Imprimir** lo deja listo para imprimir o guardar como PDF, y los botones **📥 Exportar** bajan
+El botón **Imprimir** lo deja listo para imprimir o guardar como PDF, y los botones **Exportar** bajan
 las incidencias y las recolecciones en un archivo CSV que se abre con Excel.
 
 ## Recorridos (recorridos.html)
 
 Sirve para asignar una ruta a una cuadrilla, con el camión, la fecha, el horario y las zonas que recorre.
 Solo se puede elegir un camión que esté **Operativo** y **Disponible** (RNE06); si no, la API devuelve el error.
-En la página de camiones, el botón **🔧 Ver** muestra los mantenimientos de cada camión.
+En la página de camiones, el botón **Ver** muestra los mantenimientos de cada camión.
 
 ## Mapa interactivo (mapa.html)
 
@@ -91,17 +91,31 @@ Mapa de Montevideo hecho con [Leaflet](https://leafletjs.com) (guardado en `js/l
 |---------|-------------|
 | Contenedores con colores según su estado (verde, naranja, rojo) | Todos |
 | Filtros por estado, tipo de residuo y municipio | Todos |
-| 📍 Estoy acá: muestra tu ubicación y el contenedor más cercano | Todos |
+| Estoy acá: muestra tu ubicación y el contenedor más cercano | Todos |
 | Incidencias abiertas, según su prioridad | Administrador, Operario, Recolector |
 | Centros de acopio y vertederos | Administrador, Operario, Recolector |
-| Camiones (posición simulada, los que están "En ruta" se mueven) | Administrador, Operario, Recolector |
+| Camiones: los que están "En ruta" recorren su recorrido por las calles (simulación); los demás quedan quietos | Administrador, Operario, Recolector |
 | Recorridos: contenedores numerados en orden y la línea del recorrido | Administrador y Operario ven todos, el Recolector ve el de su cuadrilla |
 | Botón "Vaciado" en cada contenedor | Administrador, Operario, Recolector |
-| Botón "⚠️ Reportar incidencia" en cada contenedor (abre el formulario de Incidencias con ese contenedor) | Todos |
+| Botón "Reportar incidencia" en cada contenedor (abre el formulario de Incidencias con ese contenedor) | Todos |
 | Zonas críticas: municipios pintados según sus incidencias abiertas, y resumen por municipio | Administrador, Operario, Recolector |
-| ➕ Agregar un contenedor tocando el mapa (el municipio se elige solo) | Administrador y Operario |
+| Agregar un contenedor tocando el mapa (el municipio se elige solo) | Administrador y Operario |
 
 Las incidencias se reportan siempre con el mismo formulario (en Incidencias), lo haga un vecino o el personal.
+
+**Movimiento de los camiones:** el camino por las calles se pide al servicio gratis de OSRM (mapas de
+OpenStreetMap), pasando por los contenedores del recorrido y volviendo al principio. Si no responde, el camión
+no anda en línea recta (podría cruzar el agua): se queda unos segundos en cada contenedor y pasa al siguiente,
+y la línea del recorrido se dibuja punteada.
+
+## Diseño
+
+- Iconos SVG de [Lucide](https://lucide.dev) (licencia ISC), todos juntos en `img/iconos.svg`. En el HTML se usan con
+  `<svg class="icono"><use href="img/iconos.svg#mapa"></use></svg>` y en JavaScript con la función `icono("mapa")`.
+- Letra Inter (Google Fonts). Si no hay internet se usa la letra del sistema.
+- Animaciones hechas solo con CSS: las páginas entran subiendo, las tarjetas se levantan al pasar el mouse,
+  las barras de los gráficos crecen y los números del inicio cuentan desde 0. Si la computadora tiene activado
+  "reducir movimiento", se sacan.
 
 ### Límites de los municipios
 

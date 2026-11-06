@@ -20,7 +20,7 @@ async function verInforme() {
     const cuales = document.getElementById("cuales").value;
 
     if (desde == "" || hasta == "") {
-        mostrarMensaje("Elige las dos fechas", true);
+        mostrarMensaje("Elegí las dos fechas", true);
         return;
     }
 

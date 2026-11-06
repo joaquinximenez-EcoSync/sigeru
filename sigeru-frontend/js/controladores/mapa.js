@@ -15,6 +15,9 @@ let capaContenedores, capaIncidencias, capaInstalaciones, capaCamiones, capaReco
 
 // Marcas de los camiones, para poder moverlas
 let marcasCamiones = [];
+let caminos = {};          // camino por las calles de cada recorrido: caminos[id del recorrido] = lista de [lat, lng]
+let caminoPorCalles = {};  // caminoPorCalles[id del recorrido] = true si salio de OSRM, false si es en linea recta
+let pasoCamion = {};       // en que punto de su camino va cada camion: pasoCamion[id del camion] = numero
 
 let modoAgregar = false;       // true cuando se esta eligiendo el lugar de un contenedor nuevo
 
@@ -50,9 +53,9 @@ async function iniciar() {
         mapa.on("click", tocarMapa);
     }
 
-    // Cada 3 segundos se mueven un poco los camiones que estan en ruta (posicion simulada)
+    // Cada 200 milisegundos los camiones que estan en ruta avanzan un poco por su recorrido (es una simulacion)
     if (esPersonal()) {
-        setInterval(moverCamiones, 3000);
+        setInterval(moverCamiones, 200);
     }
 }
 
@@ -71,6 +74,10 @@ async function cargarDatos() {
         camiones = await obtenerCamiones();
         recorridos = await obtenerRecorridos();
         mostrarListaRecorridos(recorridos, COLORES_RECORRIDOS);
+        dibujarTodo();
+        // Los caminos por las calles tardan un poco (se piden a internet): no esperamos,
+        // el mapa se ve igual y cuando llegan se vuelve a dibujar
+        prepararCaminos();
     }
     dibujarTodo();
 }
@@ -119,8 +126,8 @@ function dibujarContenedores() {
     for (const c of contenedores) {
         if (c.latitud == null || !pasaFiltros(c)) continue;
 
-        const icono = crearIcono(claseContenedor(c.estado), "🗑");
-        L.marker([c.latitud, c.longitud], { icon: icono })
+        const marcaContenedor = crearIcono(claseContenedor(c.estado), icono("contenedores"));
+        L.marker([c.latitud, c.longitud], { icon: marcaContenedor })
             .bindPopup(textoContenedor(c, botones))
             .addTo(capaContenedores);
         cantidad++;
@@ -139,7 +146,7 @@ function dibujarIncidencias() {
 
         // Se corre un poquito hacia arriba para que no tape el contenedor
         const clase = "marca-alerta-" + i.prioridad.toLowerCase();
-        L.marker([Number(i.latitud) + 0.0012, i.longitud], { icon: crearIcono(clase, "⚠") })
+        L.marker([Number(i.latitud) + 0.0012, i.longitud], { icon: crearIcono(clase, icono("alerta")) })
             .bindPopup(textoIncidencia(i))
             .addTo(capaIncidencias);
     }
@@ -151,9 +158,9 @@ function dibujarInstalaciones() {
 
     for (const ins of instalaciones) {
         if (ins.latitud == null) continue;
-        let texto = "🏭";
+        let texto = icono("centros");
         if (ins.tipo == "Vertedero") {
-            texto = "⛰";
+            texto = icono("edificio");
         }
         L.marker([ins.latitud, ins.longitud], { icon: crearIcono("marca-gris", texto) })
             .bindPopup(textoInstalacion(ins))
@@ -168,21 +175,100 @@ function dibujarCamiones() {
 
     for (const c of camiones) {
         if (c.latitud == null) continue;
-        const marca = L.marker([c.latitud, c.longitud], { icon: crearIcono("marca-azul", "🚛") })
+        const marca = L.marker([c.latitud, c.longitud], { icon: crearIcono("marca-azul", icono("camiones")) })
             .bindPopup(textoCamion(c))
             .addTo(capaCamiones);
         marcasCamiones.push({ camion: c, marca: marca });
     }
 }
 
-// Mueve un poco los camiones que estan "En ruta" (es una simulacion, no es GPS real)
+// Arma el camino de cada recorrido: sale del primer contenedor, pasa por todos (del mas cercano al mas lejano)
+// y vuelve al principio. Primero se pide por las calles; si no se puede, se usa la linea recta entre contenedores.
+async function prepararCaminos() {
+    for (const r of recorridos) {
+        if (caminos[r.id] != undefined) continue;
+
+        const ordenados = ordenarPorCercania(r.contenedores);
+        const puntos = [];
+        for (const c of ordenados) {
+            puntos.push([Number(c.latitud), Number(c.longitud)]);
+        }
+        if (puntos.length == 0) continue;
+        // Vuelve al primer contenedor para dar la vuelta completa
+        puntos.push(puntos[0]);
+
+        let camino = null;
+        if (puntos.length > 2) {
+            camino = await pedirCaminoPorCalles(puntos);
+        }
+        if (camino != null) {
+            // Por las calles: le agregamos puntos cada 10 metros, asi el camion se mueve parejo
+            caminoPorCalles[r.id] = true;
+            caminos[r.id] = agregarPuntosIntermedios(camino, 10);
+        } else {
+            // Sin el camino por las calles no lo hacemos andar en linea recta (podria cruzar el agua):
+            // el camion se queda un rato en cada contenedor y despues pasa al siguiente
+            caminoPorCalles[r.id] = false;
+            caminos[r.id] = puntos;
+        }
+    }
+    dibujarTodo();
+}
+
+// Entre cada par de puntos agrega puntos cada "metros" metros (para que el movimiento sea suave)
+function agregarPuntosIntermedios(camino, metros) {
+    const resultado = [];
+    for (let i = 0; i < camino.length - 1; i++) {
+        const a = camino[i];
+        const b = camino[i + 1];
+        const distancia = distanciaEnMetros(a[0], a[1], b[0], b[1]);
+        const pedazos = Math.max(1, Math.round(distancia / metros));
+        for (let j = 0; j < pedazos; j++) {
+            resultado.push([a[0] + (b[0] - a[0]) * j / pedazos, a[1] + (b[1] - a[1]) * j / pedazos]);
+        }
+    }
+    resultado.push(camino[camino.length - 1]);
+    return resultado;
+}
+
+// Devuelve el recorrido que tiene asignado un camion (o null si no tiene)
+function recorridoDelCamion(idCamion) {
+    for (const r of recorridos) {
+        if (r.id_camion == idCamion) return r;
+    }
+    return null;
+}
+
+// Los camiones "En ruta" avanzan por el camino de su recorrido (es una simulacion, no es GPS real).
+// Los que no estan en ruta, o no tienen recorrido, se quedan quietos donde estan.
 function moverCamiones() {
     for (const m of marcasCamiones) {
         if (m.camion.disponibilidad != "En ruta") continue;
 
-        m.camion.latitud = Number(m.camion.latitud) + (Math.random() - 0.5) * 0.002;
-        m.camion.longitud = Number(m.camion.longitud) + (Math.random() - 0.5) * 0.002;
-        m.marca.setLatLng([m.camion.latitud, m.camion.longitud]);
+        const r = recorridoDelCamion(m.camion.id);
+        if (r == null || caminos[r.id] == undefined) continue;
+        const camino = caminos[r.id];
+
+        // Avanza al siguiente punto; al llegar al final vuelve a empezar.
+        // Si el camino no es por las calles, cambia de contenedor cada 3 segundos (15 veces 200 milisegundos).
+        let paso = pasoCamion[m.camion.id] ?? 0;
+        paso = paso + 1;
+        let cantidadDePasos = camino.length;
+        if (!caminoPorCalles[r.id]) {
+            cantidadDePasos = camino.length * 15;
+        }
+        if (paso >= cantidadDePasos) {
+            paso = 0;
+        }
+        pasoCamion[m.camion.id] = paso;
+
+        let punto = camino[paso];
+        if (!caminoPorCalles[r.id]) {
+            punto = camino[Math.floor(paso / 15)];
+        }
+        m.camion.latitud = punto[0];
+        m.camion.longitud = punto[1];
+        m.marca.setLatLng(punto);
     }
 }
 
@@ -195,7 +281,7 @@ function dibujarRecorridos() {
         const color = COLORES_RECORRIDOS[r % COLORES_RECORRIDOS.length];
         const ordenados = ordenarPorCercania(recorridos[r].contenedores);
 
-        const puntos = [];
+        let puntos = [];
         for (let i = 0; i < ordenados.length; i++) {
             const c = ordenados[i];
             puntos.push([c.latitud, c.longitud]);
@@ -204,7 +290,13 @@ function dibujarRecorridos() {
                 .bindPopup(`<strong>${i + 1}. ${limpiarTexto(c.calle)}</strong><br>${limpiarTexto(recorridos[r].ruta)}`)
                 .addTo(capaRecorridos);
         }
-        L.polyline(puntos, { color: color, weight: 4, opacity: 0.8 }).addTo(capaRecorridos);
+        // Si tenemos el camino por las calles dibujamos ese con linea llena.
+        // Si no, la linea entre los contenedores va punteada (es solo para ver el orden, no es por donde va).
+        if (caminoPorCalles[recorridos[r].id]) {
+            L.polyline(caminos[recorridos[r].id], { color: color, weight: 5, opacity: 0.75 }).addTo(capaRecorridos);
+        } else {
+            L.polyline(puntos, { color: color, weight: 3, opacity: 0.7, dashArray: "6 8" }).addTo(capaRecorridos);
+        }
     }
 }
 
@@ -336,7 +428,7 @@ function buscarMiUbicacion() {
     }
     mostrarMensaje("Buscando tu ubicación...", false);
     navigator.geolocation.getCurrentPosition(mostrarMiUbicacion, function () {
-        mostrarMensaje("No se pudo obtener tu ubicación. Revisa que el navegador tenga permiso.", true);
+        mostrarMensaje("No se pudo obtener tu ubicación. Revisá que el navegador tenga permiso.", true);
     });
 }
 
@@ -345,7 +437,7 @@ function mostrarMiUbicacion(posicion) {
     const lng = posicion.coords.longitude;
     capaUbicacion.clearLayers();
 
-    L.marker([lat, lng], { icon: crearIcono("marca-yo", "📍") })
+    L.marker([lat, lng], { icon: crearIcono("marca-yo", icono("pin")) })
         .bindPopup("<strong>Estás acá</strong>")
         .addTo(capaUbicacion);
 
@@ -400,11 +492,11 @@ function activarModoAgregar() {
     modoAgregar = !modoAgregar;
     const boton = document.getElementById("botonAgregar");
     if (modoAgregar) {
-        boton.textContent = "✖ Cancelar";
+        boton.innerHTML = icono("cerrar") + "<span>Cancelar</span>";
         document.getElementById("mapa").classList.add("eligiendo");
-        mostrarMensaje("Toca en el mapa el lugar donde está el contenedor nuevo", false);
+        mostrarMensaje("Tocá en el mapa el lugar donde está el contenedor nuevo", false);
     } else {
-        boton.textContent = "➕ Agregar contenedor";
+        boton.innerHTML = icono("mas") + "<span>Agregar contenedor</span>";
         document.getElementById("mapa").classList.remove("eligiendo");
     }
 }

@@ -36,13 +36,13 @@ function mostrarTablaUsuarios(lista, conAcciones) {
         if (conAcciones && u.estado == "Pendiente") {
             // Vecino que se registro y espera que lo aprueben
             filas += `<td class="acciones">
-                <button class="btn btn-primary btn-sm" onclick="aprobarElegido(${u.id}, true)">✔ Aprobar</button>
-                <button class="btn btn-danger btn-sm" onclick="aprobarElegido(${u.id}, false)">✖ Rechazar</button>
+                <button class="btn btn-primary btn-sm" onclick="aprobarElegido(${u.id}, true)">${icono("check")}Aprobar</button>
+                <button class="btn btn-danger btn-sm" onclick="aprobarElegido(${u.id}, false)">${icono("cerrar")}Rechazar</button>
             </td>`;
         } else if (conAcciones) {
             filas += `<td class="acciones">
                 <button class="btn btn-secondary btn-sm" onclick="editarUsuario(${u.id})">${traducir("Editar")}</button>
-                <button class="btn btn-secondary btn-sm" onclick="abrirCambioRol(${u.id})">🔑 ${traducir("Rol")}</button>
+                <button class="btn btn-secondary btn-sm" onclick="abrirCambioRol(${u.id})">${icono("llave")}${traducir("Rol")}</button>
                 <button class="btn btn-danger btn-sm" onclick="borrarUsuarioElegido(${u.id})">${traducir("Borrar")}</button>
             </td>`;
         }
@@ -93,7 +93,7 @@ function mostrarTablaCamiones(lista, conAcciones) {
             <td>${c.capacidad_carga ? Number(c.capacidad_carga) + " kg" : ""}</td>
             <td><span class="etiqueta ${colorEstado(c.estado)}">${limpiarTexto(c.estado)}</span></td>
             <td><span class="etiqueta ${colorEstado(c.disponibilidad)}">${limpiarTexto(c.disponibilidad)}</span></td>
-            <td><button class="btn btn-secondary btn-sm" onclick="verMantenimientos(${c.id})">🔧 Ver</button></td>`;
+            <td><button class="btn btn-secondary btn-sm" onclick="verMantenimientos(${c.id})">${icono("herramienta")}Ver</button></td>`;
         if (conAcciones) {
             filas += botonesAcciones("Camion", c.id);
         }
@@ -285,11 +285,11 @@ function mostrarTablaIncidencias(lista) {
         // Donde esta exactamente y quien la reporto (si fue un vecino)
         let lugar = "";
         if (i.referencia) {
-            lugar = `<br><small>📍 ${limpiarTexto(i.referencia)}</small>`;
+            lugar = `<br><small class="con-icono">${icono("pin")}${limpiarTexto(i.referencia)}</small>`;
         }
         let quien = "";
         if (i.vecino) {
-            quien = `<br><small class="reportada-por">📣 Reportada por ${limpiarTexto(i.vecino)}</small>`;
+            quien = `<br><small class="reportada-por con-icono">${icono("megafono")}Reportada por ${limpiarTexto(i.vecino)}</small>`;
         }
 
         filas += `<tr>
@@ -396,7 +396,7 @@ function mostrarTablaRepuestos(lista, conAcciones) {
     for (const r of lista) {
         let etiqueta = `<span class="etiqueta">${r.cantidad}</span>`;
         if (Number(r.cantidad) <= Number(r.cantidad_minima)) {
-            etiqueta = `<span class="etiqueta mal" title="Hay que reponer">${r.cantidad} ⚠️</span>`;
+            etiqueta = `<span class="etiqueta mal" title="Hay que reponer">${icono("alerta")}${r.cantidad}</span>`;
         }
         filas += `<tr>
             <td>${r.id}</td>

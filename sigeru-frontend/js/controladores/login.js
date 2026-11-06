@@ -3,6 +3,7 @@
 // El enlace de "Crear cuenta" lleva al registro de la landing
 document.getElementById("linkRegistro").href = URL_LANDING + "#registro";
 document.getElementById("linkLanding").href = URL_LANDING;
+document.getElementById("linkLogo").href = URL_LANDING;
 
 const formulario = document.getElementById("formLogin");
 
@@ -14,7 +15,7 @@ formulario.addEventListener("submit", async function (evento) {
     const contrasena = document.getElementById("contrasena").value;
 
     if (email == "" || contrasena == "") {
-        mostrarMensaje("Completa el correo y la contraseña", true);
+        mostrarMensaje("Completá el correo y la contraseña", true);
         return;
     }
 

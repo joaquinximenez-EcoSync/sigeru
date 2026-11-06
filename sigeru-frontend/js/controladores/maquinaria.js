@@ -64,7 +64,7 @@ function editarMaquina(id) {
 }
 
 async function borrarMaquinaElegido(id) {
-    if (!confirm("¿Seguro que quieres borrar la máquina #" + id + "?")) {
+    if (!confirm("¿Seguro que querés borrar la máquina #" + id + "?")) {
         return;
     }
     try {

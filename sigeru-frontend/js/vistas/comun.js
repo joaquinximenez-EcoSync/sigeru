@@ -1,5 +1,10 @@
 // Vista: funciones para mostrar cosas en pantalla que usan todas las paginas
 
+// Devuelve el HTML de un icono (los iconos estan todos en img/iconos.svg)
+function icono(nombre) {
+    return `<svg class="icono" aria-hidden="true"><use href="img/iconos.svg#${nombre}"></use></svg>`;
+}
+
 // Muestra un mensaje verde (bien) o rojo (error)
 function mostrarMensaje(texto, esError) {
     const caja = document.getElementById("mensaje");
@@ -123,6 +128,28 @@ function buscarPorId(lista, id) {
         }
     }
     return null;
+}
+
+// Muestra un numero contando desde 0 hasta el numero final (efecto del panel)
+function contarHasta(idElemento, numero) {
+    const elemento = document.getElementById(idElemento);
+    const final = Number(numero);
+    let actual = 0;
+    // Se divide en 20 pasos de 30 milisegundos (en total tarda un poco mas de medio segundo)
+    const paso = Math.max(1, Math.ceil(final / 20));
+    const reloj = setInterval(function () {
+        actual = actual + paso;
+        if (actual >= final) {
+            actual = final;
+            clearInterval(reloj);
+        }
+        elemento.textContent = actual;
+    }, 30);
+}
+
+// Fecha de hoy escrita completa, como "viernes 6 de noviembre de 2026"
+function fechaLarga() {
+    return new Date().toLocaleDateString("es-UY", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 }
 
 // Fecha de hoy como "2026-11-06" (para los campos de fecha de los formularios)

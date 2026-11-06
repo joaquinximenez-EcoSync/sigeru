@@ -171,7 +171,7 @@ function editarUsuario(id) {
 }
 
 async function borrarUsuarioElegido(id) {
-    if (!confirm("¿Seguro que quieres borrar el usuario #" + id + "?")) {
+    if (!confirm("¿Seguro que querés borrar el usuario #" + id + "?")) {
         return;
     }
     try {

@@ -55,6 +55,37 @@ function obtenerRutas() {
     return pedirAlServidor(API_RECOLECCION + "/rutas");
 }
 
+// Pide el camino por las calles que une varios puntos (lista de [latitud, longitud]).
+// Usa el servicio gratis de OSRM (mapas de OpenStreetMap). Si no responde en 8 segundos o falla, devuelve null.
+async function pedirCaminoPorCalles(puntos) {
+    // OSRM pide los puntos al reves: longitud,latitud;longitud,latitud;...
+    const partes = [];
+    for (const p of puntos) {
+        partes.push(Number(p[1]).toFixed(6) + "," + Number(p[0]).toFixed(6));
+    }
+    const direccion = "https://router.project-osrm.org/route/v1/driving/" + partes.join(";") + "?overview=full&geometries=geojson";
+
+    const cancelar = new AbortController();
+    const reloj = setTimeout(function () { cancelar.abort(); }, 8000);
+    try {
+        const respuesta = await fetch(direccion, { signal: cancelar.signal });
+        const datos = await respuesta.json();
+        if (datos.code != "Ok") {
+            return null;
+        }
+        // Lo pasamos de nuevo a [latitud, longitud]
+        const camino = [];
+        for (const c of datos.routes[0].geometry.coordinates) {
+            camino.push([c[1], c[0]]);
+        }
+        return camino;
+    } catch (error) {
+        return null;
+    } finally {
+        clearTimeout(reloj);
+    }
+}
+
 function obtenerZonas() {
     return pedirAlServidor(API_RECOLECCION + "/zonas");
 }

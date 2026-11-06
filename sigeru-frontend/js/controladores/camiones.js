@@ -55,7 +55,7 @@ function editarCamion(id) {
 }
 
 async function borrarCamionElegido(id) {
-    if (!confirm("¿Seguro que quieres borrar el camión #" + id + "?")) {
+    if (!confirm("¿Seguro que querés borrar el camión #" + id + "?")) {
         return;
     }
     try {
@@ -120,7 +120,7 @@ function cerrarMantenimientos() {
 }
 
 async function borrarMantenimientoElegido(idCamion, nro) {
-    if (!confirm("¿Seguro que quieres borrar este mantenimiento?")) {
+    if (!confirm("¿Seguro que querés borrar este mantenimiento?")) {
         return;
     }
     try {

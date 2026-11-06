@@ -59,22 +59,22 @@ function textoContenedor(c, botones) {
     }
     if (botones == "personal") {
         texto += `<div class="popup-botones">
-            <button class="btn btn-primary btn-sm" onclick="marcarVaciado(${c.id})">✔ Vaciado</button>
-            <button class="btn btn-danger btn-sm" onclick="irAReportar(${c.id})">⚠️ Reportar incidencia</button>
+            <button class="btn btn-primary btn-sm" onclick="marcarVaciado(${c.id})">${icono("check")}Vaciado</button>
+            <button class="btn btn-danger btn-sm" onclick="irAReportar(${c.id})">${icono("incidencias")}Reportar incidencia</button>
         </div>`;
     }
     if (botones == "vecino") {
         texto += `<div class="popup-botones">
-            <button class="btn btn-danger btn-sm" onclick="irAReportar(${c.id})">⚠️ Reportar incidencia</button>
+            <button class="btn btn-danger btn-sm" onclick="irAReportar(${c.id})">${icono("incidencias")}Reportar incidencia</button>
         </div>`;
     }
     return texto;
 }
 
 function textoIncidencia(i) {
-    return `<strong>⚠ Incidencia #${i.id}: ${limpiarTexto(i.tipo)}</strong><br>
+    return `<strong>Incidencia #${i.id}: ${limpiarTexto(i.tipo)}</strong><br>
         ${limpiarTexto(i.descripcion)}<br>
-        ${i.referencia ? "📍 " + limpiarTexto(i.referencia) + "<br>" : ""}
+        ${i.referencia ? "Lugar: " + limpiarTexto(i.referencia) + "<br>" : ""}
         ${limpiarTexto(i.calle)}${i.municipio ? " - Municipio " + i.municipio : ""}<br>
         Prioridad: ${limpiarTexto(i.prioridad)} | Estado: ${limpiarTexto(i.estado)}<br>
         Detectada: ${limpiarTexto(i.fecha_deteccion)}`;
@@ -91,7 +91,7 @@ function textoInstalacion(ins) {
 }
 
 function textoCamion(c) {
-    return `<strong>🚛 ${limpiarTexto(c.matricula)}</strong><br>
+    return `<strong>Camión ${limpiarTexto(c.matricula)}</strong><br>
         ${limpiarTexto(c.estado)} - ${limpiarTexto(c.disponibilidad)}<br>
         <small>Posición simulada</small>`;
 }

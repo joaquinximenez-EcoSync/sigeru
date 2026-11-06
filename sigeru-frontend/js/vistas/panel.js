@@ -5,14 +5,14 @@ function mostrarAlertas(alertas) {
     const caja = document.getElementById("listaAlertas");
 
     if (alertas.length == 0) {
-        caja.innerHTML = `<p class="sin-alertas">✅ No hay alertas. ¡Todo en orden!</p>`;
+        caja.innerHTML = `<p class="sin-alertas">${icono("ok")}No hay alertas. ¡Está todo en orden!</p>`;
         return;
     }
 
-    const iconos = { alta: "🔴", media: "🟠", info: "🔵" };
+    const iconos = { alta: "alerta", media: "reloj", info: "info" };
     let html = "";
     for (const a of alertas) {
-        html += `<a class="alerta-item ${a.nivel}" href="${a.enlace}">${iconos[a.nivel]} ${limpiarTexto(a.texto)}</a>`;
+        html += `<a class="alerta-item ${a.nivel}" href="${a.enlace}">${icono(iconos[a.nivel])}<span>${limpiarTexto(a.texto)}</span></a>`;
     }
     caja.innerHTML = html;
 }
@@ -70,7 +70,7 @@ function mostrarEstadisticas(datos) {
     for (const c of datos.top_desbordados) {
         top.push({ nombre: "#" + c.id + " " + c.calle + " (" + c.zona + ")", cantidad: c.cantidad });
     }
-    mostrarBarras("graficoTop", top, "nombre", "Ningún contenedor se desbordó este mes 🎉");
+    mostrarBarras("graficoTop", top, "nombre", "Ningún contenedor se desbordó este mes");
 
     const municipios = [];
     for (const m of datos.por_municipio) {

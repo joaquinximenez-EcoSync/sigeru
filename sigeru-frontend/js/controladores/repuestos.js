@@ -77,7 +77,7 @@ function editarRepuesto(id) {
 }
 
 async function borrarRepuestoElegido(id) {
-    if (!confirm("¿Seguro que quieres borrar el repuesto #" + id + "?")) {
+    if (!confirm("¿Seguro que querés borrar el repuesto #" + id + "?")) {
         return;
     }
     try {

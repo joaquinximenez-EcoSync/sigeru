@@ -24,7 +24,7 @@ function mostrarListaMensajes(lista) {
     const caja = document.getElementById("listaMensajes");
 
     if (lista.length == 0) {
-        caja.innerHTML = `<p class="sin-mensajes">No tienes notificaciones</p>`;
+        caja.innerHTML = `<p class="sin-mensajes">No tenés notificaciones</p>`;
         return;
     }
 
@@ -45,7 +45,7 @@ function mostrarListaMensajes(lista) {
 // Cartelito que aparece abajo a la derecha cuando llega una notificacion nueva
 function mostrarAvisoEmergente(m) {
     const aviso = document.getElementById("avisoEmergente");
-    aviso.innerHTML = `<strong>🔔 Nueva notificación</strong><br>${limpiarTexto(m.texto)}`;
+    aviso.innerHTML = `<strong>${icono("campana")}Nueva notificación</strong><br>${limpiarTexto(m.texto)}`;
     aviso.onclick = function () {
         abrirMensaje(m.id, m.enlace);
     };

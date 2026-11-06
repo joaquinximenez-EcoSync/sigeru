@@ -80,7 +80,7 @@ function editarCentro(id) {
 }
 
 async function borrarCentroElegido(id) {
-    if (!confirm("¿Seguro que quieres borrar el centro de acopio #" + id + "?")) {
+    if (!confirm("¿Seguro que querés borrar el centro de acopio #" + id + "?")) {
         return;
     }
     try {

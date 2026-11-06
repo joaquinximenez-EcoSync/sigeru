@@ -12,7 +12,7 @@ async function iniciar() {
     // El vecino ve la pagina como "Mis incidencias"
     if (usuarioLogueado.rol == "Vecino") {
         document.querySelector("h1").textContent = "Mis incidencias";
-        document.querySelector(".subtitulo").textContent = "¿Un contenedor está lleno, roto, no lo vinieron a vaciar o hay basura en la calle? Repórtalo y sigue acá cómo va.";
+        document.querySelector(".subtitulo").textContent = "¿Un contenedor está lleno, roto, no lo vinieron a vaciar o hay basura en la calle? Reportalo y seguí acá cómo va.";
     }
 
     try {

@@ -5,26 +5,27 @@ async function iniciar() {
     if (!haySesion) return;
 
     document.getElementById("saludo").textContent = usuarioLogueado.nombre;
+    document.getElementById("fechaHoy").textContent = fechaLarga();
 
     // Totales que se muestran en las tarjetas
     try {
         const contenedores = await obtenerContenedores();
-        document.getElementById("totalContenedores").textContent = contenedores.length;
+        contarHasta("totalContenedores", contenedores.length);
 
         let conProblemas = 0;
         for (const c of contenedores) {
             if (c.estado != "Funcional") conProblemas++;
         }
-        document.getElementById("contenedoresProblema").textContent = conProblemas;
+        contarHasta("contenedoresProblema", conProblemas);
 
         if (usuarioLogueado.rol != "Vecino") {
             const camiones = await obtenerCamiones();
-            document.getElementById("totalCamiones").textContent = camiones.length;
+            contarHasta("totalCamiones", camiones.length);
         }
 
         if (usuarioLogueado.rol == "Administrador") {
             const usuarios = await obtenerUsuarios();
-            document.getElementById("totalUsuarios").textContent = usuarios.length;
+            contarHasta("totalUsuarios", usuarios.length);
         }
 
         const alertas = await obtenerAlertas();

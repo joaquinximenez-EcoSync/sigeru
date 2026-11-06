@@ -65,7 +65,7 @@ function editarContenedor(id) {
 }
 
 async function borrarContenedorElegido(id) {
-    if (!confirm("¿Seguro que quieres borrar el contenedor #" + id + "?")) {
+    if (!confirm("¿Seguro que querés borrar el contenedor #" + id + "?")) {
         return;
     }
     try {

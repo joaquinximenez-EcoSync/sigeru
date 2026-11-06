@@ -4,14 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Informes | SiGeRU</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 <div class="panel">
     <aside class="sidebar">
         <div class="logo-fila">
-            <div class="logo">SiGeRU</div>
-            <button class="campana" onclick="abrirNotificaciones()" title="Notificaciones">🔔<span id="contadorMensajes" class="contador"></span></button>
+            <a class="logo" href="panel.html"><svg class="logo-icono" aria-hidden="true"><use href="img/iconos.svg#hoja"></use></svg>SiGeRU</a>
+            <button class="campana" onclick="abrirNotificaciones()" title="Notificaciones"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#campana"></use></svg><span id="contadorMensajes" class="contador"></span></button>
         </div>
         <!-- Lista de notificaciones (se abre al tocar la campana) -->
         <div id="panelNotificaciones" class="panel-notificaciones">
@@ -22,34 +24,44 @@
             <div id="listaMensajes"></div>
         </div>
         <div id="avisoEmergente" class="aviso-emergente"></div>
-        <a href="panel.html">🏠 Inicio <span id="contadorAlertas" class="contador" title="Alertas"></span></a>
-        <a href="mapa.html">🗺️ Mapa</a>
-        <a href="incidencias.html">⚠️ Incidencias</a>
-        <a href="contenedores.html">🗑️ Contenedores</a>
-        <a href="camiones.html" class="no-vecino">🚛 Camiones</a>
-        <a href="recorridos.html" class="no-vecino">🛣️ Recorridos</a>
-        <a href="centros.html" class="no-vecino">🏭 Centros de acopio</a>
-        <a href="maquinaria.html" class="no-vecino">⚙️ Maquinaria</a>
-        <a href="repuestos.html" class="no-vecino">📦 Repuestos</a>
-        <a href="informes.html" class="activo no-vecino">📄 Informes</a>
-        <a href="usuarios.html" class="solo-admin">👥 Usuarios</a>
-        <a href="parametros.html" class="solo-admin">🛠️ Parámetros</a>
+        <nav class="menu">
+            <a href="panel.html"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#inicio"></use></svg><span>Inicio <span id="contadorAlertas" class="contador" title="Alertas"></span></span></a>
+            <a href="mapa.html"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#mapa"></use></svg><span>Mapa</span></a>
+            <a href="incidencias.html"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#incidencias"></use></svg><span>Incidencias</span></a>
+            <a href="contenedores.html"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#contenedores"></use></svg><span>Contenedores</span></a>
+            <a href="camiones.html" class="no-vecino"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#camiones"></use></svg><span>Camiones</span></a>
+            <a href="recorridos.html" class="no-vecino"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#recorridos"></use></svg><span>Recorridos</span></a>
+            <a href="centros.html" class="no-vecino"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#centros"></use></svg><span>Centros de acopio</span></a>
+            <a href="maquinaria.html" class="no-vecino"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#maquinaria"></use></svg><span>Maquinaria</span></a>
+            <a href="repuestos.html" class="no-vecino"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#repuestos"></use></svg><span>Repuestos</span></a>
+            <a href="informes.html" class="activo no-vecino"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#informes"></use></svg><span>Informes</span></a>
+            <a href="usuarios.html" class="solo-admin"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#usuarios"></use></svg><span>Usuarios</span></a>
+            <a href="parametros.html" class="solo-admin"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#parametros"></use></svg><span>Parámetros</span></a>
+        </nav>
         <div class="usuario">
-            <div>
+            <div class="avatar"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#usuario"></use></svg></div>
+            <div class="usuario-datos">
                 <strong id="nombreUsuario"></strong>
                 <span id="rolUsuario"></span>
             </div>
-            <button class="btn btn-secondary btn-sm" onclick="salir()">Cerrar sesión</button>
+            <button class="boton-salir" onclick="salir()" title="Cerrar sesión"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#salir"></use></svg></button>
         </div>
     </aside>
 
     <main class="contenido">
         <div class="encabezado no-imprimir">
-            <h1>Informes</h1>
+            <div class="titulo-pagina">
+                <div class="icono-titulo"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#informes"></use></svg></div>
+                <div>
+                    <h1>Informes</h1>
+                    <p class="subtitulo">Elegí entre qué fechas querés ver y te armamos el resumen: cuántos problemas hubo, cuántos se arreglaron,
+                       cuánto se tardó y cuántos kilos de basura se juntaron. Lo podés imprimir o bajar para abrir en Excel.</p>
+                </div>
+            </div>
             <div class="botones-mapa">
-                <button class="btn btn-secondary" onclick="exportarIncidencias()">📥 Exportar incidencias (CSV)</button>
-                <button class="btn btn-secondary" onclick="exportarVolumen()">📥 Exportar recolecciones (CSV)</button>
-                <button class="btn btn-secondary" onclick="imprimir()">🖨️ Imprimir</button>
+                <button class="btn btn-secondary" onclick="exportarIncidencias()"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#descargar"></use></svg>Incidencias (Excel)</button>
+                <button class="btn btn-secondary" onclick="exportarVolumen()"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#descargar"></use></svg>Recolecciones (Excel)</button>
+                <button class="btn btn-secondary" onclick="imprimir()"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#imprimir"></use></svg>Imprimir</button>
             </div>
         </div>
 
@@ -112,8 +124,9 @@
             </table>
         </div>
 
-        <h2 class="titulo-seccion seccion-volumen">📦 Volumen recolectado</h2>
-        <p class="subtitulo">Kilos de residuos que se sacaron al vaciar los contenedores entre esas fechas (datos simulados).</p>
+        <h2 class="titulo-seccion seccion-volumen"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#reciclar"></use></svg>Cuánta basura se juntó</h2>
+        <p class="subtitulo">Los kilos que se sacaron cada vez que se vació un contenedor entre esas fechas. Como no tenemos balanzas
+           en los camiones, los kilos se calculan según el tamaño del contenedor (son datos simulados).</p>
         <div class="dashboard-grid">
             <div class="stat">
                 <strong id="volKilos">-</strong>
@@ -134,11 +147,11 @@
         </div>
         <div class="graficos">
             <div class="card">
-                <h3>📍 Kilos por municipio</h3>
+                <h3><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#pin"></use></svg>Kilos por municipio</h3>
                 <div id="graficoVolMunicipio"></div>
             </div>
             <div class="card">
-                <h3>♻️ Kilos por tipo de residuo</h3>
+                <h3><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#reciclar"></use></svg>Kilos por tipo de residuo</h3>
                 <div id="graficoVolResiduo"></div>
             </div>
         </div>

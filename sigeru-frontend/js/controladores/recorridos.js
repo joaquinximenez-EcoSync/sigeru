@@ -78,7 +78,7 @@ async function editarRecorrido(id) {
 }
 
 async function borrarRecorridoElegido(id) {
-    if (!confirm("¿Seguro que quieres borrar el recorrido #" + id + "? Sus zonas quedan sin recorrido.")) {
+    if (!confirm("¿Seguro que querés borrar el recorrido #" + id + "? Sus zonas quedan sin recorrido.")) {
         return;
     }
     try {
