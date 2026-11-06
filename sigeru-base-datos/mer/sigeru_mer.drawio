@@ -1131,4 +1131,80 @@
       </root>
     </mxGraphModel>
   </diagram>
+  <diagram name="Agregado 3ra entrega" id="tercera-entrega-1">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="1169" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="p2-txt-1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=15;" value="&lt;b&gt;Agregado en la 3ra entrega&lt;/b&gt;&lt;br&gt;Las entidades grises con borde punteado ya están en la Página-1; acá se muestran solo para dibujar sus relaciones nuevas.&lt;br&gt;En Incidencia se agregaron los atributos Tipo y FechaResolucion (están en la Página-1)." vertex="1"><mxGeometry x="40" y="0" width="900" height="80" as="geometry" /></mxCell>
+        <mxCell id="p2-ent-2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=18;dashed=1;fillColor=#f5f5f5;fontColor=#666666;" value="Usuarios" vertex="1"><mxGeometry x="40" y="200" width="140" height="60" as="geometry" /></mxCell>
+        <mxCell id="p2-atr-3" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Estado" vertex="1"><mxGeometry x="0" y="110" width="80" height="32" as="geometry" /></mxCell>
+        <mxCell id="p2-lin-4" edge="1" parent="1" source="p2-atr-3" target="p2-ent-2" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-atr-5" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="CodigoVerificacion" vertex="1"><mxGeometry x="110" y="100" width="182" height="32" as="geometry" /></mxCell>
+        <mxCell id="p2-lin-6" edge="1" parent="1" source="p2-atr-5" target="p2-ent-2" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-atr-7" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="FechaRegistro" vertex="1"><mxGeometry x="50" y="300" width="137" height="32" as="geometry" /></mxCell>
+        <mxCell id="p2-lin-8" edge="1" parent="1" source="p2-atr-7" target="p2-ent-2" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-rel-9" parent="1" style="rhombus;whiteSpace=wrap;html=1;fontSize=15;" value="Recibe" vertex="1"><mxGeometry x="270" y="195" width="120" height="70" as="geometry" /></mxCell>
+        <mxCell id="p2-ent-10" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=18;" value="Mensaje" vertex="1"><mxGeometry x="470" y="200" width="140" height="60" as="geometry" /></mxCell>
+        <mxCell id="p2-lin-11" edge="1" parent="1" source="p2-ent-2" target="p2-rel-9" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-card-12" connectable="0" parent="p2-lin-11" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=16;" value="1" vertex="1"><mxGeometry x="-0.6" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="p2-lin-13" edge="1" parent="1" source="p2-ent-10" target="p2-rel-9" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-card-14" connectable="0" parent="p2-lin-13" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=16;" value="N" vertex="1"><mxGeometry x="-0.6" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="p2-atr-15" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="&lt;u&gt;IdMensaje&lt;/u&gt;" vertex="1"><mxGeometry x="440" y="110" width="101" height="32" as="geometry" /></mxCell>
+        <mxCell id="p2-lin-16" edge="1" parent="1" source="p2-atr-15" target="p2-ent-10" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-atr-17" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Texto" vertex="1"><mxGeometry x="560" y="110" width="80" height="32" as="geometry" /></mxCell>
+        <mxCell id="p2-lin-18" edge="1" parent="1" source="p2-atr-17" target="p2-ent-10" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-atr-19" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Enlace" vertex="1"><mxGeometry x="660" y="170" width="80" height="32" as="geometry" /></mxCell>
+        <mxCell id="p2-lin-20" edge="1" parent="1" source="p2-atr-19" target="p2-ent-10" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-atr-21" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Leido" vertex="1"><mxGeometry x="660" y="240" width="80" height="32" as="geometry" /></mxCell>
+        <mxCell id="p2-lin-22" edge="1" parent="1" source="p2-atr-21" target="p2-ent-10" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-atr-23" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Fecha" vertex="1"><mxGeometry x="540" y="300" width="80" height="32" as="geometry" /></mxCell>
+        <mxCell id="p2-lin-24" edge="1" parent="1" source="p2-atr-23" target="p2-ent-10" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-ent-25" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=18;dashed=1;fillColor=#f5f5f5;fontColor=#666666;" value="Contenedor" vertex="1"><mxGeometry x="40" y="460" width="140" height="60" as="geometry" /></mxCell>
+        <mxCell id="p2-rel-26" parent="1" style="rhombus;whiteSpace=wrap;html=1;fontSize=15;" value="Vacia" vertex="1"><mxGeometry x="270" y="455" width="120" height="70" as="geometry" /></mxCell>
+        <mxCell id="p2-ent-27" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=18;" value="Recoleccion" vertex="1"><mxGeometry x="470" y="460" width="140" height="60" as="geometry" /></mxCell>
+        <mxCell id="p2-lin-28" edge="1" parent="1" source="p2-ent-25" target="p2-rel-26" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-card-29" connectable="0" parent="p2-lin-28" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=16;" value="1" vertex="1"><mxGeometry x="-0.6" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="p2-lin-30" edge="1" parent="1" source="p2-ent-27" target="p2-rel-26" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-card-31" connectable="0" parent="p2-lin-30" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=16;" value="N" vertex="1"><mxGeometry x="-0.6" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="p2-atr-32" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="&lt;u&gt;IdRecoleccion&lt;/u&gt;" vertex="1"><mxGeometry x="440" y="380" width="137" height="32" as="geometry" /></mxCell>
+        <mxCell id="p2-lin-33" edge="1" parent="1" source="p2-atr-32" target="p2-ent-27" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-atr-34" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Fecha" vertex="1"><mxGeometry x="660" y="430" width="80" height="32" as="geometry" /></mxCell>
+        <mxCell id="p2-lin-35" edge="1" parent="1" source="p2-atr-34" target="p2-ent-27" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-atr-36" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Kilos" vertex="1"><mxGeometry x="660" y="500" width="80" height="32" as="geometry" /></mxCell>
+        <mxCell id="p2-lin-37" edge="1" parent="1" source="p2-atr-36" target="p2-ent-27" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-ent-38" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=18;dashed=1;fillColor=#f5f5f5;fontColor=#666666;" value="Instalacion" vertex="1"><mxGeometry x="40" y="700" width="140" height="60" as="geometry" /></mxCell>
+        <mxCell id="p2-rel-39" parent="1" style="rhombus;whiteSpace=wrap;html=1;fontSize=15;" value="Guarda" vertex="1"><mxGeometry x="270" y="695" width="120" height="70" as="geometry" /></mxCell>
+        <mxCell id="p2-ent-40" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=18;" value="Repuesto" vertex="1"><mxGeometry x="470" y="700" width="140" height="60" as="geometry" /></mxCell>
+        <mxCell id="p2-lin-41" edge="1" parent="1" source="p2-ent-38" target="p2-rel-39" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-card-42" connectable="0" parent="p2-lin-41" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=16;" value="1" vertex="1"><mxGeometry x="-0.6" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="p2-lin-43" edge="1" parent="1" source="p2-ent-40" target="p2-rel-39" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-card-44" connectable="0" parent="p2-lin-43" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=16;" value="N" vertex="1"><mxGeometry x="-0.6" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="p2-rel-45" parent="1" style="rhombus;whiteSpace=wrap;html=1;fontSize=15;" value="EsDe" vertex="1"><mxGeometry x="720" y="695" width="120" height="70" as="geometry" /></mxCell>
+        <mxCell id="p2-ent-46" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=18;dashed=1;fillColor=#f5f5f5;fontColor=#666666;" value="TipoResiduo" vertex="1"><mxGeometry x="920" y="700" width="140" height="60" as="geometry" /></mxCell>
+        <mxCell id="p2-lin-47" edge="1" parent="1" source="p2-ent-40" target="p2-rel-45" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-card-48" connectable="0" parent="p2-lin-47" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=16;" value="N" vertex="1"><mxGeometry x="-0.6" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="p2-lin-49" edge="1" parent="1" source="p2-ent-46" target="p2-rel-45" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-card-50" connectable="0" parent="p2-lin-49" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=16;" value="1" vertex="1"><mxGeometry x="-0.6" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="p2-atr-51" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="&lt;u&gt;IdRepuesto&lt;/u&gt;" vertex="1"><mxGeometry x="400" y="620" width="110" height="32" as="geometry" /></mxCell>
+        <mxCell id="p2-lin-52" edge="1" parent="1" source="p2-atr-51" target="p2-ent-40" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-atr-53" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Nombre" vertex="1"><mxGeometry x="520" y="615" width="80" height="32" as="geometry" /></mxCell>
+        <mxCell id="p2-lin-54" edge="1" parent="1" source="p2-atr-53" target="p2-ent-40" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-atr-55" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Tipo" vertex="1"><mxGeometry x="630" y="630" width="80" height="32" as="geometry" /></mxCell>
+        <mxCell id="p2-lin-56" edge="1" parent="1" source="p2-atr-55" target="p2-ent-40" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-atr-57" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Cantidad" vertex="1"><mxGeometry x="420" y="800" width="92" height="32" as="geometry" /></mxCell>
+        <mxCell id="p2-lin-58" edge="1" parent="1" source="p2-atr-57" target="p2-ent-40" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-atr-59" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="CantidadMinima" vertex="1"><mxGeometry x="540" y="810" width="146" height="32" as="geometry" /></mxCell>
+        <mxCell id="p2-lin-60" edge="1" parent="1" source="p2-atr-59" target="p2-ent-40" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-ent-61" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=18;" value="Parametro" vertex="1"><mxGeometry x="470" y="960" width="140" height="60" as="geometry" /></mxCell>
+        <mxCell id="p2-atr-62" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="&lt;u&gt;Nombre&lt;/u&gt;" vertex="1"><mxGeometry x="380" y="1060" width="80" height="32" as="geometry" /></mxCell>
+        <mxCell id="p2-lin-63" edge="1" parent="1" source="p2-atr-62" target="p2-ent-61" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-atr-64" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Valor" vertex="1"><mxGeometry x="490" y="1070" width="80" height="32" as="geometry" /></mxCell>
+        <mxCell id="p2-lin-65" edge="1" parent="1" source="p2-atr-64" target="p2-ent-61" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-atr-66" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Descripcion" vertex="1"><mxGeometry x="590" y="1060" width="119" height="32" as="geometry" /></mxCell>
+        <mxCell id="p2-lin-67" edge="1" parent="1" source="p2-atr-66" target="p2-ent-61" style="endArrow=none;html=1;rounded=0;" value=""><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p2-txt-68" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=13;" value="Parametro no se relaciona con otras entidades: guarda valores que cambia el administrador (días de alerta, % de centro lleno, aprobar registros, idioma, kilos por litro)." vertex="1"><mxGeometry x="680" y="960" width="330" height="90" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
 </mxfile>

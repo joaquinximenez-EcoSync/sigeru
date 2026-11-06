@@ -36,6 +36,9 @@ PK = clave primaria, FK = clave foránea, UQ = único.
 | telefono | VARCHAR(30) | (opcional) |
 | contrasena | VARCHAR(255) | NOT NULL (se guarda encriptada) |
 | rol | ENUM('Administrador','Operario','Recolector','Vecino') | NOT NULL |
+| estado | ENUM('Sin verificar','Pendiente','Activo','Rechazado') | NOT NULL, por defecto 'Activo' (3ra entrega) |
+| codigo_verificacion | VARCHAR(64) | Código del enlace del correo de verificación (3ra entrega) |
+| fecha_registro | DATETIME | Por defecto la fecha actual (3ra entrega) |
 
 **vecinos** (subtipo) — `id_usuario` PK y FK → usuarios, `calle` VARCHAR(100), `zona` VARCHAR(100)
 
@@ -154,12 +157,64 @@ UQ (id_cuadrilla, id_ruta)
 
 **plantas_procesamiento** (relación *Viaja*) — `id_planta` PK, `nombre` VARCHAR(100) NOT NULL, `calle`, `zona`, `id_centro` FK → centros_acopio
 
+### Agregadas en la 3ra entrega
+
+**mensajes** (relación *Recibe*: un usuario recibe muchos mensajes, 1:N) — las notificaciones de la campana
+
+| Columna | Tipo | Restricciones |
+|---------|------|---------------|
+| id_mensaje | INT | PK, AUTO_INCREMENT |
+| id_usuario | INT | FK → usuarios (ON DELETE CASCADE), NOT NULL |
+| texto | VARCHAR(255) | NOT NULL |
+| enlace | VARCHAR(100) | Página que se abre al tocarla |
+| leido | BOOLEAN | NOT NULL, por defecto FALSE |
+| fecha | DATETIME | Por defecto la fecha actual |
+
+**parametros** — valores del sistema que cambia el administrador (el software es parametrizable)
+
+| Columna | Tipo | Restricciones |
+|---------|------|---------------|
+| nombre | VARCHAR(50) | PK |
+| valor | VARCHAR(100) | NOT NULL |
+| descripcion | VARCHAR(200) | |
+
+Parámetros cargados: `dias_alerta_desborde` (2), `porcentaje_centro_lleno` (80), `aprobar_registros` (si),
+`idioma` (es), `kilos_por_litro` (0.18).
+
+**repuestos** (relación *Guarda*: una instalación guarda muchos repuestos, 1:N) — inventario de contenedores de repuesto, tapas y ruedas
+
+| Columna | Tipo | Restricciones |
+|---------|------|---------------|
+| id_repuesto | INT | PK, AUTO_INCREMENT |
+| nombre | VARCHAR(100) | NOT NULL |
+| tipo | ENUM('Contenedor','Tapa','Rueda','Otro') | NOT NULL |
+| id_residuo | INT | FK → tipos_residuo (ON DELETE SET NULL), solo para contenedores |
+| cantidad | INT | NOT NULL |
+| cantidad_minima | INT | NOT NULL (si queda esto o menos, se avisa) |
+| id_instalacion | INT | FK → instalaciones (ON DELETE SET NULL) |
+
+**recolecciones** (relación *Vacía*: un contenedor tiene muchas recolecciones, 1:N) — kilos recolectados (datos simulados)
+
+| Columna | Tipo | Restricciones |
+|---------|------|---------------|
+| id_recoleccion | INT | PK, AUTO_INCREMENT |
+| id_contenedor | INT | FK → contenedores (ON DELETE CASCADE), NOT NULL |
+| fecha | DATETIME | NOT NULL |
+| kilos | DECIMAL(10,2) | NOT NULL |
+
 ## Cambios de la 3ra entrega
 
 - `incidencias.tipo`: guarda qué problema tiene el contenedor. Antes solo estaba escrito en la descripción
   y así no se podía contar bien, por ejemplo para el top de contenedores desbordados del mes.
 - `incidencias.fecha_resolucion`: el día en que la incidencia quedó Resuelta. Sirve para los informes
   y para calcular cuántos días se tarda en resolver una incidencia.
+- `usuarios.estado`, `codigo_verificacion` y `fecha_registro`: los vecinos que se registran verifican su correo
+  con un enlace y después un administrador aprueba su cuenta (la letra pide registro "para su posterior aprobación").
+- Tabla `mensajes`: las notificaciones que le llegan a cada usuario (por ejemplo, cuando un vecino avisa un problema
+  le llega a todo el personal).
+- Tabla `parametros`: la letra pide que el software sea parametrizable y que el idioma sea parametrizable.
+- Tabla `repuestos`: la letra pide un inventario básico de contenedores de repuesto (nivel mínimo, punto 1.3).
+- Tabla `recolecciones`: para los informes de volumen de residuos recolectados y frecuencia de recolección.
 
 ## Pasaje del MER a tablas (resumen)
 

@@ -26,8 +26,14 @@ CREATE TABLE usuarios (
     email            VARCHAR(120) NOT NULL UNIQUE,
     telefono         VARCHAR(30),
     contrasena       VARCHAR(255) NOT NULL,
-    rol              ENUM('Administrador', 'Operario', 'Recolector', 'Vecino') NOT NULL
+    rol              ENUM('Administrador', 'Operario', 'Recolector', 'Vecino') NOT NULL,
+    estado           ENUM('Sin verificar', 'Pendiente', 'Activo', 'Rechazado') NOT NULL DEFAULT 'Activo',
+    codigo_verificacion VARCHAR(64),
+    fecha_registro   DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+-- estado: un vecino que se registra queda "Sin verificar" hasta que abre el enlace del correo.
+-- Despues queda "Pendiente" hasta que un administrador lo aprueba (o "Activo" si no hace falta aprobar).
+-- Solo los usuarios "Activo" pueden iniciar sesion.
 
 CREATE TABLE vecinos (
     id_usuario INT PRIMARY KEY,
@@ -252,4 +258,50 @@ CREATE TABLE plantas_procesamiento (
     zona      VARCHAR(100),
     id_centro INT,
     FOREIGN KEY (id_centro) REFERENCES centros_acopio(id_instalacion) ON DELETE SET NULL
+);
+
+-- ---------------------------------------------------------------------
+-- AGREGADO EN LA 3RA ENTREGA
+-- ---------------------------------------------------------------------
+
+-- Relacion Recibe: cada usuario recibe muchos mensajes (notificaciones de la campana) (1:N)
+CREATE TABLE mensajes (
+    id_mensaje INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    texto      VARCHAR(255) NOT NULL,
+    enlace     VARCHAR(100),
+    leido      BOOLEAN NOT NULL DEFAULT FALSE,
+    fecha      DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE
+);
+
+-- Parametros del sistema que puede cambiar el administrador (el software es parametrizable)
+CREATE TABLE parametros (
+    nombre      VARCHAR(50) PRIMARY KEY,
+    valor       VARCHAR(100) NOT NULL,
+    descripcion VARCHAR(200)
+);
+
+-- Inventario de repuestos: contenedores de repuesto, tapas, ruedas...
+-- Relacion Guarda: una instalacion guarda muchos repuestos (1:N)
+CREATE TABLE repuestos (
+    id_repuesto     INT AUTO_INCREMENT PRIMARY KEY,
+    nombre          VARCHAR(100) NOT NULL,
+    tipo            ENUM('Contenedor', 'Tapa', 'Rueda', 'Otro') NOT NULL,
+    id_residuo      INT,
+    cantidad        INT NOT NULL DEFAULT 0,
+    cantidad_minima INT NOT NULL DEFAULT 0,
+    id_instalacion  INT,
+    FOREIGN KEY (id_residuo)     REFERENCES tipos_residuo(id_residuo) ON DELETE SET NULL,
+    FOREIGN KEY (id_instalacion) REFERENCES instalaciones(id_instalacion) ON DELETE SET NULL
+);
+
+-- Cada vez que se vacia un contenedor se guarda cuantos kilos se recolectaron (datos simulados)
+-- Relacion Vacia: un contenedor tiene muchas recolecciones (1:N)
+CREATE TABLE recolecciones (
+    id_recoleccion INT AUTO_INCREMENT PRIMARY KEY,
+    id_contenedor  INT NOT NULL,
+    fecha          DATETIME NOT NULL,
+    kilos          DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (id_contenedor) REFERENCES contenedores(id_contenedor) ON DELETE CASCADE
 );

@@ -178,6 +178,21 @@ CREATE TABLE `maquinaria` (
   PRIMARY KEY (`id_maquinaria`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `mensajes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `mensajes` (
+  `id_mensaje` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(11) NOT NULL,
+  `texto` varchar(255) NOT NULL,
+  `enlace` varchar(100) DEFAULT NULL,
+  `leido` tinyint(1) NOT NULL DEFAULT 0,
+  `fecha` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id_mensaje`),
+  KEY `id_usuario` (`id_usuario`),
+  CONSTRAINT `mensajes_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `notificaciones`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -204,6 +219,16 @@ CREATE TABLE `operarios` (
   CONSTRAINT `operarios_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `parametros`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `parametros` (
+  `nombre` varchar(50) NOT NULL,
+  `valor` varchar(100) NOT NULL,
+  `descripcion` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`nombre`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `plantas_procesamiento`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -216,6 +241,19 @@ CREATE TABLE `plantas_procesamiento` (
   PRIMARY KEY (`id_planta`),
   KEY `id_centro` (`id_centro`),
   CONSTRAINT `plantas_procesamiento_ibfk_1` FOREIGN KEY (`id_centro`) REFERENCES `centros_acopio` (`id_instalacion`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `recolecciones`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `recolecciones` (
+  `id_recoleccion` int(11) NOT NULL AUTO_INCREMENT,
+  `id_contenedor` int(11) NOT NULL,
+  `fecha` datetime NOT NULL,
+  `kilos` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`id_recoleccion`),
+  KEY `id_contenedor` (`id_contenedor`),
+  CONSTRAINT `recolecciones_ibfk_1` FOREIGN KEY (`id_contenedor`) REFERENCES `contenedores` (`id_contenedor`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `recolectores`;
@@ -249,6 +287,24 @@ CREATE TABLE `recorridos` (
   CONSTRAINT `recorridos_ibfk_1` FOREIGN KEY (`id_cuadrilla`) REFERENCES `cuadrillas` (`id_cuadrilla`) ON DELETE CASCADE,
   CONSTRAINT `recorridos_ibfk_2` FOREIGN KEY (`id_ruta`) REFERENCES `rutas` (`id_ruta`) ON DELETE CASCADE,
   CONSTRAINT `recorridos_ibfk_3` FOREIGN KEY (`id_camion`) REFERENCES `camiones` (`id_camion`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `repuestos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `repuestos` (
+  `id_repuesto` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) NOT NULL,
+  `tipo` enum('Contenedor','Tapa','Rueda','Otro') NOT NULL,
+  `id_residuo` int(11) DEFAULT NULL,
+  `cantidad` int(11) NOT NULL DEFAULT 0,
+  `cantidad_minima` int(11) NOT NULL DEFAULT 0,
+  `id_instalacion` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id_repuesto`),
+  KEY `id_residuo` (`id_residuo`),
+  KEY `id_instalacion` (`id_instalacion`),
+  CONSTRAINT `repuestos_ibfk_1` FOREIGN KEY (`id_residuo`) REFERENCES `tipos_residuo` (`id_residuo`) ON DELETE SET NULL,
+  CONSTRAINT `repuestos_ibfk_2` FOREIGN KEY (`id_instalacion`) REFERENCES `instalaciones` (`id_instalacion`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `rutas`;
@@ -285,6 +341,9 @@ CREATE TABLE `usuarios` (
   `telefono` varchar(30) DEFAULT NULL,
   `contrasena` varchar(255) NOT NULL,
   `rol` enum('Administrador','Operario','Recolector','Vecino') NOT NULL,
+  `estado` enum('Sin verificar','Pendiente','Activo','Rechazado') NOT NULL DEFAULT 'Activo',
+  `codigo_verificacion` varchar(64) DEFAULT NULL,
+  `fecha_registro` datetime DEFAULT current_timestamp(),
   PRIMARY KEY (`id_usuario`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
