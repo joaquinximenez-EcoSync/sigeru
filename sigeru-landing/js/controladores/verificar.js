@@ -5,6 +5,16 @@ for (const enlace of enlacesIngresar) {
     enlace.href = URL_FRONTEND;
 }
 
+// Cambia el icono de arriba: "ok" si salio bien o "alerta" si hubo un error
+function mostrarIconoVerificacion(nombre, esError) {
+    const caja = document.getElementById("icono");
+    document.getElementById("iconoUso").setAttribute("href", "img/iconos.svg#" + nombre);
+    caja.classList.remove("cargando");
+    if (esError) {
+        caja.classList.add("mal");
+    }
+}
+
 async function verificar() {
     // El codigo viene en la direccion: verificar.html?codigo=abc123
     const parametros = new URLSearchParams(window.location.search);
@@ -13,16 +23,16 @@ async function verificar() {
 
     try {
         const respuesta = await enviarVerificacion(codigo);
-        document.getElementById("icono").textContent = "✅";
+        mostrarIconoVerificacion("ok", false);
         titulo.textContent = "¡Te registraste correctamente!";
         mostrarMensaje(respuesta.mensaje, false);
 
         // Si la cuenta ya quedo activa, mostramos el boton para entrar
         if (respuesta.estado == "Activo") {
-            document.getElementById("botonIngresar").style.display = "inline-block";
+            document.getElementById("botonIngresar").style.display = "inline-flex";
         }
     } catch (error) {
-        document.getElementById("icono").textContent = "❌";
+        mostrarIconoVerificacion("alerta", true);
         titulo.textContent = "No pudimos verificar tu correo";
         mostrarMensaje(error.message, true);
     }

@@ -4,66 +4,155 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SiGeRU | Gestión de Residuos Urbanos</title>
+    <meta name="description" content="SiGeRU es el sistema de EcoSync para organizar la recolección de basura en Montevideo: contenedores, camiones, cuadrillas e incidencias.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-<header class="navbar">
-    <a class="logo" href="index.html">SiGeRU</a>
+
+<header class="navbar" id="navbar">
+    <a class="logo" href="index.html"><svg class="logo-icono" aria-hidden="true"><use href="img/iconos.svg#hoja"></use></svg>SiGeRU</a>
     <nav>
-        <a href="#inicio">Inicio</a>
-        <a href="#sobre">Sobre el sistema</a>
+        <a href="#como-funciona">Cómo funciona</a>
+        <a href="#que-hace">Qué podés hacer</a>
         <a href="#registro">Registrarse</a>
         <a class="btn btn-primary link-ingresar" href="#">Ingresar</a>
     </nav>
 </header>
 
 <main>
+    <!-- Portada: video de fondo (si existe media/fondo.mp4) y un fondo animado por si no hay video -->
     <section id="inicio" class="hero">
-        <div>
-            <span class="badge">Sistema de Gestión de Residuos Urbanos</span>
-            <h1>Una gestión más inteligente para una ciudad más limpia.</h1>
-            <p>SiGeRU centraliza la información de contenedores, camiones, cuadrillas e incidencias para organizar mejor la recolección de residuos.</p>
+        <video class="hero-video" autoplay muted loop playsinline poster="">
+            <source src="media/fondo.mp4" type="video/mp4">
+        </video>
+        <div class="hero-fondo">
+            <span class="mancha m1"></span>
+            <span class="mancha m2"></span>
+            <span class="mancha m3"></span>
+        </div>
+
+        <div class="hero-texto">
+            <span class="badge"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#reciclar"></use></svg>Sistema de Gestión de Residuos Urbanos</span>
+            <h1>Una ciudad más limpia empieza por saber <span class="resaltado">dónde está el problema.</span></h1>
+            <p>SiGeRU junta en un solo lugar los contenedores, los camiones, las cuadrillas y los reclamos de los vecinos de
+               Montevideo. Así se sabe qué contenedor está lleno, quién lo tiene que ir a vaciar y cuándo quedó solucionado.</p>
             <div class="actions">
-                <a class="btn btn-primary" href="#registro">Crear una cuenta</a>
-                <a class="btn btn-secondary link-ingresar" href="#">Iniciar sesión</a>
+                <a class="btn btn-primary btn-grande" href="#registro">Crear mi cuenta
+                    <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#flecha"></use></svg></a>
+                <a class="btn btn-claro btn-grande link-ingresar" href="#">Ya tengo cuenta</a>
             </div>
         </div>
+
         <div class="hero-card">
-            <h3>Gestión centralizada</h3>
-            <p>Cada perfil accede a lo que necesita:</p>
-            <ul>
-                <li><strong>Vecinos:</strong> consultan los contenedores de su zona.</li>
-                <li><strong>Recolectores:</strong> ven la flota y sus recorridos.</li>
-                <li><strong>Operarios:</strong> gestionan contenedores y camiones.</li>
-                <li><strong>Administradores:</strong> controlan todo el sistema.</li>
+            <h3>Cada uno ve lo que necesita</h3>
+            <ul class="lista-roles">
+                <li><span class="rol-icono"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#usuario"></use></svg></span>
+                    <div><strong>Vecinos</strong><p>Reportan un contenedor lleno, roto o basura en la calle, y siguen cómo va.</p></div></li>
+                <li><span class="rol-icono"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#camiones"></use></svg></span>
+                    <div><strong>Recolectores</strong><p>Ven el recorrido de su cuadrilla y los problemas que les toca resolver.</p></div></li>
+                <li><span class="rol-icono"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#herramienta"></use></svg></span>
+                    <div><strong>Operarios</strong><p>Manejan los contenedores, los camiones y los centros de acopio.</p></div></li>
+                <li><span class="rol-icono"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#escudo"></use></svg></span>
+                    <div><strong>Administradores</strong><p>Tienen todo a la vista: usuarios, informes y estadísticas.</p></div></li>
             </ul>
         </div>
     </section>
 
-    <section id="sobre" class="section">
-        <h2>¿Qué permite SiGeRU?</h2>
-        <div class="cards">
-            <article class="card">
-                <div class="icono">🗑️</div>
-                <h3>Contenedores</h3>
-                <p>Registro de contenedores, su ubicación, su estado y el tipo de residuo que guardan.</p>
+    <!-- Como funciona: 3 pasos -->
+    <section id="como-funciona" class="section">
+        <div class="titulo-seccion aparecer">
+            <span class="etiqueta-seccion">Cómo funciona</span>
+            <h2>De un contenedor lleno a la calle limpia, en tres pasos</h2>
+            <p>Lo armamos pensando en que cualquiera lo pueda usar, desde el celular o la compu.</p>
+        </div>
+        <div class="pasos">
+            <article class="paso aparecer">
+                <span class="paso-numero">1</span>
+                <div class="paso-icono"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#megafono"></use></svg></div>
+                <h3>Avisás el problema</h3>
+                <p>Encontrás el contenedor en el mapa, elegís qué pasa (está lleno, roto, no lo vaciaron o hay basura tirada)
+                   y contás con tus palabras qué viste y dónde exactamente.</p>
             </article>
-            <article class="card">
-                <div class="icono">🚛</div>
-                <h3>Flota de camiones</h3>
-                <p>Control de los camiones recolectores, su estado y su disponibilidad.</p>
+            <article class="paso aparecer">
+                <span class="paso-numero">2</span>
+                <div class="paso-icono"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#camiones"></use></svg></div>
+                <h3>Una cuadrilla lo atiende</h3>
+                <p>Al personal le llega una notificación al instante. Se le asigna a la cuadrilla que pasa por esa zona,
+                   que lo ve en su recorrido del día.</p>
             </article>
-            <article class="card">
-                <div class="icono">⚠️</div>
-                <h3>Incidencias</h3>
-                <p>Seguimiento de contenedores rotos o desbordados hasta que se resuelven.</p>
+            <article class="paso aparecer">
+                <span class="paso-numero">3</span>
+                <div class="paso-icono"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#ok"></use></svg></div>
+                <h3>Te avisamos cuando está listo</h3>
+                <p>Ves en todo momento si tu reclamo está abierto, en proceso o resuelto, y te llega un aviso cuando
+                   lo solucionan. No hace falta llamar a nadie.</p>
             </article>
         </div>
     </section>
 
+    <!-- Que se puede hacer -->
+    <section id="que-hace" class="section section-gris">
+        <div class="titulo-seccion aparecer">
+            <span class="etiqueta-seccion">Qué podés hacer</span>
+            <h2>Todo lo de la recolección, en una sola página</h2>
+            <p>Estas son las partes principales del sistema.</p>
+        </div>
+        <div class="cards">
+            <article class="card aparecer">
+                <div class="card-icono"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#mapa"></use></svg></div>
+                <h3>Mapa de Montevideo</h3>
+                <p>Todos los contenedores en el mapa, pintados según cómo están: verde si anda bien, naranja si está roto
+                   y rojo si se llenó. También se ven los camiones recorriendo las calles.</p>
+            </article>
+            <article class="card aparecer">
+                <div class="card-icono"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#contenedores"></use></svg></div>
+                <h3>Contenedores</h3>
+                <p>Dónde está cada contenedor, qué tipo de residuo lleva (orgánico, reciclable, común o peligroso),
+                   cuánto le entra y cuándo fue la última vez que lo vaciaron.</p>
+            </article>
+            <article class="card aparecer">
+                <div class="card-icono"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#incidencias"></use></svg></div>
+                <h3>Reclamos e incidencias</h3>
+                <p>Cada problema queda anotado con lo que pasó, dónde y quién lo reportó, y se sigue paso a paso hasta
+                   que alguien lo soluciona.</p>
+            </article>
+            <article class="card aparecer">
+                <div class="card-icono"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#camiones"></use></svg></div>
+                <h3>Camiones y recorridos</h3>
+                <p>Qué camiones están funcionando, cuáles están en la calle y cuáles en el taller. Se arma qué cuadrilla sale,
+                   por qué barrios y con qué camión.</p>
+            </article>
+            <article class="card aparecer">
+                <div class="card-icono"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#campana"></use></svg></div>
+                <h3>Avisos al instante</h3>
+                <p>Cuando pasa algo importante, a cada persona le llega una notificación: un vecino que reportó algo,
+                   un recorrido nuevo o un reclamo que quedó resuelto.</p>
+            </article>
+            <article class="card aparecer">
+                <div class="card-icono"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#grafico"></use></svg></div>
+                <h3>Informes y números</h3>
+                <p>Cuántos problemas hubo en el mes, cuánto se tardó en resolverlos, qué contenedores se llenan más y
+                   cuántos kilos de basura se juntaron. Se pueden imprimir.</p>
+            </article>
+        </div>
+    </section>
+
+    <!-- Registro -->
     <section id="registro" class="section seccion-registro">
-        <div class="form-container">
-            <h1>Crear cuenta de vecino</h1>
+        <div class="registro-texto aparecer">
+            <span class="etiqueta-seccion">Para vecinos</span>
+            <h2>Creá tu cuenta y ayudanos a tener el barrio limpio</h2>
+            <p>Con tu cuenta podés reportar problemas con los contenedores de tu zona y ver cómo se van resolviendo.</p>
+            <ul class="lista-check">
+                <li><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#check"></use></svg>Es gratis y te lleva un minuto.</li>
+                <li><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#check"></use></svg>Te mandamos un correo para confirmar que es tuyo.</li>
+                <li><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#check"></use></svg>Un administrador revisa tu cuenta y te avisamos cuando está lista.</li>
+            </ul>
+        </div>
+        <div class="form-container aparecer">
+            <h3>Crear cuenta de vecino</h3>
             <form id="formRegistro">
                 <div class="form-row">
                     <div class="form-group">
@@ -78,21 +167,21 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="email">Correo electrónico *</label>
-                        <input id="email" type="email" required>
+                        <input id="email" type="email" required placeholder="tucorreo@gmail.com">
                     </div>
                     <div class="form-group">
                         <label for="telefono">Teléfono</label>
-                        <input id="telefono" type="tel">
+                        <input id="telefono" type="tel" placeholder="099 123 456">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label for="calle">Calle</label>
-                        <input id="calle">
+                        <input id="calle" placeholder="Av. Italia 3000">
                     </div>
                     <div class="form-group">
-                        <label for="zona">Zona / Barrio</label>
-                        <input id="zona">
+                        <label for="zona">Barrio</label>
+                        <input id="zona" placeholder="Malvín">
                     </div>
                 </div>
                 <div class="form-row">
@@ -106,21 +195,26 @@
                         <input id="contrasena2" type="password" required minlength="6">
                     </div>
                 </div>
-                <button class="btn btn-primary btn-block" type="submit">Registrarse</button>
+                <button class="btn btn-primary btn-block btn-grande" type="submit">Crear mi cuenta</button>
             </form>
             <div id="mensaje" class="mensaje"></div>
-            <p>¿Ya tienes cuenta? <a class="link-ingresar" href="#">Ingresar</a></p>
+            <p class="ya-tengo">¿Ya tenés cuenta? <a class="link-ingresar" href="#">Ingresar</a></p>
         </div>
     </section>
 </main>
 
 <footer>
-    <p>SiGeRU © 2026 - EcoSync</p>
+    <div class="footer-contenido">
+        <a class="logo" href="index.html"><svg class="logo-icono" aria-hidden="true"><use href="img/iconos.svg#hoja"></use></svg>SiGeRU</a>
+        <p>Proyecto de EcoSync para la ESI 2026: Valentín Ramírez, Joaquín Ximénez y Juan Cuadro.</p>
+    </div>
+    <p class="footer-chico">SiGeRU © 2026 - EcoSync</p>
 </footer>
 
 <script src="js/config.js"></script>
 <script src="js/modelos/registro.js"></script>
 <script src="js/vistas/mensajes.js"></script>
+<script src="js/vistas/animaciones.js"></script>
 <script src="js/controladores/registro.js"></script>
 </body>
 </html>

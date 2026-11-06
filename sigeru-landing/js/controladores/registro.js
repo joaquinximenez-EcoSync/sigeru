@@ -25,7 +25,7 @@ formulario.addEventListener("submit", async function (evento) {
 
     // Validacion con JavaScript
     if (datos.primer_nombre == "" || datos.primer_apellido == "" || datos.email == "" || datos.contrasena == "") {
-        mostrarMensaje("Completa todos los campos obligatorios", true);
+        mostrarMensaje("Completá todos los campos obligatorios", true);
         return;
     } else if (datos.contrasena.length < 6) {
         mostrarMensaje("La contraseña debe tener al menos 6 caracteres", true);
