@@ -69,9 +69,27 @@ function cerrarModal() {
 
 // Elige el color de la etiqueta segun el estado: verde (bien), amarillo (alerta) o rojo (mal)
 function colorEstado(estado) {
-    if (estado == "Funcional" || estado == "Operativo" || estado == "Operativa" || estado == "Disponible") return "";
-    if (estado == "En mantenimiento" || estado == "En reparación" || estado == "En ruta") return "alerta";
+    if (estado == "Funcional" || estado == "Operativo" || estado == "Operativa" || estado == "Disponible" || estado == "Resuelta") return "";
+    if (estado == "En mantenimiento" || estado == "En reparación" || estado == "En ruta" || estado == "En proceso") return "alerta";
     return "mal";
+}
+
+// Color de la etiqueta de la prioridad de una incidencia
+function colorPrioridad(prioridad) {
+    if (prioridad == "Alta") return "mal";
+    if (prioridad == "Media") return "alerta";
+    return "";
+}
+
+// Mes actual como "2026-11"
+function mesActual() {
+    return fechaDeHoy().substring(0, 7);
+}
+
+// Dias que pasaron entre dos fechas "2026-11-01" y "2026-11-04" (da 3)
+function diasEntre(desde, hasta) {
+    const unDia = 24 * 60 * 60 * 1000;
+    return Math.round((new Date(hasta) - new Date(desde)) / unDia);
 }
 
 // Busca un elemento de una lista por su id. Si no lo encuentra devuelve null.

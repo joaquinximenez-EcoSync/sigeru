@@ -26,6 +26,27 @@ async function iniciar() {
             const usuarios = await obtenerUsuarios();
             document.getElementById("totalUsuarios").textContent = usuarios.length;
         }
+
+        const alertas = await obtenerAlertas();
+        mostrarAlertas(alertas);
+    } catch (error) {
+        mostrarMensaje(error.message, true);
+    }
+
+    // Las estadisticas son para el personal (el vecino no las ve)
+    if (usuarioLogueado.rol != "Vecino") {
+        document.getElementById("mesEstadisticas").value = mesActual();
+        await cargarEstadisticas();
+    }
+}
+
+async function cargarEstadisticas() {
+    const mes = document.getElementById("mesEstadisticas").value;
+    if (mes == "") return;
+
+    try {
+        const datos = await obtenerEstadisticas(mes);
+        mostrarEstadisticas(datos);
     } catch (error) {
         mostrarMensaje(error.message, true);
     }

@@ -4,6 +4,7 @@ Interfaz para los usuarios del Sistema de Gestión de Residuos Urbanos (SiGeRU),
 
 Permite iniciar sesión y, según el rol, ver, agregar, modificar y borrar usuarios, contenedores,
 camiones (con sus mantenimientos), recorridos, centros de acopio y maquinaria.
+También tiene el panel de control con estadísticas y alertas, el seguimiento de incidencias y los informes.
 No guarda datos ni accede a la base de datos: todo se hace a través de las APIs.
 
 ## Tecnologías
@@ -22,6 +23,25 @@ HTML5, CSS y JavaScript.
 | Vecino        | Ver          | -                         | -            | -                 | -          | -        |
 
 El menú y los botones se muestran según el rol, y además cada API revisa el rol antes de responder.
+
+## Panel de control (panel.html)
+
+- **🔔 Alertas** para cada rol. El número de alertas se ve en el menú, al lado de Inicio.
+- **📊 Estadísticas** del mes elegido (no las ve el vecino): incidencias abiertas y en proceso, resueltas en el mes,
+  tiempo promedio de resolución, top de contenedores desbordados, incidencias sin resolver por municipio y por tipo.
+
+## Incidencias (incidencias.html)
+
+Registro y seguimiento de incidencias (no lo ve el vecino). Se filtra por estado y se busca por calle, zona,
+municipio, tipo o cuadrilla. El botón **Seguimiento** cambia el estado (Abierta → En proceso → Resuelta),
+la prioridad y la cuadrilla; el recolector solo cambia el estado de las de su cuadrilla.
+El botón **Historial** muestra todas las incidencias que tuvo ese contenedor.
+
+## Informes (informes.html)
+
+Listado de incidencias abiertas y cerradas entre dos fechas, con el total, cuántas siguen abiertas,
+cuántas se cerraron y el tiempo promedio de resolución. El botón **🖨️ Imprimir** lo deja listo para
+imprimir o guardar como PDF (sin el menú ni los filtros).
 
 ## Recorridos (recorridos.html)
 
@@ -63,6 +83,8 @@ Si el archivo no está, el mapa funciona igual y marca cada municipio con un cí
 index.html                      Inicio de sesión
 panel.html                      Inicio del panel
 mapa.html                       Mapa interactivo de Montevideo
+incidencias.html                Registro y seguimiento de incidencias
+informes.html                   Informes de incidencias para imprimir
 usuarios.html                   Usuarios
 contenedores.html               Contenedores
 camiones.html                   Camiones y sus mantenimientos
@@ -72,7 +94,7 @@ maquinaria.html                 Maquinaria
 css/styles.css
 js/config.js                    Direcciones de las APIs
 js/modelos/                     Pedidos a las APIs (servidor, usuarios, gestion, recoleccion)
-js/vistas/                      Funciones que muestran datos en pantalla (comun, tablas, mapa)
+js/vistas/                      Funciones que muestran datos en pantalla (comun, tablas, mapa, panel)
 js/libs/leaflet/                Libreria del mapa (Leaflet 1.9.4)
 js/datos/                       Límites de los municipios (municipios.json, opcional)
 js/controladores/               Lógica de cada página

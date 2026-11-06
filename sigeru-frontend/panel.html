@@ -10,13 +10,15 @@
 <div class="panel">
     <aside class="sidebar">
         <div class="logo">SiGeRU</div>
-        <a href="panel.html" class="activo">🏠 Inicio</a>
+        <a href="panel.html" class="activo">🏠 Inicio <span id="contadorAlertas" class="contador" title="Alertas"></span></a>
         <a href="mapa.html">🗺️ Mapa</a>
+        <a href="incidencias.html" class="no-vecino">⚠️ Incidencias</a>
         <a href="contenedores.html">🗑️ Contenedores</a>
         <a href="camiones.html" class="no-vecino">🚛 Camiones</a>
         <a href="recorridos.html" class="no-vecino">🛣️ Recorridos</a>
         <a href="centros.html" class="no-vecino">🏭 Centros de acopio</a>
         <a href="maquinaria.html" class="no-vecino">⚙️ Maquinaria</a>
+        <a href="informes.html" class="no-vecino">📄 Informes</a>
         <a href="usuarios.html" class="solo-admin">👥 Usuarios</a>
         <div class="usuario">
             <div>
@@ -52,6 +54,52 @@
             </div>
         </div>
 
+        <h2 class="titulo-seccion" id="alertas">🔔 Alertas</h2>
+        <div id="listaAlertas" class="lista-alertas"><p class="texto-gris">Cargando...</p></div>
+
+        <section class="no-vecino">
+            <div class="mapa-barra">
+                <h2 class="titulo-seccion">📊 Estadísticas</h2>
+                <div class="filtros">
+                    <label for="mesEstadisticas">Mes</label>
+                    <input id="mesEstadisticas" type="month" onchange="cargarEstadisticas()">
+                </div>
+            </div>
+            <div class="dashboard-grid">
+                <div class="stat">
+                    <strong id="statAbiertas">-</strong>
+                    <span>Incidencias abiertas</span>
+                </div>
+                <div class="stat">
+                    <strong id="statEnProceso">-</strong>
+                    <span>Incidencias en proceso</span>
+                </div>
+                <div class="stat">
+                    <strong id="statResueltasMes">-</strong>
+                    <span>Resueltas en el mes</span>
+                </div>
+                <div class="stat">
+                    <strong id="statPromedio">-</strong>
+                    <span>Tiempo promedio de resolución</span>
+                </div>
+            </div>
+            <div class="graficos">
+                <div class="card grafico-ancho">
+                    <h3>🏆 Top de contenedores desbordados del mes</h3>
+                    <div id="graficoTop"></div>
+                </div>
+                <div class="card">
+                    <h3>📍 Incidencias sin resolver por municipio</h3>
+                    <div id="graficoMunicipios"></div>
+                </div>
+                <div class="card">
+                    <h3>🧾 Incidencias del mes por tipo</h3>
+                    <div id="graficoTipos"></div>
+                </div>
+            </div>
+        </section>
+
+        <h2 class="titulo-seccion">Accesos rápidos</h2>
         <div class="cards">
             <a class="card card-enlace solo-vecino" href="mapa.html">
                 <h3>📣 Avisar un problema</h3>
@@ -60,6 +108,14 @@
             <a class="card card-enlace" href="mapa.html">
                 <h3>🗺️ Mapa</h3>
                 <p>Contenedores, incidencias, recorridos y zonas críticas de cada municipio.</p>
+            </a>
+            <a class="card card-enlace no-vecino" href="incidencias.html">
+                <h3>⚠️ Incidencias</h3>
+                <p>Registra problemas y sigue su estado hasta que se resuelven.</p>
+            </a>
+            <a class="card card-enlace no-vecino" href="informes.html">
+                <h3>📄 Informes</h3>
+                <p>Incidencias abiertas y cerradas entre dos fechas, listas para imprimir.</p>
             </a>
             <a class="card card-enlace" href="contenedores.html">
                 <h3>🗑️ Contenedores</h3>
@@ -92,6 +148,7 @@
 <script src="js/modelos/recoleccion.js"></script>
 <script src="js/vistas/comun.js"></script>
 <script src="js/vistas/tablas.js"></script>
+<script src="js/vistas/panel.js"></script>
 <script src="js/controladores/sesion.js"></script>
 <script src="js/controladores/panel.js"></script>
 </body>

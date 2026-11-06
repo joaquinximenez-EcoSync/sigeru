@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informes | SiGeRU</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="panel">
+    <aside class="sidebar">
+        <div class="logo">SiGeRU</div>
+        <a href="panel.html">🏠 Inicio <span id="contadorAlertas" class="contador" title="Alertas"></span></a>
+        <a href="mapa.html">🗺️ Mapa</a>
+        <a href="incidencias.html" class="no-vecino">⚠️ Incidencias</a>
+        <a href="contenedores.html">🗑️ Contenedores</a>
+        <a href="camiones.html" class="no-vecino">🚛 Camiones</a>
+        <a href="recorridos.html" class="no-vecino">🛣️ Recorridos</a>
+        <a href="centros.html" class="no-vecino">🏭 Centros de acopio</a>
+        <a href="maquinaria.html" class="no-vecino">⚙️ Maquinaria</a>
+        <a href="informes.html" class="activo no-vecino">📄 Informes</a>
+        <a href="usuarios.html" class="solo-admin">👥 Usuarios</a>
+        <div class="usuario">
+            <div>
+                <strong id="nombreUsuario"></strong>
+                <span id="rolUsuario"></span>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="salir()">Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <main class="contenido">
+        <div class="encabezado no-imprimir">
+            <h1>Informes</h1>
+            <button class="btn btn-secondary" onclick="imprimir()">🖨️ Imprimir</button>
+        </div>
+
+        <div id="mensaje" class="mensaje"></div>
+
+        <div class="filtros barra-filtros no-imprimir">
+            <label for="desde">Desde</label>
+            <input id="desde" type="date">
+            <label for="hasta">Hasta</label>
+            <input id="hasta" type="date">
+            <select id="cuales">
+                <option value="todas">Abiertas y cerradas</option>
+                <option value="abiertas">Solo abiertas (sin resolver)</option>
+                <option value="cerradas">Solo cerradas (resueltas)</option>
+            </select>
+            <button class="btn btn-primary btn-sm" onclick="verInforme()">Ver informe</button>
+        </div>
+
+        <!-- Lo que sigue es lo que sale en la hoja al imprimir -->
+        <div class="solo-imprimir">
+            <strong>SiGeRU - EcoSync</strong>
+        </div>
+        <h2 id="tituloInforme" class="titulo-seccion"></h2>
+
+        <div class="dashboard-grid">
+            <div class="stat">
+                <strong id="totalInforme">-</strong>
+                <span>Incidencias en total</span>
+            </div>
+            <div class="stat">
+                <strong id="abiertasInforme">-</strong>
+                <span>Abiertas (sin resolver)</span>
+            </div>
+            <div class="stat">
+                <strong id="cerradasInforme">-</strong>
+                <span>Cerradas (resueltas)</span>
+            </div>
+            <div class="stat">
+                <strong id="promedioInforme">-</strong>
+                <span>Tiempo promedio de resolución</span>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Detectada</th>
+                        <th>Contenedor</th>
+                        <th>Municipio</th>
+                        <th>Tipo</th>
+                        <th>Prioridad</th>
+                        <th>Estado</th>
+                        <th>Resuelta</th>
+                        <th>Días</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaInforme"></tbody>
+            </table>
+        </div>
+        <p id="fechaImpresion" class="texto-gris pie-informe"></p>
+    </main>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/modelos/servidor.js"></script>
+<script src="js/modelos/usuarios.js"></script>
+<script src="js/modelos/gestion.js"></script>
+<script src="js/modelos/recoleccion.js"></script>
+<script src="js/vistas/comun.js"></script>
+<script src="js/vistas/tablas.js"></script>
+<script src="js/controladores/sesion.js"></script>
+<script src="js/controladores/informes.js"></script>
+</body>
+</html>

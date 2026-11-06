@@ -68,10 +68,6 @@ function vaciarContenedor(id) {
     return pedirAlServidor(API_GESTION + "/vaciar?id=" + id, "POST");
 }
 
-function obtenerIncidencias() {
-    return pedirAlServidor(API_GESTION + "/incidencias");
-}
-
 function reportarProblema(datos) {
     return pedirAlServidor(API_GESTION + "/incidencias", "POST", datos);
 }
@@ -88,6 +84,30 @@ async function obtenerLimitesMunicipios() {
     } catch (error) {
         return null;
     }
+}
+
+// ----- Incidencias -----
+// filtros es opcional, por ejemplo "estado=Abierta" o "desde=2026-11-01&hasta=2026-11-30"
+function obtenerIncidencias(filtros) {
+    let direccion = API_GESTION + "/incidencias";
+    if (filtros) {
+        direccion = direccion + "?" + filtros;
+    }
+    return pedirAlServidor(direccion);
+}
+
+function seguimientoIncidencia(id, datos) {
+    return pedirAlServidor(API_GESTION + "/incidencias?id=" + id, "PUT", datos);
+}
+
+// ----- Panel de control -----
+// mes es como "2026-11"
+function obtenerEstadisticas(mes) {
+    return pedirAlServidor(API_GESTION + "/estadisticas?mes=" + mes);
+}
+
+function obtenerAlertas() {
+    return pedirAlServidor(API_GESTION + "/alertas");
 }
 
 // ----- Avisos de los vecinos -----

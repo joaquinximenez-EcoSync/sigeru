@@ -14,7 +14,24 @@ async function revisarSesion() {
     }
 
     mostrarDatosUsuario(usuarioLogueado);
+    mostrarContadorAlertas();
     return true;
+}
+
+// Muestra en el menu (al lado de Inicio) cuantas alertas tiene el usuario
+async function mostrarContadorAlertas() {
+    const contador = document.getElementById("contadorAlertas");
+    if (contador == null) return;
+
+    try {
+        const alertas = await obtenerAlertas();
+        if (alertas.length > 0) {
+            contador.textContent = alertas.length;
+            contador.style.display = "inline-block";
+        }
+    } catch (error) {
+        // Si no se pueden cargar las alertas, el menu sigue funcionando igual
+    }
 }
 
 // Devuelve true si el usuario puede agregar, editar y borrar contenedores, camiones, centros y maquinaria

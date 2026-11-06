@@ -242,3 +242,97 @@ function llenarCasillasZonas(zonas) {
         </label>`;
     }
 }
+
+// Nombre de la cuadrilla y la ruta de una incidencia (o "Sin asignar")
+function textoCuadrilla(i) {
+    if (i.cuadrilla == null) {
+        return `<span class="texto-gris">Sin asignar</span>`;
+    }
+    return `${limpiarTexto(i.cuadrilla)}<br><small>${limpiarTexto(i.ruta)}</small>`;
+}
+
+// Tabla de incidencias. Cada incidencia trae "puedeCambiar" (lo calcula el controlador)
+// para saber si se muestra el boton de Seguimiento.
+function mostrarTablaIncidencias(lista) {
+    const tabla = document.getElementById("tablaIncidencias");
+
+    if (lista.length == 0) {
+        tabla.innerHTML = filaVacia(8, "No hay incidencias");
+        return;
+    }
+
+    let filas = "";
+    for (const i of lista) {
+        let botonSeguimiento = "";
+        if (i.puedeCambiar) {
+            botonSeguimiento = `<button class="btn btn-primary btn-sm" onclick="abrirSeguimiento(${i.id})">Seguimiento</button>`;
+        }
+        filas += `<tr>
+            <td>${i.id}</td>
+            <td>${limpiarTexto(i.fecha_deteccion)}</td>
+            <td class="ajustar">${limpiarTexto(i.calle)}<br><small>${limpiarTexto(i.zona_incidencia)} · Municipio ${limpiarTexto(i.municipio)}</small></td>
+            <td>${limpiarTexto(i.tipo)}</td>
+            <td><span class="etiqueta ${colorPrioridad(i.prioridad)}">${limpiarTexto(i.prioridad)}</span></td>
+            <td><span class="etiqueta ${colorEstado(i.estado)}">${limpiarTexto(i.estado)}</span></td>
+            <td>${textoCuadrilla(i)}</td>
+            <td class="acciones acciones-columna">
+                ${botonSeguimiento}
+                <button class="btn btn-secondary btn-sm" onclick="verHistorial(${i.id_contenedor})">Historial</button>
+            </td>
+        </tr>`;
+    }
+    tabla.innerHTML = filas;
+}
+
+// Historial de incidencias de un contenedor (en la ventana de Historial)
+function mostrarTablaHistorial(lista) {
+    const tabla = document.getElementById("tablaHistorial");
+
+    if (lista.length == 0) {
+        tabla.innerHTML = filaVacia(5, "Este contenedor no tuvo incidencias");
+        return;
+    }
+
+    let filas = "";
+    for (const i of lista) {
+        filas += `<tr>
+            <td>${limpiarTexto(i.fecha_deteccion)}</td>
+            <td>${limpiarTexto(i.tipo)}</td>
+            <td><span class="etiqueta ${colorEstado(i.estado)}">${limpiarTexto(i.estado)}</span></td>
+            <td>${limpiarTexto(i.fecha_resolucion ?? "-")}</td>
+            <td class="ajustar">${limpiarTexto(i.descripcion)}</td>
+        </tr>`;
+    }
+    tabla.innerHTML = filas;
+}
+
+// Tabla del informe de incidencias
+function mostrarTablaInforme(lista) {
+    const tabla = document.getElementById("tablaInforme");
+
+    if (lista.length == 0) {
+        tabla.innerHTML = filaVacia(9, "No hay incidencias entre esas fechas");
+        return;
+    }
+
+    let filas = "";
+    for (const i of lista) {
+        // Dias que tardo en resolverse (solo si ya esta resuelta)
+        let dias = "-";
+        if (i.fecha_resolucion != null) {
+            dias = diasEntre(i.fecha_deteccion, i.fecha_resolucion);
+        }
+        filas += `<tr>
+            <td>${i.id}</td>
+            <td>${limpiarTexto(i.fecha_deteccion)}</td>
+            <td class="ajustar">${limpiarTexto(i.calle)}</td>
+            <td>${limpiarTexto(i.municipio)}</td>
+            <td>${limpiarTexto(i.tipo)}</td>
+            <td>${limpiarTexto(i.prioridad)}</td>
+            <td>${limpiarTexto(i.estado)}</td>
+            <td>${limpiarTexto(i.fecha_resolucion ?? "-")}</td>
+            <td>${dias}</td>
+        </tr>`;
+    }
+    tabla.innerHTML = filas;
+}

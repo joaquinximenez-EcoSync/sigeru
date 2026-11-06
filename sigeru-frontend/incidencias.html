@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incidencias | SiGeRU</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="panel">
+    <aside class="sidebar">
+        <div class="logo">SiGeRU</div>
+        <a href="panel.html">🏠 Inicio <span id="contadorAlertas" class="contador" title="Alertas"></span></a>
+        <a href="mapa.html">🗺️ Mapa</a>
+        <a href="incidencias.html" class="activo no-vecino">⚠️ Incidencias</a>
+        <a href="contenedores.html">🗑️ Contenedores</a>
+        <a href="camiones.html" class="no-vecino">🚛 Camiones</a>
+        <a href="recorridos.html" class="no-vecino">🛣️ Recorridos</a>
+        <a href="centros.html" class="no-vecino">🏭 Centros de acopio</a>
+        <a href="maquinaria.html" class="no-vecino">⚙️ Maquinaria</a>
+        <a href="informes.html" class="no-vecino">📄 Informes</a>
+        <a href="usuarios.html" class="solo-admin">👥 Usuarios</a>
+        <div class="usuario">
+            <div>
+                <strong id="nombreUsuario"></strong>
+                <span id="rolUsuario"></span>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="salir()">Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <main class="contenido">
+        <div class="encabezado">
+            <h1>Incidencias</h1>
+            <button class="btn btn-primary" onclick="nuevaIncidencia()">+ Registrar incidencia</button>
+        </div>
+        <p class="subtitulo">Problemas en los contenedores y su seguimiento: Abierta → En proceso → Resuelta.</p>
+
+        <div id="mensaje" class="mensaje"></div>
+
+        <!-- Ventana para registrar una incidencia -->
+        <dialog id="formModal">
+            <h3 id="tituloModal"></h3>
+            <form id="formIncidencia">
+                <div class="form-group">
+                    <label for="id_contenedor">Contenedor</label>
+                    <select id="id_contenedor" required></select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="problema">Problema</label>
+                        <select id="problema" required>
+                            <option value="Desbordado">Desbordado</option>
+                            <option value="Roto">Roto</option>
+                            <option value="Falta de recolección">Falta de recolección</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="prioridad">Prioridad</label>
+                        <select id="prioridad" required>
+                            <option value="Baja">Baja</option>
+                            <option value="Media" selected>Media</option>
+                            <option value="Alta">Alta</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="descripcion">Descripción <small>(opcional)</small></label>
+                    <input id="descripcion" maxlength="200">
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+            </form>
+        </dialog>
+
+        <!-- Ventana del seguimiento -->
+        <dialog id="seguimientoModal">
+            <h3 id="tituloSeguimiento"></h3>
+            <p id="detalleSeguimiento" class="subtitulo"></p>
+            <form id="formSeguimiento">
+                <div class="form-group">
+                    <label for="seguimientoEstado">Estado</label>
+                    <select id="seguimientoEstado">
+                        <option value="Abierta">Abierta</option>
+                        <option value="En proceso">En proceso</option>
+                        <option value="Resuelta">Resuelta</option>
+                    </select>
+                </div>
+                <div class="form-row solo-gestion">
+                    <div class="form-group">
+                        <label for="seguimientoPrioridad">Prioridad</label>
+                        <select id="seguimientoPrioridad">
+                            <option value="Baja">Baja</option>
+                            <option value="Media">Media</option>
+                            <option value="Alta">Alta</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="seguimientoRecorrido">Cuadrilla que la resuelve</label>
+                        <select id="seguimientoRecorrido">
+                            <option value="">Sin asignar</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarSeguimiento()">Cancelar</button>
+            </form>
+        </dialog>
+
+        <!-- Ventana del historial de un contenedor -->
+        <dialog id="historialModal" class="dialogo-ancho">
+            <h3 id="tituloHistorial"></h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Detectada</th>
+                            <th>Tipo</th>
+                            <th>Estado</th>
+                            <th>Resuelta</th>
+                            <th>Descripción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaHistorial"></tbody>
+                </table>
+            </div>
+            <button type="button" class="btn btn-secondary boton-cerrar" onclick="cerrarHistorial()">Cerrar</button>
+        </dialog>
+
+        <div class="filtros barra-filtros">
+            <input id="buscador" class="buscador" placeholder="Buscar por calle, zona, municipio, tipo o cuadrilla..." oninput="buscar()">
+            <select id="filtroEstado" onchange="cargarIncidencias()">
+                <option value="">Todos los estados</option>
+                <option value="Abierta">Abiertas</option>
+                <option value="En proceso">En proceso</option>
+                <option value="Resuelta">Resueltas</option>
+            </select>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Detectada</th>
+                        <th>Contenedor</th>
+                        <th>Tipo</th>
+                        <th>Prioridad</th>
+                        <th>Estado</th>
+                        <th>Cuadrilla</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaIncidencias"></tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/modelos/servidor.js"></script>
+<script src="js/modelos/usuarios.js"></script>
+<script src="js/modelos/gestion.js"></script>
+<script src="js/modelos/recoleccion.js"></script>
+<script src="js/vistas/comun.js"></script>
+<script src="js/vistas/tablas.js"></script>
+<script src="js/controladores/sesion.js"></script>
+<script src="js/controladores/incidencias.js"></script>
+</body>
+</html>

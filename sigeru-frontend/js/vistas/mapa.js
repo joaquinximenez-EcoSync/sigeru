@@ -76,7 +76,7 @@ function textoIncidencia(i) {
         ${limpiarTexto(i.descripcion)}<br>
         ${limpiarTexto(i.calle)}${i.municipio ? " - Municipio " + i.municipio : ""}<br>
         Prioridad: ${limpiarTexto(i.prioridad)} | Estado: ${limpiarTexto(i.estado)}<br>
-        Fecha: ${limpiarTexto(i.fecha)}`;
+        Detectada: ${limpiarTexto(i.fecha_deteccion)}`;
 }
 
 function textoInstalacion(ins) {
