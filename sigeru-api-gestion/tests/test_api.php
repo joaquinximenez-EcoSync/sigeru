@@ -26,9 +26,6 @@ entrar($apiUsuarios, "operario", "operario@sigeru.uy", "123456");
 entrar($apiUsuarios, "recolector", "recolector@sigeru.uy", "123456");
 entrar($apiUsuarios, "vecino", "vecino@sigeru.uy", "123456");
 
-// Matricula distinta cada vez, para que no choque con otros camiones
-$matricula = "TST " . rand(1000, 9999);
-
 // ---------------------------------------------------------------
 titulo("Permisos por rol");
 
@@ -40,15 +37,6 @@ verificar($r['codigo'] == 200, "El vecino puede ver los contenedores");
 
 $r = pedir("POST", $api . "/contenedores", ["calle" => "x", "zona" => "y", "estado" => "Funcional", "id_residuo" => 1], "vecino");
 verificar($r['codigo'] == 403, "El vecino no puede crear contenedores (403)");
-
-$r = pedir("GET", $api . "/camiones", null, "vecino");
-verificar($r['codigo'] == 403, "El vecino no puede ver los camiones (403)");
-
-$r = pedir("GET", $api . "/camiones", null, "recolector");
-verificar($r['codigo'] == 200, "El recolector puede ver los camiones");
-
-$r = pedir("POST", $api . "/camiones", ["matricula" => $matricula, "estado" => "Operativo", "disponibilidad" => "Disponible"], "recolector");
-verificar($r['codigo'] == 403, "El recolector no puede crear camiones (403)");
 
 $r = pedir("GET", $api . "/operarios", null, "recolector");
 verificar($r['codigo'] == 403, "El recolector no puede ver la lista de operarios (403)");
@@ -91,28 +79,6 @@ $r = pedir("GET", $api . "/contenedores?id=" . $idContenedor, null, "operario");
 verificar($r['codigo'] == 404, "El contenedor borrado ya no existe (404)");
 
 // ---------------------------------------------------------------
-titulo("CRUD de camiones (administrador)");
-
-$r = pedir("POST", $api . "/camiones", ["matricula" => $matricula, "estado" => "Operativo", "disponibilidad" => "Disponible", "capacidad_carga" => "9000"], "admin");
-verificar($r['codigo'] == 201, "Crea un camión");
-$idCamion = $r['json']['camion']['id'];
-
-$r = pedir("POST", $api . "/camiones", ["matricula" => $matricula, "estado" => "Operativo", "disponibilidad" => "Disponible"], "admin");
-verificar($r['codigo'] == 409, "No deja repetir la matrícula (409)");
-
-$r = pedir("PUT", $api . "/camiones?id=" . $idCamion, ["matricula" => "SBA 1234", "estado" => "Operativo", "disponibilidad" => "Disponible"], "admin");
-verificar($r['codigo'] == 409, "No deja poner la matrícula de otro camión (409)");
-
-$r = pedir("PUT", $api . "/camiones?id=" . $idCamion, ["matricula" => $matricula, "estado" => "En mantenimiento", "disponibilidad" => "No disponible", "capacidad_carga" => "mucho"], "admin");
-verificar($r['codigo'] == 400, "Con una capacidad que no es un número devuelve 400");
-
-$r = pedir("PUT", $api . "/camiones?id=" . $idCamion, ["matricula" => $matricula, "estado" => "En mantenimiento", "disponibilidad" => "No disponible"], "admin");
-verificar($r['codigo'] == 200 && $r['json']['camion']['estado'] == "En mantenimiento", "Modifica el camión");
-
-$r = pedir("DELETE", $api . "/camiones?id=" . $idCamion, null, "admin");
-verificar($r['codigo'] == 200, "Borra el camión de prueba");
-
-// ---------------------------------------------------------------
 titulo("CRUD de centros de acopio (administrador)");
 
 $r = pedir("POST", $api . "/centros", ["nombre" => "Centro de prueba", "capacidad_actual" => "100", "capacidad_max" => "500", "id_operario" => 2, "residuos" => [1, 2]], "admin");
@@ -151,13 +117,7 @@ $r = pedir("DELETE", $api . "/maquinaria?id=" . $idMaquina, null, "operario");
 verificar($r['codigo'] == 200, "Borra la máquina de prueba");
 
 // ---------------------------------------------------------------
-titulo("Mapa: recorridos, incidencias y avisos");
-
-$r = pedir("GET", $api . "/recorridos", null, "recolector");
-verificar($r['codigo'] == 200 && count($r['json']) == 1, "El recolector ve solo el recorrido de su cuadrilla");
-
-$r = pedir("GET", $api . "/recorridos", null, "admin");
-verificar($r['codigo'] == 200 && count($r['json']) == 2, "El administrador ve todos los recorridos");
+titulo("Mapa: incidencias y avisos");
 
 $r = pedir("GET", $api . "/incidencias", null, "vecino");
 verificar($r['codigo'] == 403, "El vecino no puede ver las incidencias (403)");

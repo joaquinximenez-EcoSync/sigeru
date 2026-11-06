@@ -5,12 +5,10 @@
 
 require_once __DIR__ . "/funciones_test.php";
 require_once __DIR__ . "/../modelos/Contenedor.php";
-require_once __DIR__ . "/../modelos/Camion.php";
 require_once __DIR__ . "/../modelos/Centro.php";
 require_once __DIR__ . "/../modelos/Maquinaria.php";
 require_once __DIR__ . "/../modelos/Incidencia.php";
 require_once __DIR__ . "/../modelos/Notificacion.php";
-require_once __DIR__ . "/../modelos/Recorrido.php";
 
 $conn = crearBaseDePrueba();
 
@@ -58,24 +56,6 @@ verificar($contenedor->obtenerPorId($id)['estado'] == "Roto", "cambiarEstado cam
 
 $contenedor->eliminar($id);
 verificar($contenedor->obtenerPorId($id) == null, "Borra el contenedor");
-
-// ---------------------------------------------------------------
-titulo("Camiones");
-
-$camion = new Camion($conn);
-verificar(count($camion->obtenerTodos()) == 4, "Hay 4 camiones de prueba");
-verificar($camion->buscarPorMatricula("SBA 1234")['id'] == 1, "Encuentra un camión por su matrícula");
-verificar($camion->buscarPorMatricula("XXX 0000") == null, "Una matrícula que no existe devuelve null");
-
-$nuevo = $camion->agregar(["matricula" => "sbe 3456", "estado" => "Operativo", "disponibilidad" => "Disponible", "capacidad_carga" => "9000"]);
-$id = $nuevo['id'];
-verificar($nuevo['matricula'] == "SBE 3456", "La matrícula se guarda en mayúsculas");
-
-$modificado = $camion->modificar($id, ["matricula" => "SBE 3456", "estado" => "En mantenimiento", "disponibilidad" => "No disponible", "capacidad_carga" => ""]);
-verificar($modificado['estado'] == "En mantenimiento" && $modificado['capacidad_carga'] == null, "Modifica el camión");
-
-$camion->eliminar($id);
-verificar($camion->obtenerPorId($id) == null, "Borra el camión");
 
 // ---------------------------------------------------------------
 titulo("Centros de acopio");
@@ -136,17 +116,5 @@ verificar(!$notificacion->yaAviso(4, 8), "En otro contenedor todavía no avisó"
 
 mysqli_query($conn, "UPDATE incidencias SET estado = 'Resuelta' WHERE id_incidencia = " . $nueva['id']);
 verificar(!$notificacion->yaAviso(4, 7), "Cuando la incidencia se resuelve puede volver a avisar");
-
-// ---------------------------------------------------------------
-titulo("Recorridos");
-
-$recorrido = new Recorrido($conn);
-verificar(count($recorrido->obtenerTodos()) == 2, "Hay 2 recorridos");
-
-$deLaRecolectora = $recorrido->obtenerDelRecolector(3);
-verificar(count($deLaRecolectora) == 1 && $deLaRecolectora[0]['ruta'] == "Ruta Centro", "La recolectora ve solo el recorrido de su cuadrilla");
-verificar(count($deLaRecolectora[0]['zonas']) == 3, "Su recorrido pasa por 3 zonas");
-verificar(count($deLaRecolectora[0]['contenedores']) == 4, "Y tiene 4 contenedores");
-verificar(count($recorrido->obtenerDelRecolector(1)) == 0, "Un usuario que no es recolector no tiene recorridos");
 
 mostrarResumen();

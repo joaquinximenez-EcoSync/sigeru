@@ -1,5 +1,7 @@
 <?php
 // API RESTful de Gestion - SiGeRU
+// Se encarga de los elementos fijos: contenedores, centros de acopio, maquinaria e incidencias.
+// (los camiones y los recorridos estan en la API de Recoleccion)
 //
 // Direcciones que tiene esta API (endpoints). Todas necesitan la sesion iniciada.
 //   GET    api.php/contenedores       lista de contenedores            (todos los roles)
@@ -7,8 +9,6 @@
 //   PUT    api.php/contenedores?id=1  modificar un contenedor          (administrador y operario)
 //   DELETE api.php/contenedores?id=1  borrar un contenedor             (administrador y operario)
 //   GET    api.php/tipos_residuo      lista de tipos de residuo        (todos los roles)
-//   GET    api.php/camiones           lista de camiones                (administrador, operario y recolector)
-//   POST / PUT / DELETE camiones                                       (administrador y operario)
 //   GET    api.php/centros            lista de centros de acopio       (administrador, operario y recolector)
 //   POST / PUT / DELETE centros                                        (administrador y operario)
 //   GET    api.php/maquinaria         lista de maquinas                (administrador, operario y recolector)
@@ -18,8 +18,6 @@
 //   POST   api.php/vaciar?id=1        marcar un contenedor como vaciado (administrador, operario y recolector)
 //   GET    api.php/incidencias        lista de incidencias             (administrador, operario y recolector)
 //   POST   api.php/incidencias        reportar un problema             (administrador, operario y recolector)
-//   GET    api.php/recorridos         recorridos de las cuadrillas     (administrador, operario y recolector)
-//                                     (el recolector solo ve los de su cuadrilla)
 //   GET    api.php/notificaciones     avisos de los vecinos            (vecino ve los suyos, administrador y operario ven todos)
 //   POST   api.php/notificaciones     un vecino avisa un problema      (vecino)
 // Con ?id=1 en un GET se pide uno solo.
@@ -29,14 +27,11 @@ require_once "conexion.php";
 require_once "vistas/respuesta.php";
 require_once "seguridad.php";
 require_once "modelos/Contenedor.php";
-require_once "modelos/Camion.php";
 require_once "modelos/Centro.php";
 require_once "modelos/Maquinaria.php";
 require_once "modelos/Incidencia.php";
-require_once "modelos/Recorrido.php";
 require_once "modelos/Notificacion.php";
 require_once "controladores/contenedores.php";
-require_once "controladores/camiones.php";
 require_once "controladores/centros.php";
 require_once "controladores/maquinaria.php";
 require_once "controladores/mapa.php";
@@ -44,7 +39,7 @@ require_once "controladores/mapa.php";
 // Tipo de pedido: GET (pedir), POST (crear), PUT (modificar) o DELETE (borrar)
 $metodo = $_SERVER['REQUEST_METHOD'];
 
-// Que se pidio: lo que viene despues de api.php/ (por ejemplo camiones)
+// Que se pidio: lo que viene despues de api.php/ (por ejemplo contenedores)
 $endpoint = trim($_SERVER['PATH_INFO'] ?? "", "/");
 
 // Id que viene en la direccion (para ver, modificar o borrar uno)
@@ -60,11 +55,9 @@ $gestores = ["Administrador", "Operario"];
 
 // Modelos que usan la base de datos
 $contenedor = new Contenedor($conn);
-$camion = new Camion($conn);
 $centro = new Centro($conn);
 $maquinaria = new Maquinaria($conn);
 $incidencia = new Incidencia($conn);
-$recorrido = new Recorrido($conn);
 $notificacion = new Notificacion($conn);
 
 switch ($endpoint) {
@@ -86,21 +79,6 @@ switch ($endpoint) {
     case "tipos_residuo":
         verificarRol($todos);
         if ($metodo == "GET") listarTiposResiduo($contenedor);
-        break;
-
-    case "camiones":
-        if ($metodo == "GET") {
-            verificarRol($personal);
-            if ($id != null) {
-                obtenerCamion($camion, $id);
-            } else {
-                listarCamiones($camion);
-            }
-        }
-        verificarRol($gestores);
-        if ($metodo == "POST") registrarCamion($camion, $datos);
-        if ($metodo == "PUT") modificarCamion($camion, $id, $datos);
-        if ($metodo == "DELETE") eliminarCamion($camion, $id);
         break;
 
     case "centros":
@@ -152,11 +130,6 @@ switch ($endpoint) {
         verificarRol($personal);
         if ($metodo == "GET") listarIncidencias($incidencia);
         if ($metodo == "POST") reportarIncidencia($incidencia, $contenedor, $datos);
-        break;
-
-    case "recorridos":
-        verificarRol($personal);
-        if ($metodo == "GET") listarRecorridos($recorrido);
         break;
 
     case "notificaciones":

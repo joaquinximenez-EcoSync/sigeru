@@ -1,5 +1,5 @@
 <?php
-// Controlador de las cosas que usa el mapa: incidencias y recorridos
+// Controlador de las cosas que usa el mapa: incidencias y avisos de los vecinos
 
 // Devuelve la lista de incidencias (GET incidencias)
 function listarIncidencias($incidencia) {
@@ -36,16 +36,6 @@ function reportarIncidencia($incidencia, $contenedor, $datos) {
     }
 
     responder(["mensaje" => "Problema reportado correctamente", "incidencia" => $nueva], 201);
-}
-
-// Recorridos (GET recorridos): el recolector ve solo los de su cuadrilla, el resto ve todos
-function listarRecorridos($recorrido) {
-    $usuario = $_SESSION['usuario_logueado'];
-
-    if ($usuario['rol'] == "Recolector") {
-        responder($recorrido->obtenerDelRecolector($usuario['id']));
-    }
-    responder($recorrido->obtenerTodos());
 }
 
 // Un vecino avisa que hay un problema en un contenedor (POST notificaciones)

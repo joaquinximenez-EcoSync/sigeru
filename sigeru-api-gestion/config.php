@@ -1,7 +1,7 @@
 <?php
 // Configuracion general de la API de Gestion
 
-// La sesion guarda quien inicio sesion (la comparten las dos APIs)
+// La sesion guarda quien inicio sesion (la comparten todas las APIs)
 session_name("SIGERU");
 session_start();
 
