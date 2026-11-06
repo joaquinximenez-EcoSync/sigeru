@@ -24,9 +24,10 @@ services:
       - datos-mysql:/var/lib/mysql
     ports:
       - "3307:3306"
-    # El servidor web espera a que MySQL este listo
+    # El servidor web espera a que MySQL este listo y con los datos de prueba cargados
+    # (se fija que ya este la ultima tabla que se llena: recolecciones)
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD-SHELL", "mysql -uroot -h 127.0.0.1 -e 'SELECT id_recoleccion FROM sigeru.recolecciones LIMIT 1' | grep -q id"]
       interval: 5s
       timeout: 5s
       retries: 30
@@ -42,6 +43,11 @@ services:
       # Las APIs se conectan a la base de datos del contenedor "mysql" (ver conexion.php)
       DB_HOST: mysql
       TZ: America/Montevideo
+      # Correo de Gmail para los mails de verificacion (ver sigeru-api-usuarios/config_correo.php).
+      # Si se dejan vacios, el registro funciona en "modo prueba" (muestra el enlace en pantalla).
+      GMAIL_USUARIO: ""
+      GMAIL_CLAVE: ""
+      DIRECCION_SITIO: "http://localhost:8080"
     volumes:
       - ./sigeru-landing:/var/www/html/sigeru-landing
       - ./sigeru-frontend:/var/www/html/sigeru-frontend

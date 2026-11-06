@@ -9,7 +9,7 @@ Proyecto de pasaje de grado de **EcoSync** - ESI 2026.
 | `sigeru-landing` | Página principal y registro de vecinos |
 | `sigeru-frontend` | Inicio de sesión, panel de control con estadísticas y alertas, mapa interactivo de Montevideo, seguimiento de incidencias, informes y CRUD de usuarios, contenedores, camiones, recorridos, centros de acopio y maquinaria |
 | `sigeru-api-usuarios` | API de registro, inicio de sesión y usuarios |
-| `sigeru-api-gestion` | API de contenedores, centros de acopio, maquinaria, incidencias (registro y seguimiento), avisos de vecinos, estadísticas y alertas |
+| `sigeru-api-gestion` | API de contenedores, centros de acopio, maquinaria, inventario de repuestos, incidencias (registro y seguimiento), avisos de vecinos, volumen recolectado, estadísticas y alertas |
 | `sigeru-api-recoleccion` | API de la flota de camiones, mantenimientos y recorridos (rutas asignadas a cuadrillas) |
 | `sigeru-base-datos` | MER, modelo físico, DDL y dump de la base de datos |
 
@@ -82,12 +82,41 @@ Cada test muestra `OK` o `FALLA` y al final cuántos pasaron:
 
 | Tests | Cantidad |
 |-------|----------|
-| Modelo de usuarios | 21 |
-| Endpoints de la API de usuarios | 26 |
-| Modelos de gestión (contenedores, centros, maquinaria, incidencias, avisos, estadísticas, alertas) | 56 |
-| Endpoints de la API de gestión | 52 |
-| Modelos de recolección (camiones, mantenimientos, recorridos) | 32 |
-| Endpoints de la API de recolección | 34 |
+| Modelos de usuarios (usuarios, verificación, parámetros, notificaciones) | 38 |
+| Endpoints de la API de usuarios | 45 |
+| Modelos de gestión (contenedores, centros, maquinaria, incidencias, avisos, estadísticas, alertas, repuestos, volumen) | 77 |
+| Endpoints de la API de gestión | 74 |
+| Modelos de recolección (camiones, mantenimientos, recorridos, notificaciones) | 35 |
+| Endpoints de la API de recolección | 35 |
+
+## Registro con verificación por correo (Gmail)
+
+Cuando un vecino se registra en la landing:
+
+1. Le llega un **correo con un enlace** para verificar que el correo es suyo.
+2. Al abrir el enlace ve **"¡Te registraste correctamente!"** y le llega otro correo confirmándolo.
+3. Un **administrador aprueba** su cuenta (le llega una notificación y lo hace desde Usuarios). Al vecino le llega un correo avisando.
+   Esto se puede apagar en **Parámetros** → "aprobar registros".
+
+Para que se manden los correos hay que poner una cuenta de Gmail en `sigeru-api-usuarios/config_correo.php`
+(los pasos están en ese archivo: hace falta una "contraseña de aplicación" de Google).
+Si no se configura, el registro funciona igual en **modo prueba**: en vez de mandar el correo, la landing muestra el enlace de verificación.
+
+## Notificaciones
+
+La campana 🔔 del menú muestra las notificaciones de cada usuario y se actualiza sola cada 15 segundos
+(cuando llega una nueva aparece un cartel abajo a la derecha). Por ejemplo:
+
+| Qué pasa | A quién le llega |
+|----------|------------------|
+| Un vecino avisa un problema en un contenedor | A todo el personal (administradores, operarios y recolectores) y la confirmación al vecino |
+| El personal registra una incidencia | A los administradores y operarios |
+| Se asigna una incidencia a una cuadrilla | A los recolectores de esa cuadrilla |
+| La incidencia del aviso pasa a En proceso o Resuelta | Al vecino que avisó |
+| Un recolector resuelve una incidencia | A los administradores y operarios |
+| Se asigna o cambia un recorrido (ruta) de una cuadrilla | A los recolectores de esa cuadrilla |
+| Un vecino verifica su correo y espera aprobación | A los administradores |
+| Un repuesto queda en la cantidad mínima | A los administradores y operarios |
 
 ## Usuarios de prueba
 
