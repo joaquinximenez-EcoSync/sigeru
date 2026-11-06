@@ -27,3 +27,31 @@ function modificarUsuario(id, datos) {
 function borrarUsuario(id) {
     return pedirAlServidor(API_USUARIOS + "/usuarios?id=" + id, "DELETE");
 }
+
+// aprobado es true para aprobar el registro de un vecino o false para rechazarlo
+function aprobarUsuario(id, aprobado) {
+    return pedirAlServidor(API_USUARIOS + "/aprobar?id=" + id, "POST", { aprobado: aprobado });
+}
+
+// ----- Notificaciones (la campana) -----
+function obtenerMensajes() {
+    return pedirAlServidor(API_USUARIOS + "/mensajes");
+}
+
+// Sin id marca todas como leidas
+function marcarMensajeLeido(id) {
+    let direccion = API_USUARIOS + "/mensajes";
+    if (id) {
+        direccion = direccion + "?id=" + id;
+    }
+    return pedirAlServidor(direccion, "PUT");
+}
+
+// ----- Parametros del sistema -----
+function obtenerParametros() {
+    return pedirAlServidor(API_USUARIOS + "/parametros");
+}
+
+function guardarParametros(datos) {
+    return pedirAlServidor(API_USUARIOS + "/parametros", "PUT", datos);
+}

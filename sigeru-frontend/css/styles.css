@@ -84,6 +84,8 @@ td.ajustar { white-space: normal; min-width: 120px; }
 th { background: #f1f5f3; font-size: 13px; text-transform: uppercase; color: #6b7280; }
 tbody tr:hover { background: #fafcfb; }
 .acciones button { margin-right: 6px; }
+td.stock { white-space: nowrap; }
+td.stock .etiqueta { min-width: 34px; text-align: center; margin: 0 4px; }
 .acciones-columna button { display: block; width: 100%; margin: 0 0 6px 0; }
 .vacio { text-align: center; color: #6b7280; padding: 30px; }
 
@@ -126,6 +128,7 @@ dialog.dialogo-ancho { max-width: 760px; }
 .filtros input[type=date], .filtros input[type=month] { padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font: inherit; }
 .solo-imprimir { display: none; }
 .pie-informe { margin-top: 15px; font-size: 13px; }
+.seccion-volumen { margin-top: 30px; }
 
 /* Al imprimir el informe se oculta el menu y los botones */
 @media print {
@@ -137,9 +140,36 @@ dialog.dialogo-ancho { max-width: 760px; }
     .stat, .table-container { box-shadow: none; border: 1px solid #ddd; }
     .dashboard-grid { grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
     .stat { padding: 12px; }
+    .seccion-volumen { break-before: page; }
+    .graficos { grid-template-columns: 1fr 1fr; }
     .stat strong { font-size: 24px; }
     th, td { padding: 6px; font-size: 12px; white-space: normal; }
 }
+
+/* ===== Notificaciones (campana) ===== */
+.logo-fila { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
+.sidebar .logo-fila .logo { margin-bottom: 0; }
+.campana { position: relative; background: rgba(255,255,255,.08); border: 0; border-radius: 10px; font-size: 20px; padding: 6px 10px; cursor: pointer; }
+.campana:hover { background: rgba(255,255,255,.18); }
+.campana .contador { position: absolute; top: -6px; right: -8px; margin: 0; }
+.panel-notificaciones { display: none; position: fixed; top: 70px; left: 250px; width: 380px; max-height: 70vh; overflow-y: auto;
+                        background: #fff; color: #1f2937; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,.25); z-index: 1000; }
+.panel-notificaciones.abierto { display: block; }
+.panel-notificaciones-titulo { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid #e5e7eb; position: sticky; top: 0; background: #fff; }
+.sidebar .panel-notificaciones a.mensaje-item { display: block; color: #1f2937; padding: 10px 14px; border-radius: 0; border-bottom: 1px solid #f1f5f3; font-size: 14px; }
+.sidebar .panel-notificaciones a.mensaje-item:hover { background: #f5f7fa; color: #1f2937; }
+.sidebar .panel-notificaciones a.mensaje-item.sin-leer { background: #eaf5ee; font-weight: bold; }
+.mensaje-item small { display: block; color: #6b7280; font-weight: normal; margin-top: 2px; }
+.sin-mensajes { padding: 20px; text-align: center; color: #6b7280; }
+.aviso-emergente { position: fixed; right: 20px; bottom: 20px; max-width: 360px; background: #17251d; color: #fff; padding: 14px 18px;
+                   border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,.3); cursor: pointer; z-index: 1001;
+                   transform: translateY(150%); transition: transform .4s; }
+.aviso-emergente.visible { transform: translateY(0); }
+.aviso-solicitudes { display: none; margin-bottom: 15px; padding: 12px 16px; border-radius: 10px; background: #fef3c7; color: #7a4f0a; }
+.aviso-solicitudes button { margin-left: 10px; }
+
+.caja-parametros { max-width: 640px; }
+.caja-parametros small { display: block; margin-top: 4px; font-family: monospace; }
 
 /* ===== Mapa ===== */
 #mapa { height: 560px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,.06); z-index: 0; }
@@ -181,7 +211,8 @@ dialog.dialogo-ancho { max-width: 760px; }
     .cards, .form-row { grid-template-columns: 1fr; }
     .panel { grid-template-columns: 1fr; }
     .sidebar { flex-direction: row; flex-wrap: wrap; align-items: center; padding: 12px 16px; }
-    .sidebar .logo { width: 100%; margin-bottom: 5px; }
+    .sidebar .logo-fila { width: 100%; margin-bottom: 5px; }
+    .panel-notificaciones { top: 60px; left: 16px; right: 16px; width: auto; }
     .sidebar .usuario { width: 100%; margin: 0; display: flex; justify-content: space-between; align-items: center; }
     .sidebar .usuario button { margin: 0; }
     .contenido { padding: 25px 16px; }

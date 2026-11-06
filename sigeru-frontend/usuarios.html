@@ -9,7 +9,19 @@
 <body>
 <div class="panel">
     <aside class="sidebar">
-        <div class="logo">SiGeRU</div>
+        <div class="logo-fila">
+            <div class="logo">SiGeRU</div>
+            <button class="campana" onclick="abrirNotificaciones()" title="Notificaciones">🔔<span id="contadorMensajes" class="contador"></span></button>
+        </div>
+        <!-- Lista de notificaciones (se abre al tocar la campana) -->
+        <div id="panelNotificaciones" class="panel-notificaciones">
+            <div class="panel-notificaciones-titulo">
+                <strong>Notificaciones</strong>
+                <button class="btn btn-secondary btn-sm" onclick="leerTodos()">Marcar todas como leídas</button>
+            </div>
+            <div id="listaMensajes"></div>
+        </div>
+        <div id="avisoEmergente" class="aviso-emergente"></div>
         <a href="panel.html">🏠 Inicio <span id="contadorAlertas" class="contador" title="Alertas"></span></a>
         <a href="mapa.html">🗺️ Mapa</a>
         <a href="incidencias.html" class="no-vecino">⚠️ Incidencias</a>
@@ -18,8 +30,10 @@
         <a href="recorridos.html" class="no-vecino">🛣️ Recorridos</a>
         <a href="centros.html" class="no-vecino">🏭 Centros de acopio</a>
         <a href="maquinaria.html" class="no-vecino">⚙️ Maquinaria</a>
+        <a href="repuestos.html" class="no-vecino">📦 Repuestos</a>
         <a href="informes.html" class="no-vecino">📄 Informes</a>
         <a href="usuarios.html" class="activo solo-admin">👥 Usuarios</a>
+        <a href="parametros.html" class="solo-admin">🛠️ Parámetros</a>
         <div class="usuario">
             <div>
                 <strong id="nombreUsuario"></strong>
@@ -36,6 +50,7 @@
         </div>
 
         <div id="mensaje" class="mensaje"></div>
+        <div id="avisoSolicitudes" class="aviso-solicitudes"></div>
 
         <!-- Ventana emergente (modal) con el formulario para agregar o modificar. Empieza oculta -->
         <dialog id="formModal">
@@ -96,7 +111,7 @@
             </form>
         </dialog>
 
-        <input id="buscador" class="buscador" placeholder="Buscar por nombre, correo o rol..." oninput="buscar()">
+        <input id="buscador" class="buscador" placeholder="Buscar por nombre, correo, rol o estado..." oninput="buscar()">
 
         <div class="table-container">
             <table>
@@ -108,6 +123,7 @@
                         <th>Teléfono</th>
                         <th>Zona</th>
                         <th>Rol</th>
+                        <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -118,12 +134,14 @@
 </div>
 
 <script src="js/config.js"></script>
+<script src="js/idioma.js"></script>
 <script src="js/modelos/servidor.js"></script>
 <script src="js/modelos/usuarios.js"></script>
 <script src="js/modelos/gestion.js"></script>
 <script src="js/modelos/recoleccion.js"></script>
 <script src="js/vistas/comun.js"></script>
 <script src="js/vistas/tablas.js"></script>
+<script src="js/vistas/notificaciones.js"></script>
 <script src="js/controladores/sesion.js"></script>
 <script src="js/controladores/usuarios.js"></script>
 </body>

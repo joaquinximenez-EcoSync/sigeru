@@ -13,6 +13,8 @@ a { color: #176b3a; }
 .btn-danger:hover { background: #fdecea; }
 .btn-sm { padding: 5px 12px; font-size: 13px; }
 .btn-block { width: 100%; }
+.enlace-prueba { margin-top: 10px; }
+.verificar-icono { font-size: 54px; text-align: center; }
 
 /* ===== Barra de navegacion (pagina de inicio) ===== */
 .navbar { background: #fff; display: flex; justify-content: space-between; align-items: center; padding: 18px 7%; box-shadow: 0 2px 10px rgba(0,0,0,.08); position: sticky; top: 0; }

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificar correo | SiGeRU</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header class="navbar">
+    <a class="logo" href="index.html">SiGeRU</a>
+    <nav>
+        <a href="index.html">Inicio</a>
+        <a class="btn btn-primary link-ingresar" href="#">Ingresar</a>
+    </nav>
+</header>
+
+<main>
+    <!-- Esta pagina se abre desde el enlace del correo de verificacion -->
+    <section class="section seccion-registro">
+        <div class="form-container">
+            <div id="icono" class="verificar-icono">⏳</div>
+            <h2>Verificando tu correo...</h2>
+            <div id="mensaje" class="mensaje"></div>
+            <p><a id="botonIngresar" class="btn btn-primary link-ingresar" href="#" style="display: none">Iniciar sesión</a></p>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <p>SiGeRU © 2026 - EcoSync</p>
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/modelos/registro.js"></script>
+<script src="js/vistas/mensajes.js"></script>
+<script src="js/controladores/verificar.js"></script>
+</body>
+</html>

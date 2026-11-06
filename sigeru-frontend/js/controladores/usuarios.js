@@ -14,6 +14,7 @@ async function cargarUsuarios() {
     try {
         listaUsuarios = await obtenerUsuarios();
         mostrarTablaUsuarios(listaUsuarios, true);
+        mostrarSolicitudes();
     } catch (error) {
         mostrarMensaje(error.message, true);
     }
@@ -25,12 +26,54 @@ function buscar() {
     // Guardamos solo los que tienen el texto buscado
     const filtrados = [];
     for (const u of listaUsuarios) {
-        const contenido = (u.primer_nombre + " " + u.primer_apellido + " " + u.email + " " + u.rol).toLowerCase();
+        const contenido = (u.primer_nombre + " " + u.primer_apellido + " " + u.email + " " + u.rol + " " + u.estado).toLowerCase();
         if (contenido.includes(texto)) {
             filtrados.push(u);
         }
     }
     mostrarTablaUsuarios(filtrados, true);
+}
+
+// Muestra arriba de la tabla cuantos vecinos esperan aprobacion
+function mostrarSolicitudes() {
+    let pendientes = 0;
+    for (const u of listaUsuarios) {
+        if (u.estado == "Pendiente") pendientes++;
+    }
+
+    const aviso = document.getElementById("avisoSolicitudes");
+    if (pendientes == 0) {
+        aviso.style.display = "none";
+        return;
+    }
+    let texto = "🆕 Hay " + pendientes + " vecinos esperando que apruebes su registro.";
+    if (pendientes == 1) {
+        texto = "🆕 Hay 1 vecino esperando que apruebes su registro.";
+    }
+    aviso.innerHTML = `${texto} <button class="btn btn-secondary btn-sm" onclick="verPendientes()">Ver solicitudes</button>`;
+    aviso.style.display = "block";
+}
+
+function verPendientes() {
+    document.getElementById("buscador").value = "pendiente";
+    buscar();
+}
+
+async function aprobarElegido(id, aprobado) {
+    const u = buscarPorId(listaUsuarios, id);
+    let pregunta = "¿Aprobar el registro de " + u.primer_nombre + " " + u.primer_apellido + "?";
+    if (!aprobado) {
+        pregunta = "¿Rechazar el registro de " + u.primer_nombre + " " + u.primer_apellido + "?";
+    }
+    if (!confirm(pregunta)) return;
+
+    try {
+        const respuesta = await aprobarUsuario(id, aprobado);
+        mostrarMensaje(respuesta.mensaje, false);
+        cargarUsuarios();
+    } catch (error) {
+        mostrarMensaje(error.message, true);
+    }
 }
 
 function nuevoUsuario() {

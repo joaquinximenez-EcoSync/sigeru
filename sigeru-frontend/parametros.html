@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parámetros | SiGeRU</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="panel">
+    <aside class="sidebar">
+        <div class="logo-fila">
+            <div class="logo">SiGeRU</div>
+            <button class="campana" onclick="abrirNotificaciones()" title="Notificaciones">🔔<span id="contadorMensajes" class="contador"></span></button>
+        </div>
+        <!-- Lista de notificaciones (se abre al tocar la campana) -->
+        <div id="panelNotificaciones" class="panel-notificaciones">
+            <div class="panel-notificaciones-titulo">
+                <strong>Notificaciones</strong>
+                <button class="btn btn-secondary btn-sm" onclick="leerTodos()">Marcar todas como leídas</button>
+            </div>
+            <div id="listaMensajes"></div>
+        </div>
+        <div id="avisoEmergente" class="aviso-emergente"></div>
+        <a href="panel.html">🏠 Inicio <span id="contadorAlertas" class="contador" title="Alertas"></span></a>
+        <a href="mapa.html">🗺️ Mapa</a>
+        <a href="incidencias.html" class="no-vecino">⚠️ Incidencias</a>
+        <a href="contenedores.html">🗑️ Contenedores</a>
+        <a href="camiones.html" class="no-vecino">🚛 Camiones</a>
+        <a href="recorridos.html" class="no-vecino">🛣️ Recorridos</a>
+        <a href="centros.html" class="no-vecino">🏭 Centros de acopio</a>
+        <a href="maquinaria.html" class="no-vecino">⚙️ Maquinaria</a>
+        <a href="repuestos.html" class="no-vecino">📦 Repuestos</a>
+        <a href="informes.html" class="no-vecino">📄 Informes</a>
+        <a href="usuarios.html" class="solo-admin">👥 Usuarios</a>
+        <a href="parametros.html" class="activo solo-admin">🛠️ Parámetros</a>
+        <div class="usuario">
+            <div>
+                <strong id="nombreUsuario"></strong>
+                <span id="rolUsuario"></span>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="salir()">Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <main class="contenido">
+        <h1>Parámetros</h1>
+        <p class="subtitulo">Valores del sistema que puede cambiar el administrador, sin tocar el código.</p>
+
+        <div id="mensaje" class="mensaje"></div>
+
+        <div class="card caja-parametros">
+            <form id="formParametros">
+                <div id="camposParametros"><p class="texto-gris">Cargando...</p></div>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </form>
+        </div>
+    </main>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/idioma.js"></script>
+<script src="js/modelos/servidor.js"></script>
+<script src="js/modelos/usuarios.js"></script>
+<script src="js/modelos/gestion.js"></script>
+<script src="js/modelos/recoleccion.js"></script>
+<script src="js/vistas/comun.js"></script>
+<script src="js/vistas/tablas.js"></script>
+<script src="js/vistas/notificaciones.js"></script>
+<script src="js/controladores/sesion.js"></script>
+<script src="js/controladores/parametros.js"></script>
+</body>
+</html>

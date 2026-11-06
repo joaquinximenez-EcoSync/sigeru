@@ -69,8 +69,8 @@ function cerrarModal() {
 
 // Elige el color de la etiqueta segun el estado: verde (bien), amarillo (alerta) o rojo (mal)
 function colorEstado(estado) {
-    if (estado == "Funcional" || estado == "Operativo" || estado == "Operativa" || estado == "Disponible" || estado == "Resuelta") return "";
-    if (estado == "En mantenimiento" || estado == "En reparación" || estado == "En ruta" || estado == "En proceso") return "alerta";
+    if (estado == "Funcional" || estado == "Operativo" || estado == "Operativa" || estado == "Disponible" || estado == "Resuelta" || estado == "Activo") return "";
+    if (estado == "En mantenimiento" || estado == "En reparación" || estado == "En ruta" || estado == "En proceso" || estado == "Pendiente" || estado == "Sin verificar") return "alerta";
     return "mal";
 }
 
@@ -84,6 +84,29 @@ function colorPrioridad(prioridad) {
 // Mes actual como "2026-11"
 function mesActual() {
     return fechaDeHoy().substring(0, 7);
+}
+
+// Descarga un archivo CSV (se abre con Excel). "filas" es una lista de listas:
+// la primera fila son los titulos de las columnas.
+function descargarCSV(nombreArchivo, filas) {
+    let texto = "";
+    for (const fila of filas) {
+        const celdas = [];
+        for (const celda of fila) {
+            // Cada celda va entre comillas (y las comillas de adentro se duplican)
+            celdas.push('"' + String(celda ?? "").replaceAll('"', '""') + '"');
+        }
+        // Excel en español usa ; para separar las columnas
+        texto += celdas.join(";") + "\r\n";
+    }
+
+    // El \uFEFF del principio es para que Excel muestre bien los acentos
+    const archivo = new Blob(["\uFEFF" + texto], { type: "text/csv;charset=utf-8" });
+    const enlace = document.createElement("a");
+    enlace.href = URL.createObjectURL(archivo);
+    enlace.download = nombreArchivo;
+    enlace.click();
+    URL.revokeObjectURL(enlace.href);
 }
 
 // Dias que pasaron entre dos fechas "2026-11-01" y "2026-11-04" (da 3)

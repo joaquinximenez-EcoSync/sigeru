@@ -3,6 +3,8 @@
 Página principal del Sistema de Gestión de Residuos Urbanos (SiGeRU), desarrollado por **EcoSync**.
 
 Brinda información al público y recibe las solicitudes de registro de usuarios (vecinos).
+Al registrarse le llega un correo para verificar la cuenta (si Gmail no está configurado en la API,
+la página muestra el enlace de verificación: modo prueba).
 No guarda datos: el registro se envía a la **API de Usuarios**.
 
 ## Tecnologías
@@ -18,6 +20,8 @@ js/config.js               Direcciones de la API y del frontend
 js/modelos/registro.js     Modelo: envía el registro a la API de Usuarios
 js/vistas/mensajes.js      Vista: muestra mensajes en pantalla
 js/controladores/registro.js  Controlador: valida y maneja el formulario
+verificar.html             Página que se abre desde el enlace del correo de verificación
+js/controladores/verificar.js Controlador: manda el código del enlace a la API y muestra "¡Te registraste correctamente!"
 ```
 
 ## Cómo ejecutarla (XAMPP)

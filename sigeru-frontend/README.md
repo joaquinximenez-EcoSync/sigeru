@@ -24,6 +24,28 @@ HTML5, CSS y JavaScript.
 
 El menú y los botones se muestran según el rol, y además cada API revisa el rol antes de responder.
 
+## Notificaciones (campana 🔔)
+
+Todas las páginas tienen la campana arriba del menú: muestra cuántas notificaciones no se leyeron y se
+actualiza sola cada 15 segundos. Cuando llega una nueva aparece un cartel abajo a la derecha.
+Al tocar una notificación se abre la página que corresponde (por ejemplo Incidencias).
+
+## Repuestos (repuestos.html)
+
+Inventario de contenedores de repuesto, tapas y ruedas. Los botones **−** y **+** usan o agregan una unidad.
+Los que están en la cantidad mínima o menos se marcan en rojo y generan una alerta.
+
+## Parámetros (parametros.html, solo administrador)
+
+Valores del sistema que se cambian sin tocar el código: días para avisar de un desborde, porcentaje de
+centro lleno, si hay que aprobar los registros, **idioma** (español o inglés) y kilos por litro.
+Con el idioma en inglés se traducen el menú, los títulos, las tablas y los botones (`js/idioma.js`).
+
+## Usuarios (usuarios.html)
+
+Además del CRUD, muestra el estado de cada usuario. Los vecinos que se registraron y verificaron su correo
+quedan **Pendiente** y el administrador los aprueba o rechaza con los botones ✔ y ✖.
+
 ## Panel de control (panel.html)
 
 - **🔔 Alertas** para cada rol. El número de alertas se ve en el menú, al lado de Inicio.
@@ -40,8 +62,10 @@ El botón **Historial** muestra todas las incidencias que tuvo ese contenedor.
 ## Informes (informes.html)
 
 Listado de incidencias abiertas y cerradas entre dos fechas, con el total, cuántas siguen abiertas,
-cuántas se cerraron y el tiempo promedio de resolución. El botón **🖨️ Imprimir** lo deja listo para
-imprimir o guardar como PDF (sin el menú ni los filtros).
+cuántas se cerraron y el tiempo promedio de resolución. También el **volumen recolectado** (kilos por
+municipio y por tipo de residuo, y cada cuántos días se vacía un contenedor; datos simulados).
+El botón **🖨️ Imprimir** lo deja listo para imprimir o guardar como PDF, y los botones **📥 Exportar** bajan
+las incidencias y las recolecciones en un archivo CSV que se abre con Excel.
 
 ## Recorridos (recorridos.html)
 
@@ -84,8 +108,10 @@ index.html                      Inicio de sesión
 panel.html                      Inicio del panel
 mapa.html                       Mapa interactivo de Montevideo
 incidencias.html                Registro y seguimiento de incidencias
-informes.html                   Informes de incidencias para imprimir
-usuarios.html                   Usuarios
+informes.html                   Informes de incidencias y volumen recolectado (imprimir y exportar)
+repuestos.html                  Inventario de repuestos
+parametros.html                 Parámetros del sistema e idioma (administrador)
+usuarios.html                   Usuarios y aprobación de registros
 contenedores.html               Contenedores
 camiones.html                   Camiones y sus mantenimientos
 recorridos.html                 Recorridos (rutas asignadas a cuadrillas)
@@ -93,8 +119,9 @@ centros.html                    Centros de acopio
 maquinaria.html                 Maquinaria
 css/styles.css
 js/config.js                    Direcciones de las APIs
+js/idioma.js                    Traducciones (idioma parametrizable)
 js/modelos/                     Pedidos a las APIs (servidor, usuarios, gestion, recoleccion)
-js/vistas/                      Funciones que muestran datos en pantalla (comun, tablas, mapa, panel)
+js/vistas/                      Funciones que muestran datos en pantalla (comun, tablas, mapa, panel, notificaciones)
 js/libs/leaflet/                Libreria del mapa (Leaflet 1.9.4)
 js/datos/                       Límites de los municipios (municipios.json, opcional)
 js/controladores/               Lógica de cada página

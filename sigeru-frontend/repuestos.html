@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repuestos | SiGeRU</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="panel">
+    <aside class="sidebar">
+        <div class="logo-fila">
+            <div class="logo">SiGeRU</div>
+            <button class="campana" onclick="abrirNotificaciones()" title="Notificaciones">🔔<span id="contadorMensajes" class="contador"></span></button>
+        </div>
+        <!-- Lista de notificaciones (se abre al tocar la campana) -->
+        <div id="panelNotificaciones" class="panel-notificaciones">
+            <div class="panel-notificaciones-titulo">
+                <strong>Notificaciones</strong>
+                <button class="btn btn-secondary btn-sm" onclick="leerTodos()">Marcar todas como leídas</button>
+            </div>
+            <div id="listaMensajes"></div>
+        </div>
+        <div id="avisoEmergente" class="aviso-emergente"></div>
+        <a href="panel.html">🏠 Inicio <span id="contadorAlertas" class="contador" title="Alertas"></span></a>
+        <a href="mapa.html">🗺️ Mapa</a>
+        <a href="incidencias.html" class="no-vecino">⚠️ Incidencias</a>
+        <a href="contenedores.html">🗑️ Contenedores</a>
+        <a href="camiones.html" class="no-vecino">🚛 Camiones</a>
+        <a href="recorridos.html" class="no-vecino">🛣️ Recorridos</a>
+        <a href="centros.html" class="no-vecino">🏭 Centros de acopio</a>
+        <a href="maquinaria.html" class="no-vecino">⚙️ Maquinaria</a>
+        <a href="repuestos.html" class="activo no-vecino">📦 Repuestos</a>
+        <a href="informes.html" class="no-vecino">📄 Informes</a>
+        <a href="usuarios.html" class="solo-admin">👥 Usuarios</a>
+        <a href="parametros.html" class="solo-admin">🛠️ Parámetros</a>
+        <div class="usuario">
+            <div>
+                <strong id="nombreUsuario"></strong>
+                <span id="rolUsuario"></span>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="salir()">Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <main class="contenido">
+        <div class="encabezado">
+            <h1>Repuestos</h1>
+            <button class="btn btn-primary solo-gestion" onclick="nuevoRepuesto()">+ Nuevo repuesto</button>
+        </div>
+
+        <div id="mensaje" class="mensaje"></div>
+
+        <!-- Ventana emergente (modal) con el formulario para agregar o modificar. Empieza oculta -->
+        <dialog id="formModal">
+            <h3 id="tituloModal"></h3>
+            <form id="formRepuesto">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nombre">Nombre *</label>
+                        <input id="nombre" required placeholder="Contenedor orgánico 1000 L">
+                    </div>
+                    <div class="form-group">
+                        <label for="tipo">Tipo</label>
+                        <select id="tipo">
+                            <option>Contenedor</option>
+                            <option>Tapa</option>
+                            <option>Rueda</option>
+                            <option>Otro</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cantidad">Cantidad *</label>
+                        <input id="cantidad" type="number" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cantidad_minima">Cantidad mínima *</label>
+                        <input id="cantidad_minima" type="number" min="0" required>
+                        <small>Si queda esto o menos, avisa para reponer</small>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_residuo">Tipo de residuo <small>(contenedores)</small></label>
+                        <select id="id_residuo">
+                            <option value="">Ninguno</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_instalacion">Dónde está guardado</label>
+                        <select id="id_instalacion">
+                            <option value="">Sin asignar</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+            </form>
+        </dialog>
+
+        <input id="buscador" class="buscador" placeholder="Buscar por nombre, tipo, residuo o instalación..." oninput="buscar()">
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Tipo</th>
+                        <th>Residuo</th>
+                        <th>Dónde está</th>
+                        <th>Cantidad</th>
+                        <th>Mínimo</th>
+                        <th class="solo-gestion">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaRepuestos"></tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/idioma.js"></script>
+<script src="js/modelos/servidor.js"></script>
+<script src="js/modelos/usuarios.js"></script>
+<script src="js/modelos/gestion.js"></script>
+<script src="js/modelos/recoleccion.js"></script>
+<script src="js/vistas/comun.js"></script>
+<script src="js/vistas/tablas.js"></script>
+<script src="js/vistas/notificaciones.js"></script>
+<script src="js/controladores/sesion.js"></script>
+<script src="js/controladores/repuestos.js"></script>
+</body>
+</html>

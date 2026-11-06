@@ -59,6 +59,28 @@ function borrarMaquina(id) {
     return pedirAlServidor(API_GESTION + "/maquinaria?id=" + id, "DELETE");
 }
 
+// ----- Repuestos -----
+function obtenerRepuestos() {
+    return pedirAlServidor(API_GESTION + "/repuestos");
+}
+
+function crearRepuesto(datos) {
+    return pedirAlServidor(API_GESTION + "/repuestos", "POST", datos);
+}
+
+function modificarRepuesto(id, datos) {
+    return pedirAlServidor(API_GESTION + "/repuestos?id=" + id, "PUT", datos);
+}
+
+function borrarRepuesto(id) {
+    return pedirAlServidor(API_GESTION + "/repuestos?id=" + id, "DELETE");
+}
+
+// cambio es -1 cuando se usa uno, o un numero positivo cuando llegan nuevos
+function cambiarStock(id, cambio) {
+    return pedirAlServidor(API_GESTION + "/stock?id=" + id, "POST", { cambio: cambio });
+}
+
 function obtenerInstalaciones() {
     return pedirAlServidor(API_GESTION + "/instalaciones");
 }
@@ -98,6 +120,11 @@ function obtenerIncidencias(filtros) {
 
 function seguimientoIncidencia(id, datos) {
     return pedirAlServidor(API_GESTION + "/incidencias?id=" + id, "PUT", datos);
+}
+
+// Kilos recolectados entre dos fechas (para los informes)
+function obtenerVolumen(desde, hasta) {
+    return pedirAlServidor(API_GESTION + "/volumen?desde=" + desde + "&hasta=" + hasta);
 }
 
 // ----- Panel de control -----

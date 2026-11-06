@@ -14,3 +14,14 @@ async function enviarRegistro(datos) {
     }
     return json;
 }
+
+// Manda el codigo que vino en el enlace del correo para verificar la cuenta
+async function enviarVerificacion(codigo) {
+    const respuesta = await fetch(API_USUARIOS + "/verificar?codigo=" + encodeURIComponent(codigo));
+    const json = await respuesta.json();
+
+    if (!respuesta.ok) {
+        throw new Error(json.error);
+    }
+    return json;
+}

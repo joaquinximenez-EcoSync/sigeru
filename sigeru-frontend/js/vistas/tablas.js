@@ -4,8 +4,8 @@
 // y se usa para llamar a la funcion que corresponde (por ejemplo editarCamion(3)).
 function botonesAcciones(tipo, id) {
     return `<td class="acciones">
-        <button class="btn btn-secondary btn-sm" onclick="editar${tipo}(${id})">Editar</button>
-        <button class="btn btn-danger btn-sm" onclick="borrar${tipo}Elegido(${id})">Borrar</button>
+        <button class="btn btn-secondary btn-sm" onclick="editar${tipo}(${id})">${traducir("Editar")}</button>
+        <button class="btn btn-danger btn-sm" onclick="borrar${tipo}Elegido(${id})">${traducir("Borrar")}</button>
     </td>`;
 }
 
@@ -19,7 +19,7 @@ function mostrarTablaUsuarios(lista, conAcciones) {
     const tabla = document.getElementById("tablaUsuarios");
 
     if (lista.length == 0) {
-        tabla.innerHTML = filaVacia(7, "No hay usuarios");
+        tabla.innerHTML = filaVacia(8, "No hay usuarios");
         return;
     }
 
@@ -31,8 +31,15 @@ function mostrarTablaUsuarios(lista, conAcciones) {
             <td>${limpiarTexto(u.email)}</td>
             <td>${limpiarTexto(u.telefono)}</td>
             <td>${limpiarTexto(u.zona)}</td>
-            <td><span class="etiqueta">${limpiarTexto(u.rol)}</span></td>`;
-        if (conAcciones) {
+            <td><span class="etiqueta">${limpiarTexto(u.rol)}</span></td>
+            <td><span class="etiqueta ${colorEstado(u.estado)}">${limpiarTexto(u.estado)}</span></td>`;
+        if (conAcciones && u.estado == "Pendiente") {
+            // Vecino que se registro y espera que lo aprueben
+            filas += `<td class="acciones">
+                <button class="btn btn-primary btn-sm" onclick="aprobarElegido(${u.id}, true)">✔ Aprobar</button>
+                <button class="btn btn-danger btn-sm" onclick="aprobarElegido(${u.id}, false)">✖ Rechazar</button>
+            </td>`;
+        } else if (conAcciones) {
             filas += botonesAcciones("Usuario", u.id);
         }
         filas += `</tr>`;
@@ -306,6 +313,29 @@ function mostrarTablaHistorial(lista) {
     tabla.innerHTML = filas;
 }
 
+// Tabla de recolecciones por contenedor (informe de volumen)
+function mostrarTablaVolumen(lista) {
+    const tabla = document.getElementById("tablaVolumen");
+
+    if (lista.length == 0) {
+        tabla.innerHTML = filaVacia(6, "No hay contenedores");
+        return;
+    }
+
+    let filas = "";
+    for (const c of lista) {
+        filas += `<tr>
+            <td>${c.id}</td>
+            <td class="ajustar">${limpiarTexto(c.calle)}<br><small>${limpiarTexto(c.zona)}</small></td>
+            <td>${limpiarTexto(c.municipio)}</td>
+            <td>${c.vaciados}</td>
+            <td>${c.kilos} kg</td>
+            <td>${limpiarTexto(c.ultima ?? "-")}</td>
+        </tr>`;
+    }
+    tabla.innerHTML = filas;
+}
+
 // Tabla del informe de incidencias
 function mostrarTablaInforme(lista) {
     const tabla = document.getElementById("tablaInforme");
@@ -333,6 +363,42 @@ function mostrarTablaInforme(lista) {
             <td>${limpiarTexto(i.fecha_resolucion ?? "-")}</td>
             <td>${dias}</td>
         </tr>`;
+    }
+    tabla.innerHTML = filas;
+}
+
+// Tabla del inventario de repuestos. Los que estan en el minimo o menos se marcan en rojo.
+// conAcciones: puede editar y borrar. Todo el personal puede usar (-1) o reponer (+1).
+function mostrarTablaRepuestos(lista, conAcciones) {
+    const tabla = document.getElementById("tablaRepuestos");
+
+    if (lista.length == 0) {
+        tabla.innerHTML = filaVacia(8, "No hay repuestos");
+        return;
+    }
+
+    let filas = "";
+    for (const r of lista) {
+        let etiqueta = `<span class="etiqueta">${r.cantidad}</span>`;
+        if (Number(r.cantidad) <= Number(r.cantidad_minima)) {
+            etiqueta = `<span class="etiqueta mal" title="Hay que reponer">${r.cantidad} ⚠️</span>`;
+        }
+        filas += `<tr>
+            <td>${r.id}</td>
+            <td class="ajustar">${limpiarTexto(r.nombre)}</td>
+            <td>${limpiarTexto(r.tipo)}</td>
+            <td>${limpiarTexto(r.residuo ?? "-")}</td>
+            <td class="ajustar">${limpiarTexto(r.instalacion ?? "Sin asignar")}</td>
+            <td class="stock">
+                <button class="btn btn-secondary btn-sm" onclick="usarRepuesto(${r.id}, -1)" title="Usar uno">−</button>
+                ${etiqueta}
+                <button class="btn btn-secondary btn-sm" onclick="usarRepuesto(${r.id}, 1)" title="Agregar uno">+</button>
+            </td>
+            <td>${r.cantidad_minima}</td>`;
+        if (conAcciones) {
+            filas += botonesAcciones("Repuesto", r.id);
+        }
+        filas += `</tr>`;
     }
     tabla.innerHTML = filas;
 }
