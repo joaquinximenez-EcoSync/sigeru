@@ -119,8 +119,8 @@ Cada test muestra `OK` o `FALLA` y al final cuántos pasaron:
 
 | Tests | Cantidad |
 |-------|----------|
-| Modelos de usuarios (usuarios, verificación, parámetros, notificaciones) | 38 |
-| Endpoints de la API de usuarios (incluye bloqueo por intentos fallidos y auditoría) | 60 |
+| Modelos de usuarios (usuarios, verificación, cifrado, parámetros, notificaciones) | 44 |
+| Endpoints de la API de usuarios (incluye bloqueo por intentos fallidos y auditoría) | 61 |
 | Modelos de gestión (contenedores, centros, maquinaria, incidencias, estadísticas, alertas, repuestos, volumen) | 88 |
 | Endpoints de la API de gestión | 81 |
 | Modelos de recolección (camiones, mantenimientos, recorridos, notificaciones) | 35 |
@@ -167,12 +167,20 @@ La seguridad está pensada en capas, una complementa a la otra:
 | Sesión | Cookie `HttpOnly` y `SameSite=Strict`, número de sesión nuevo al entrar, se cierra sola después de 30 minutos sin usar el sistema |
 | APIs | Cada endpoint revisa la sesión y el rol (`verificarRol`), valida todos los datos otra vez, consultas preparadas (evita inyección SQL), desde el navegador solo se puede abrir `api.php` |
 | Contraseñas | Guardadas con `password_hash` (bcrypt). Las nuevas tienen que tener al menos 8 caracteres, con letras y números |
+| Cifrado | El teléfono de los usuarios se guarda cifrado con AES-256-GCM (`sigeru-api-usuarios/cifrado.php`) y el código de verificación como resumen SHA-256 |
+| HTTPS | Certificado SSL firmado por la CA propia "EcoSync CA", solo TLS 1.2 y 1.3 (`seguridad/ssl/`) |
+| Respaldos | Hash SHA-256, cifrado AES-256 y firma digital RSA (`seguridad/respaldos/`) |
+| OWASP | `seguridad/owasp/revision_owasp.sh`: 28 pruebas contra el OWASP Top 10, todas pasan |
 | Fuerza bruta | Después de 5 contraseñas equivocadas el correo se bloquea 15 minutos (se cambia en Parámetros) |
 | Auditoría | Página **Seguridad** (solo administrador): quién entró, intentos fallidos y bloqueados, usuarios creados o borrados, cambios de rol y de parámetros. Se exporta a Excel |
 | Base de datos | En el servidor las APIs usan el usuario `sigeru_app` con permisos mínimos (`sigeru-base-datos/seguridad/usuario_aplicacion.sql`), su contraseña va en las variables `DB_USER` / `DB_PASS` y no en el código |
 | Correo | Gmail por SMTP con STARTTLS (cifrado). La contraseña de aplicación está fuera del proyecto (`sigeru_correo.php`) y nunca se sube a GitHub |
 
-Si ya tenían la base cargada, importen `sigeru-base-datos/actualizaciones/002_seguridad.sql` (no borra nada).
+Si ya tenían la base cargada, importen `sigeru-base-datos/actualizaciones/002_seguridad.sql` y después
+`003_cifrado.sql` (no borran nada). Más detalles y cómo prender HTTPS en XAMPP: `seguridad/LEEME.md`.
+
+**Importante:** la primera vez que se usa, la API crea `C:\xampp\sigeru_clave.php` con la clave que cifra los teléfonos.
+Si se pasa la base de datos a otra computadora, hay que copiar también ese archivo (si no, los teléfonos no se pueden leer).
 
 ## Datos de prueba
 
