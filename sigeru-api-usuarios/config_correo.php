@@ -1,20 +1,37 @@
 <?php
 // Configuracion del correo (Gmail) que usa la API para mandar los mails de verificacion.
 //
-// Como se configura:
-//   1. Entrar a la cuenta de Gmail de la empresa -> Gestionar tu cuenta de Google -> Seguridad.
-//   2. Activar la "Verificación en dos pasos".
-//   3. Buscar "Contraseñas de aplicaciones", crear una (por ejemplo "SiGeRU") y copiar las 16 letras.
-//   4. Escribir abajo el correo y esas 16 letras (sin espacios).
+// La contraseña NO se escribe aca (este archivo se sube a GitHub).
+// Se escribe en un archivo aparte que esta FUERA de las carpetas del proyecto:
 //
-// Si se deja vacio no se mandan correos, y los vecinos no se pueden registrar desde la landing.
-// IMPORTANTE: no subir a GitHub este archivo con la contraseña escrita.
+//     C:\xampp\sigeru_correo.php        (al lado de la carpeta htdocs, no adentro)
+//
+// Asi no se sube nunca a GitHub y no se borra cuando se copian las carpetas nuevas del proyecto.
+// En cada computadora se crea una sola vez, con este contenido:
+//
+//     <?php
+//     $correoGmail = "el correo de gmail";
+//     $claveAppGmail = "la contraseña de aplicacion de 16 letras, sin espacios";
+//
+// Como se saca la contraseña de aplicacion:
+//   1. Entrar a la cuenta de Gmail -> Gestionar tu cuenta de Google -> Seguridad.
+//   2. Activar la "Verificación en dos pasos".
+//   3. Entrar a https://myaccount.google.com/apppasswords, crear una (por ejemplo "SiGeRU") y copiar las 16 letras.
+//
+// Si no esta configurado no se mandan correos, y los vecinos no se pueden registrar desde la landing.
 
-$correoGmail = "";       // por ejemplo "ecosync.sigeru@gmail.com"
-$claveAppGmail = "";     // la contraseña de aplicacion de 16 letras
+$correoGmail = "";
+$claveAppGmail = "";
 
 // Direccion donde esta publicada la pagina (para armar el enlace del correo)
 $direccionSitio = "http://localhost";
+
+// Leemos el archivo con la contraseña, que esta dos carpetas mas arriba:
+// C:\xampp\htdocs\sigeru-api-usuarios  ->  C:\xampp\htdocs  ->  C:\xampp
+$archivoPrivado = __DIR__ . "/../../sigeru_correo.php";
+if (file_exists($archivoPrivado)) {
+    require $archivoPrivado;
+}
 
 // En Docker estos datos se pueden pasar como variables de entorno
 if (getenv("GMAIL_USUARIO")) {

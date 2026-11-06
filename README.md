@@ -98,8 +98,10 @@ Cuando un vecino se registra en la landing:
 3. Un **administrador aprueba** su cuenta (le llega una notificación y lo hace desde Usuarios). Al vecino le llega un correo avisando.
    Esto se puede apagar en **Parámetros** → "aprobar registros".
 
-Para que se manden los correos hay que poner una cuenta de Gmail en `sigeru-api-usuarios/config_correo.php`
-(los pasos están en ese archivo: hace falta una "contraseña de aplicación" de Google).
+Para que se manden los correos, en cada computadora se crea **una sola vez** el archivo `C:\xampp\sigeru_correo.php`
+(al lado de `htdocs`, no adentro) con el correo de Gmail y su "contraseña de aplicación" de Google.
+Como está fuera del proyecto, no se sube a GitHub y no se borra al copiar una versión nueva.
+Los pasos están en `sigeru-api-usuarios/config_correo.php`.
 Si no se configura, no se pueden registrar vecinos (la API avisa que no pudo mandar el correo).
 
 ## Notificaciones

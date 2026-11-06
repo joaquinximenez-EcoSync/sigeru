@@ -18,7 +18,7 @@ config.php                    Sesión y formato de respuesta
 conexion.php                  Conexión a la base de datos MySQL
 seguridad.php                 Revisa que haya sesión iniciada y que el rol tenga permiso
 correo.php                    Manda los correos con Gmail (usa la libreria PHPMailer)
-config_correo.php             Cuenta de Gmail que manda los correos (hay que completarla)
+config_correo.php             Lee la cuenta de Gmail del archivo C:\xampp\sigeru_correo.php (fuera del proyecto)
 libs/PHPMailer/               Libreria PHPMailer 6.9.1 (solo los 3 archivos que se usan)
 modelos/Usuario.php           Modelo (clase): guarda, busca, modifica y borra usuarios
 modelos/Parametro.php         Modelo (clase): parametros del sistema
@@ -55,10 +55,18 @@ un administrador) → **Activo**. Si lo rechazan queda **Rechazado**. Solo los u
 
 ### Correo (Gmail)
 
-Completar `config_correo.php` con una cuenta de Gmail y una **contraseña de aplicación**
-(Cuenta de Google → Seguridad → Verificación en dos pasos → Contraseñas de aplicaciones).
-Si se deja vacío no se mandan correos y no se pueden registrar vecinos.
-No subir a GitHub ese archivo con la contraseña escrita.
+La contraseña **no** va en el código. En cada computadora se crea una sola vez el archivo
+`C:\xampp\sigeru_correo.php` (al lado de la carpeta `htdocs`, no adentro), con este contenido:
+
+```php
+<?php
+$correoGmail = "el correo de gmail";
+$claveAppGmail = "la contraseña de aplicacion de 16 letras, sin espacios";
+```
+
+La contraseña de aplicación se crea en la cuenta de Google → Seguridad → Verificación en dos pasos →
+Contraseñas de aplicaciones. Como el archivo está fuera del proyecto, no se sube a GitHub y no se borra
+cuando se copia una versión nueva. Si no está, no se mandan correos y no se pueden registrar vecinos.
 
 Ejemplo:
 
