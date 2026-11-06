@@ -5,6 +5,8 @@
 -- Motor: MySQL 8
 -- =====================================================================
 
+SET NAMES utf8mb4;
+
 DROP DATABASE IF EXISTS sigeru;
 CREATE DATABASE sigeru CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE sigeru;
@@ -147,16 +149,20 @@ CREATE TABLE contenedores (
 -- Relacion Genera1: un contenedor genera muchas incidencias (1:N)
 -- Relacion Resuelven: un recorrido (cuadrilla) resuelve muchas incidencias (1:N)
 -- RNE02: una incidencia tiene un solo estado a la vez
+-- tipo: que problema tiene el contenedor (se usa para el top de desbordados)
+-- fecha: ultimo cambio de estado. fecha_resolucion: dia en que quedo Resuelta
 CREATE TABLE incidencias (
-    id_incidencia   INT AUTO_INCREMENT PRIMARY KEY,
-    id_contenedor   INT NOT NULL,
-    fecha_deteccion DATE,
-    zona_incidencia VARCHAR(100),
-    estado          ENUM('Abierta', 'En proceso', 'Resuelta') NOT NULL DEFAULT 'Abierta',
-    prioridad       ENUM('Baja', 'Media', 'Alta') NOT NULL DEFAULT 'Media',
-    fecha           DATE,
-    descripcion     TEXT,
-    id_recorrido    INT,
+    id_incidencia    INT AUTO_INCREMENT PRIMARY KEY,
+    id_contenedor    INT NOT NULL,
+    fecha_deteccion  DATE,
+    zona_incidencia  VARCHAR(100),
+    tipo             ENUM('Desbordado', 'Roto', 'Falta de recolección') NOT NULL DEFAULT 'Desbordado',
+    estado           ENUM('Abierta', 'En proceso', 'Resuelta') NOT NULL DEFAULT 'Abierta',
+    prioridad        ENUM('Baja', 'Media', 'Alta') NOT NULL DEFAULT 'Media',
+    fecha            DATE,
+    fecha_resolucion DATE,
+    descripcion      TEXT,
+    id_recorrido     INT,
     FOREIGN KEY (id_contenedor) REFERENCES contenedores(id_contenedor) ON DELETE CASCADE,
     FOREIGN KEY (id_recorrido)  REFERENCES recorridos(id_recorrido) ON DELETE SET NULL
 );

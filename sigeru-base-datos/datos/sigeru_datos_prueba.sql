@@ -85,15 +85,16 @@ INSERT INTO contenedores (id_contenedor, calle, zona, municipio, estado, capacid
 (15, 'Av. 8 de Octubre 3500', 'Unión', 'E', 'Funcional', 1000, 4, -34.876800, -56.144900, '2026-11-05 09:00'),
 (16, 'Av. Rivera 3000', 'Pocitos', 'CH', 'Funcional', 1000, 4, -34.897900, -56.159500, '2026-11-05 09:30');
 
-INSERT INTO incidencias (id_incidencia, id_contenedor, fecha_deteccion, zona_incidencia, estado, prioridad, fecha, descripcion, id_recorrido) VALUES
-(1, 2, '2026-11-01', 'Carrasco', 'Abierta', 'Alta', '2026-11-01', 'Contenedor desbordado, hay basura en la vereda', 2),
-(2, 3, '2026-10-28', 'Tres Cruces', 'En proceso', 'Media', '2026-10-28', 'La tapa del contenedor está rota', 1),
-(3, 6, '2026-11-02', 'Pocitos', 'Abierta', 'Alta', '2026-11-02', 'Contenedor desbordado desde el fin de semana', 2),
-(4, 11, '2026-10-31', 'Cerro', 'Abierta', 'Alta', '2026-10-31', 'Contenedor desbordado, bolsas en la calle', NULL),
-(5, 10, '2026-11-03', 'Prado', 'Abierta', 'Media', '2026-11-03', 'Tapa rota', NULL),
-(6, 14, '2026-11-02', 'Colón', 'Abierta', 'Baja', '2026-11-02', 'Una rueda del contenedor está rota', NULL),
-(7, 1, '2026-10-25', 'Centro', 'Resuelta', 'Baja', '2026-10-25', 'Falta de recolección', 1),
-(8, 2, '2026-10-20', 'Carrasco', 'Resuelta', 'Media', '2026-10-20', 'Contenedor desbordado', 2);
+INSERT INTO incidencias (id_incidencia, id_contenedor, fecha_deteccion, zona_incidencia, tipo, estado, prioridad, fecha, fecha_resolucion, descripcion, id_recorrido) VALUES
+(1, 2, '2026-11-01', 'Carrasco', 'Desbordado', 'Abierta', 'Alta', '2026-11-01', NULL, 'Contenedor desbordado, hay basura en la vereda', 2),
+(2, 3, '2026-10-28', 'Tres Cruces', 'Roto', 'En proceso', 'Media', '2026-10-29', NULL, 'La tapa del contenedor está rota', 1),
+(3, 6, '2026-11-02', 'Pocitos', 'Desbordado', 'Abierta', 'Alta', '2026-11-02', NULL, 'Contenedor desbordado desde el fin de semana', 2),
+(4, 11, '2026-10-31', 'Cerro', 'Desbordado', 'Abierta', 'Alta', '2026-10-31', NULL, 'Contenedor desbordado, bolsas en la calle', NULL),
+(5, 10, '2026-11-03', 'Prado', 'Roto', 'Abierta', 'Media', '2026-11-03', NULL, 'Tapa rota', NULL),
+(6, 14, '2026-11-02', 'Colón', 'Roto', 'Abierta', 'Baja', '2026-11-02', NULL, 'Una rueda del contenedor está rota', NULL),
+(7, 1, '2026-10-25', 'Centro', 'Falta de recolección', 'Resuelta', 'Baja', '2026-10-26', '2026-10-26', 'Falta de recolección', 1),
+(8, 2, '2026-10-20', 'Carrasco', 'Desbordado', 'Resuelta', 'Media', '2026-10-22', '2026-10-22', 'Contenedor desbordado', 2),
+(9, 2, '2026-11-02', 'Carrasco', 'Desbordado', 'Resuelta', 'Alta', '2026-11-03', '2026-11-03', 'Contenedor desbordado otra vez', 2);
 
 INSERT INTO notificaciones (id_usuario, id_notificacion, estado, descripcion, fecha, id_incidencia) VALUES
 (4, 1, 'Recibida', 'El contenedor de la rambla está lleno hace dos días', '2026-11-01', 1);
@@ -102,7 +103,7 @@ INSERT INTO notificaciones (id_usuario, id_notificacion, estado, descripcion, fe
 INSERT INTO instalaciones (id_instalacion, nombre, calle, zona, capacidad_actual, capacidad_max, id_operario, latitud, longitud) VALUES
 (1, 'Centro de Acopio Norte', 'Camino Carrasco 4500', 'Malvín Norte', 3500, 10000, 2, -34.870900, -56.106600),
 (2, 'Vertedero Felipe Cardoso', 'Camino Felipe Cardoso', 'Punta de Rieles', 50000, 200000, 2, -34.817600, -56.121400),
-(3, 'Centro de Acopio Oeste', 'Ruta 1 km 8', 'Paso de la Arena', 1200, 8000, NULL, -34.838000, -56.290000);
+(3, 'Centro de Acopio Oeste', 'Ruta 1 km 8', 'Paso de la Arena', 6800, 8000, NULL, -34.838000, -56.290000);
 
 INSERT INTO centros_acopio (id_instalacion) VALUES (1), (3);
 INSERT INTO vertederos (id_instalacion) VALUES (2);

@@ -117,9 +117,11 @@ UQ (id_cuadrilla, id_ruta)
 | id_contenedor | INT | FK → contenedores, NOT NULL |
 | fecha_deteccion | DATE | |
 | zona_incidencia | VARCHAR(100) | |
+| tipo | ENUM('Desbordado','Roto','Falta de recolección') | NOT NULL (agregado en la 3ra entrega) |
 | estado | ENUM('Abierta','En proceso','Resuelta') | NOT NULL |
 | prioridad | ENUM('Baja','Media','Alta') | NOT NULL |
-| fecha | DATE | |
+| fecha | DATE | Último cambio de estado |
+| fecha_resolucion | DATE | Día en que quedó Resuelta (agregado en la 3ra entrega) |
 | descripcion | TEXT | |
 | id_recorrido | INT | FK → recorridos (cuadrilla que la resuelve) |
 
@@ -151,6 +153,13 @@ UQ (id_cuadrilla, id_ruta)
 **centro_vertedero** (relación *Viaja2*, N:N) — PK (`id_centro`, `id_vertedero`), FK → centros_acopio y vertederos
 
 **plantas_procesamiento** (relación *Viaja*) — `id_planta` PK, `nombre` VARCHAR(100) NOT NULL, `calle`, `zona`, `id_centro` FK → centros_acopio
+
+## Cambios de la 3ra entrega
+
+- `incidencias.tipo`: guarda qué problema tiene el contenedor. Antes solo estaba escrito en la descripción
+  y así no se podía contar bien, por ejemplo para el top de contenedores desbordados del mes.
+- `incidencias.fecha_resolucion`: el día en que la incidencia quedó Resuelta. Sirve para los informes
+  y para calcular cuántos días se tarda en resolver una incidencia.
 
 ## Pasaje del MER a tablas (resumen)
 
