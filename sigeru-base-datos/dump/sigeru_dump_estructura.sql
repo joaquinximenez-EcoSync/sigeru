@@ -25,6 +25,23 @@ CREATE TABLE `administradores` (
   CONSTRAINT `administradores_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `auditoria`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `auditoria` (
+  `id_auditoria` int(11) NOT NULL AUTO_INCREMENT,
+  `fecha` datetime NOT NULL DEFAULT current_timestamp(),
+  `id_usuario` int(11) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `accion` varchar(50) NOT NULL,
+  `detalle` varchar(255) DEFAULT NULL,
+  `ip` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id_auditoria`),
+  KEY `idx_auditoria_email` (`email`,`accion`),
+  KEY `id_usuario` (`id_usuario`),
+  CONSTRAINT `auditoria_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `camiones`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;

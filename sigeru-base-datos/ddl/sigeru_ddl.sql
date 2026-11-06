@@ -313,3 +313,18 @@ CREATE TABLE recolecciones (
     kilos          DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (id_contenedor) REFERENCES contenedores(id_contenedor) ON DELETE CASCADE
 );
+
+-- Auditoria: queda guardado quien entro, quien fallo la contraseña, quien creo, borro o cambio
+-- el rol de un usuario, etc. Tambien se usa para bloquear un correo despues de muchos intentos fallidos.
+-- Relacion Genera: un usuario genera muchos eventos (1:N). id_usuario es NULL si nadie habia iniciado sesion.
+CREATE TABLE auditoria (
+    id_auditoria INT AUTO_INCREMENT PRIMARY KEY,
+    fecha        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id_usuario   INT,
+    email        VARCHAR(100),
+    accion       VARCHAR(50) NOT NULL,
+    detalle      VARCHAR(255),
+    ip           VARCHAR(45),
+    INDEX idx_auditoria_email (email, accion),
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE SET NULL
+);

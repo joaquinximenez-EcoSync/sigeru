@@ -203,6 +203,18 @@ Parámetros cargados: `dias_alerta_desborde` (2), `porcentaje_centro_lleno` (80)
 | fecha | DATETIME | NOT NULL |
 | kilos | DECIMAL(10,2) | NOT NULL |
 
+**auditoria** (relación *Genera*: un usuario genera muchos eventos, 1:N) — registro de seguridad
+
+| Columna | Tipo | Restricciones |
+|---------|------|---------------|
+| id_auditoria | INT | PK, AUTO_INCREMENT |
+| fecha | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP |
+| id_usuario | INT | FK → usuarios (ON DELETE SET NULL). NULL si nadie había iniciado sesión |
+| email | VARCHAR(100) | correo involucrado (índice junto con accion) |
+| accion | VARCHAR(50) | NOT NULL (Inicio de sesión, Login fallido, Cambio de rol...) |
+| detalle | VARCHAR(255) | |
+| ip | VARCHAR(45) | IPv4 o IPv6 de quien hizo el pedido |
+
 ## Cambios de la 3ra entrega
 
 - `incidencias.tipo`: guarda qué problema tiene el contenedor. Antes solo estaba escrito en la descripción
@@ -219,6 +231,10 @@ Parámetros cargados: `dias_alerta_desborde` (2), `porcentaje_centro_lleno` (80)
 - Tabla `parametros`: la letra pide que el software sea parametrizable y que el idioma sea parametrizable.
 - Tabla `repuestos`: la letra pide un inventario básico de contenedores de repuesto (nivel mínimo, punto 1.3).
 - Tabla `recolecciones`: para los informes de volumen de residuos recolectados y frecuencia de recolección.
+- Tabla `auditoria` y parámetros `intentos_login` / `minutos_bloqueo` (Ciberseguridad): queda anotado quién entró,
+  quién se equivocó de contraseña y quién cambió usuarios o roles. Después de 5 intentos fallidos el correo
+  se bloquea 15 minutos (protección contra fuerza bruta).
+- `seguridad/usuario_aplicacion.sql`: usuario de MySQL para las APIs con permisos mínimos (sin DROP, ALTER ni CREATE).
 
 ## Pasaje del MER a tablas (resumen)
 

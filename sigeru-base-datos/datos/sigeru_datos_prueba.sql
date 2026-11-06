@@ -114,7 +114,9 @@ INSERT INTO parametros (nombre, valor, descripcion) VALUES
 ('porcentaje_centro_lleno', '80', 'Porcentaje de capacidad desde el que se avisa que un centro está casi lleno'),
 ('aprobar_registros', 'si', 'Si un administrador tiene que aprobar a los vecinos que se registran (si / no)'),
 ('idioma', 'es', 'Idioma del sistema (es = español, en = inglés)'),
-('kilos_por_litro', '0.18', 'Kilos que pesa cada litro de residuos (para simular lo recolectado)');
+('kilos_por_litro', '0.18', 'Kilos que pesa cada litro de residuos (para simular lo recolectado)'),
+('intentos_login', '5', 'Intentos fallidos de contraseña permitidos antes de bloquear el correo (0 = sin límite)'),
+('minutos_bloqueo', '15', 'Minutos que queda bloqueado un correo después de muchos intentos fallidos');
 
 INSERT INTO repuestos (id_repuesto, nombre, tipo, id_residuo, cantidad, cantidad_minima, id_instalacion) VALUES
 (1, 'Contenedor orgánico 1000 L', 'Contenedor', 1, 6, 3, 1),
