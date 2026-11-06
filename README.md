@@ -6,7 +6,7 @@ Proyecto de pasaje de grado de **EcoSync** - ESI 2026.
 
 | Carpeta | Qué es |
 |---------|--------|
-| `sigeru-landing` | Página principal y registro de vecinos |
+| `sigeru-landing` | Página principal (con video de fondo opcional en `media/fondo.mp4`) y registro de vecinos |
 | `sigeru-frontend` | Inicio de sesión, panel de control con estadísticas y alertas, mapa interactivo de Montevideo, seguimiento de incidencias, informes y CRUD de usuarios, contenedores, camiones, recorridos, centros de acopio y maquinaria |
 | `sigeru-api-usuarios` | API de registro, inicio de sesión y usuarios |
 | `sigeru-api-gestion` | API de contenedores, centros de acopio, maquinaria, inventario de repuestos, incidencias (las reportan el personal y los vecinos, con su seguimiento), volumen recolectado, estadísticas y alertas |
@@ -29,6 +29,9 @@ Lo único que los borra es **volver a importar `sigeru_ddl.sql`**, porque empiez
 - Cuando se baja una versión nueva del proyecto, solo se reemplazan las 5 carpetas de `htdocs`. **No** se vuelve a importar la base.
 - Si la base cambia (una tabla o columna nueva), el cambio viene en la carpeta `sigeru-base-datos/actualizaciones`
   y se importa ese archivo, que agrega lo nuevo sin borrar nada.
+- **Si la base se creó antes del 6/11/2026** (todavía tiene las incidencias de prueba inventadas): importar
+  `sigeru-base-datos/actualizaciones/001_sacar_datos_inventados.sql`. Borra solo esas incidencias inventadas,
+  no las que cargaron ustedes.
 - **Para llevar los datos a otra computadora** (o guardar una copia): en phpMyAdmin elegir la base **sigeru** →
   **Exportar** → **Continuar**. Se descarga un archivo `.sql` con todo. En la otra computadora: crear la base con
   `sigeru_ddl.sql` (sin los datos de prueba) y después **Importar** ese archivo.
@@ -140,7 +143,7 @@ Si no se configura, no se pueden registrar vecinos (la API avisa que no pudo man
 
 ## Notificaciones
 
-La campana 🔔 del menú muestra las notificaciones de cada usuario y se actualiza sola cada 15 segundos
+La campana del menú muestra las notificaciones de cada usuario y se actualiza sola cada 15 segundos
 (cuando llega una nueva aparece un cartel abajo a la derecha). Por ejemplo:
 
 | Qué pasa | A quién le llega |
