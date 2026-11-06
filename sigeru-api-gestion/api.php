@@ -20,6 +20,8 @@
 //   POST   api.php/incidencias        reportar un problema             (administrador, operario y recolector)
 //   GET    api.php/recorridos         recorridos de las cuadrillas     (administrador, operario y recolector)
 //                                     (el recolector solo ve los de su cuadrilla)
+//   GET    api.php/notificaciones     avisos de los vecinos            (vecino ve los suyos, administrador y operario ven todos)
+//   POST   api.php/notificaciones     un vecino avisa un problema      (vecino)
 // Con ?id=1 en un GET se pide uno solo.
 
 require_once "config.php";
@@ -32,6 +34,7 @@ require_once "modelos/Centro.php";
 require_once "modelos/Maquinaria.php";
 require_once "modelos/Incidencia.php";
 require_once "modelos/Recorrido.php";
+require_once "modelos/Notificacion.php";
 require_once "controladores/contenedores.php";
 require_once "controladores/camiones.php";
 require_once "controladores/centros.php";
@@ -62,6 +65,7 @@ $centro = new Centro($conn);
 $maquinaria = new Maquinaria($conn);
 $incidencia = new Incidencia($conn);
 $recorrido = new Recorrido($conn);
+$notificacion = new Notificacion($conn);
 
 switch ($endpoint) {
     case "contenedores":
@@ -153,6 +157,15 @@ switch ($endpoint) {
     case "recorridos":
         verificarRol($personal);
         if ($metodo == "GET") listarRecorridos($recorrido);
+        break;
+
+    case "notificaciones":
+        if ($metodo == "GET") {
+            verificarRol(["Vecino", "Administrador", "Operario"]);
+            listarAvisos($notificacion);
+        }
+        verificarRol(["Vecino"]);
+        if ($metodo == "POST") avisarProblema($notificacion, $incidencia, $contenedor, $datos);
         break;
 }
 
