@@ -70,7 +70,7 @@ function mostrarTablaCamiones(lista, conAcciones) {
     const tabla = document.getElementById("tablaCamiones");
 
     if (lista.length == 0) {
-        tabla.innerHTML = filaVacia(6, "No hay camiones");
+        tabla.innerHTML = filaVacia(7, "No hay camiones");
         return;
     }
 
@@ -81,7 +81,8 @@ function mostrarTablaCamiones(lista, conAcciones) {
             <td>${limpiarTexto(c.matricula)}</td>
             <td>${c.capacidad_carga ? Number(c.capacidad_carga) + " kg" : ""}</td>
             <td><span class="etiqueta ${colorEstado(c.estado)}">${limpiarTexto(c.estado)}</span></td>
-            <td><span class="etiqueta ${colorEstado(c.disponibilidad)}">${limpiarTexto(c.disponibilidad)}</span></td>`;
+            <td><span class="etiqueta ${colorEstado(c.disponibilidad)}">${limpiarTexto(c.disponibilidad)}</span></td>
+            <td><button class="btn btn-secondary btn-sm" onclick="verMantenimientos(${c.id})">🔧 Ver</button></td>`;
         if (conAcciones) {
             filas += botonesAcciones("Camion", c.id);
         }
@@ -167,6 +168,77 @@ function llenarCasillasResiduos(tipos) {
     for (const tipo of tipos) {
         caja.innerHTML += `<label class="casilla">
             <input type="checkbox" name="residuo" value="${tipo.id_residuo}"> ${limpiarTexto(tipo.nombre)}
+        </label>`;
+    }
+}
+
+// Mantenimientos de un camion (dentro de la ventana de mantenimientos)
+function mostrarTablaMantenimientos(lista, conAcciones) {
+    const tabla = document.getElementById("tablaMantenimientos");
+
+    if (lista.length == 0) {
+        tabla.innerHTML = filaVacia(5, "Este camión todavía no tiene mantenimientos");
+        return;
+    }
+
+    let filas = "";
+    for (const m of lista) {
+        filas += `<tr>
+            <td>${limpiarTexto(m.fecha)}</td>
+            <td>${limpiarTexto(m.tipo)}</td>
+            <td>${m.costo ? "$ " + Number(m.costo) : ""}</td>
+            <td class="ajustar">${limpiarTexto(m.descripcion)}</td>`;
+        if (conAcciones) {
+            filas += `<td><button class="btn btn-danger btn-sm" onclick="borrarMantenimientoElegido(${m.id_camion}, ${m.nro})">Borrar</button></td>`;
+        }
+        filas += `</tr>`;
+    }
+    tabla.innerHTML = filas;
+}
+
+function mostrarTablaRecorridos(lista, conAcciones) {
+    const tabla = document.getElementById("tablaRecorridos");
+
+    if (lista.length == 0) {
+        tabla.innerHTML = filaVacia(8, "No hay recorridos asignados");
+        return;
+    }
+
+    let filas = "";
+    for (const r of lista) {
+        // Horario, por ejemplo "06:00 a 12:00"
+        let horario = "";
+        if (r.hora_inicio) horario = r.hora_inicio.substring(0, 5);
+        if (r.hora_fin) horario += " a " + r.hora_fin.substring(0, 5);
+
+        filas += `<tr>
+            <td>${limpiarTexto(r.fecha_asignacion)}</td>
+            <td>${limpiarTexto(r.ruta)}</td>
+            <td>${limpiarTexto(r.cuadrilla)}</td>
+            <td>${limpiarTexto(r.camion)}</td>
+            <td>${horario}</td>
+            <td class="ajustar">${limpiarTexto(r.zonas.join(", "))}</td>
+            <td>${r.contenedores.length}</td>`;
+        if (conAcciones) {
+            filas += botonesAcciones("Recorrido", r.id);
+        }
+        filas += `</tr>`;
+    }
+    tabla.innerHTML = filas;
+}
+
+// Carga las zonas como casillas para marcar (en el formulario de recorridos).
+// Si la zona ya la recorre otro recorrido, se avisa al lado.
+function llenarCasillasZonas(zonas) {
+    const caja = document.getElementById("casillasZonas");
+    caja.innerHTML = "";
+    for (const z of zonas) {
+        let aviso = "";
+        if (z.id_recorrido != null) {
+            aviso = ` <small>(recorrido #${z.id_recorrido})</small>`;
+        }
+        caja.innerHTML += `<label class="casilla">
+            <input type="checkbox" name="zona" value="${z.id}"> ${limpiarTexto(z.nombre)}${aviso}
         </label>`;
     }
 }

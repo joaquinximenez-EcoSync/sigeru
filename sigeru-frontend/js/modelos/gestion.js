@@ -21,23 +21,6 @@ function obtenerTiposResiduo() {
     return pedirAlServidor(API_GESTION + "/tipos_residuo");
 }
 
-// ----- Camiones -----
-function obtenerCamiones() {
-    return pedirAlServidor(API_GESTION + "/camiones");
-}
-
-function crearCamion(datos) {
-    return pedirAlServidor(API_GESTION + "/camiones", "POST", datos);
-}
-
-function modificarCamion(id, datos) {
-    return pedirAlServidor(API_GESTION + "/camiones?id=" + id, "PUT", datos);
-}
-
-function borrarCamion(id) {
-    return pedirAlServidor(API_GESTION + "/camiones?id=" + id, "DELETE");
-}
-
 // ----- Centros de acopio -----
 function obtenerCentros() {
     return pedirAlServidor(API_GESTION + "/centros");
@@ -91,10 +74,6 @@ function obtenerIncidencias() {
 
 function reportarProblema(datos) {
     return pedirAlServidor(API_GESTION + "/incidencias", "POST", datos);
-}
-
-function obtenerRecorridos() {
-    return pedirAlServidor(API_GESTION + "/recorridos");
 }
 
 // Limites de los municipios (archivo GeoJSON descargado de la Intendencia).

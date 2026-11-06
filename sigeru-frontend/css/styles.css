@@ -91,6 +91,13 @@ tbody tr:hover { background: #fafcfb; }
 .etiqueta.alerta { background: #fef3c7; color: #b7791f; }
 .etiqueta.mal { background: #fdecea; color: #c0392b; }
 
+/* Ventana mas ancha (mantenimientos) */
+dialog.dialogo-ancho { max-width: 760px; }
+.form-mantenimiento { margin-top: 20px; padding-top: 15px; border-top: 1px solid #e5e7eb; }
+.form-mantenimiento h4 { margin-bottom: 12px; }
+.boton-cerrar { margin-top: 15px; }
+.horario { display: flex; align-items: center; gap: 8px; }
+
 /* ===== Mapa ===== */
 #mapa { height: 560px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,.06); z-index: 0; }
 #mapa.eligiendo { cursor: crosshair; }

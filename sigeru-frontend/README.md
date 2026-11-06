@@ -3,7 +3,7 @@
 Interfaz para los usuarios del Sistema de Gestión de Residuos Urbanos (SiGeRU), desarrollado por **EcoSync**.
 
 Permite iniciar sesión y, según el rol, ver, agregar, modificar y borrar usuarios, contenedores,
-camiones, centros de acopio y maquinaria.
+camiones (con sus mantenimientos), recorridos, centros de acopio y maquinaria.
 No guarda datos ni accede a la base de datos: todo se hace a través de las APIs.
 
 ## Tecnologías
@@ -14,14 +14,20 @@ HTML5, CSS y JavaScript.
 
 "Todo" = ver, agregar, modificar y borrar.
 
-| Rol           | Contenedores | Camiones | Centros de acopio | Maquinaria | Usuarios |
-|---------------|--------------|----------|-------------------|------------|----------|
-| Administrador | Todo         | Todo     | Todo              | Todo       | Todo     |
-| Operario      | Todo         | Todo     | Todo              | Todo       | -        |
-| Recolector    | Ver          | Ver      | Ver               | Ver        | -        |
-| Vecino        | Ver          | -        | -                 | -          | -        |
+| Rol           | Contenedores | Camiones y mantenimientos | Recorridos   | Centros de acopio | Maquinaria | Usuarios |
+|---------------|--------------|---------------------------|--------------|-------------------|------------|----------|
+| Administrador | Todo         | Todo                      | Todo         | Todo              | Todo       | Todo     |
+| Operario      | Todo         | Todo                      | Todo         | Todo              | Todo       | -        |
+| Recolector    | Ver          | Ver                       | Ver los suyos| Ver               | Ver        | -        |
+| Vecino        | Ver          | -                         | -            | -                 | -          | -        |
 
 El menú y los botones se muestran según el rol, y además cada API revisa el rol antes de responder.
+
+## Recorridos (recorridos.html)
+
+Sirve para asignar una ruta a una cuadrilla, con el camión, la fecha, el horario y las zonas que recorre.
+Solo se puede elegir un camión que esté **Operativo** y **Disponible** (RNE06); si no, la API devuelve el error.
+En la página de camiones, el botón **🔧 Ver** muestra los mantenimientos de cada camión.
 
 ## Mapa interactivo (mapa.html)
 
@@ -59,12 +65,13 @@ panel.html                      Inicio del panel
 mapa.html                       Mapa interactivo de Montevideo
 usuarios.html                   Usuarios
 contenedores.html               Contenedores
-camiones.html                   Camiones
+camiones.html                   Camiones y sus mantenimientos
+recorridos.html                 Recorridos (rutas asignadas a cuadrillas)
 centros.html                    Centros de acopio
 maquinaria.html                 Maquinaria
 css/styles.css
 js/config.js                    Direcciones de las APIs
-js/modelos/                     Pedidos a las APIs (servidor, usuarios, gestion)
+js/modelos/                     Pedidos a las APIs (servidor, usuarios, gestion, recoleccion)
 js/vistas/                      Funciones que muestran datos en pantalla (comun, tablas, mapa)
 js/libs/leaflet/                Libreria del mapa (Leaflet 1.9.4)
 js/datos/                       Límites de los municipios (municipios.json, opcional)
@@ -77,7 +84,8 @@ js/controladores/               Lógica de cada página
 2. Prender **Apache** y **MySQL** en el panel de XAMPP (la base de datos tiene que estar creada).
 3. Abrir http://localhost/sigeru-frontend/
 
-Necesita la API de Usuarios y la API de Gestión en `htdocs/sigeru-api-usuarios` y `htdocs/sigeru-api-gestion`.
+Necesita la API de Usuarios, la de Gestión y la de Recolección en `htdocs/sigeru-api-usuarios`,
+`htdocs/sigeru-api-gestion` y `htdocs/sigeru-api-recoleccion`.
 Las direcciones se configuran en `js/config.js`.
 
 Usuario de prueba: **admin@sigeru.uy** / **admin123**

@@ -14,6 +14,7 @@
         <a href="mapa.html">🗺️ Mapa</a>
         <a href="contenedores.html">🗑️ Contenedores</a>
         <a href="camiones.html" class="activo no-vecino">🚛 Camiones</a>
+        <a href="recorridos.html" class="no-vecino">🛣️ Recorridos</a>
         <a href="centros.html" class="no-vecino">🏭 Centros de acopio</a>
         <a href="maquinaria.html" class="no-vecino">⚙️ Maquinaria</a>
         <a href="usuarios.html" class="solo-admin">👥 Usuarios</a>
@@ -82,12 +83,61 @@
                         <th>Capacidad</th>
                         <th>Estado</th>
                         <th>Disponibilidad</th>
+                        <th>Mantenimientos</th>
                         <th class="solo-gestion">Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="tablaCamiones"></tbody>
             </table>
         </div>
+
+        <!-- Ventana con los mantenimientos de un camion -->
+        <dialog id="mantenimientosModal" class="dialogo-ancho">
+            <h3 id="tituloMantenimientos"></h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Tipo</th>
+                            <th>Costo</th>
+                            <th>Descripción</th>
+                            <th class="solo-gestion"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaMantenimientos"></tbody>
+                </table>
+            </div>
+            <form id="formMantenimiento" class="solo-gestion form-mantenimiento">
+                <h4>Registrar un mantenimiento</h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tipoMantenimiento">Tipo *</label>
+                        <select id="tipoMantenimiento">
+                            <option>Preventivo</option>
+                            <option>Correctivo</option>
+                            <option>Revisión</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="fechaMantenimiento">Fecha *</label>
+                        <input id="fechaMantenimiento" type="date" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="costoMantenimiento">Costo ($)</label>
+                        <input id="costoMantenimiento" type="number" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="descripcionMantenimiento">Descripción</label>
+                        <input id="descripcionMantenimiento" placeholder="Por ejemplo: cambio de aceite">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Agregar</button>
+            </form>
+            <button type="button" class="btn btn-secondary boton-cerrar" onclick="cerrarMantenimientos()">Cerrar</button>
+        </dialog>
     </main>
 </div>
 
@@ -95,6 +145,7 @@
 <script src="js/modelos/servidor.js"></script>
 <script src="js/modelos/usuarios.js"></script>
 <script src="js/modelos/gestion.js"></script>
+<script src="js/modelos/recoleccion.js"></script>
 <script src="js/vistas/comun.js"></script>
 <script src="js/vistas/tablas.js"></script>
 <script src="js/controladores/sesion.js"></script>

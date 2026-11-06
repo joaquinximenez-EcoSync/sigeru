@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recorridos | SiGeRU</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="panel">
+    <aside class="sidebar">
+        <div class="logo">SiGeRU</div>
+        <a href="panel.html">🏠 Inicio</a>
+        <a href="mapa.html">🗺️ Mapa</a>
+        <a href="contenedores.html">🗑️ Contenedores</a>
+        <a href="camiones.html" class="no-vecino">🚛 Camiones</a>
+        <a href="recorridos.html" class="activo no-vecino">🛣️ Recorridos</a>
+        <a href="centros.html" class="no-vecino">🏭 Centros de acopio</a>
+        <a href="maquinaria.html" class="no-vecino">⚙️ Maquinaria</a>
+        <a href="usuarios.html" class="solo-admin">👥 Usuarios</a>
+        <div class="usuario">
+            <div>
+                <strong id="nombreUsuario"></strong>
+                <span id="rolUsuario"></span>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="salir()">Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <main class="contenido">
+        <div class="encabezado">
+            <h1>Recorridos</h1>
+            <button class="btn btn-primary solo-gestion" onclick="nuevoRecorrido()">+ Asignar recorrido</button>
+        </div>
+
+        <div id="mensaje" class="mensaje"></div>
+
+        <!-- Ventana emergente (modal) con el formulario para agregar o modificar. Empieza oculta -->
+        <dialog id="formModal">
+            <h3 id="tituloModal"></h3>
+            <form id="formRecorrido">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_cuadrilla">Cuadrilla *</label>
+                        <select id="id_cuadrilla" required>
+                            <option value="">Elegir...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_ruta">Ruta *</label>
+                        <select id="id_ruta" required>
+                            <option value="">Elegir...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="id_camion">Camión *</label>
+                    <select id="id_camion" required>
+                        <option value="">Elegir...</option>
+                    </select>
+                    <small>Solo se puede asignar un camión Operativo y Disponible (RNE06).</small>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fecha_asignacion">Fecha *</label>
+                        <input id="fecha_asignacion" type="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Horario</label>
+                        <div class="horario">
+                            <input id="hora_inicio" type="time"> a <input id="hora_fin" type="time">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Zonas que recorre</label>
+                    <div id="casillasZonas" class="casillas"></div>
+                    <small>Cada zona la recorre un solo recorrido: si la marcas, deja de estar en el otro.</small>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+            </form>
+        </dialog>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Ruta</th>
+                        <th>Cuadrilla</th>
+                        <th>Camión</th>
+                        <th>Horario</th>
+                        <th>Zonas</th>
+                        <th>Contenedores</th>
+                        <th class="solo-gestion">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaRecorridos"></tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/modelos/servidor.js"></script>
+<script src="js/modelos/usuarios.js"></script>
+<script src="js/modelos/gestion.js"></script>
+<script src="js/modelos/recoleccion.js"></script>
+<script src="js/vistas/comun.js"></script>
+<script src="js/vistas/tablas.js"></script>
+<script src="js/controladores/sesion.js"></script>
+<script src="js/controladores/recorridos.js"></script>
+</body>
+</html>

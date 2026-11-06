@@ -93,4 +93,63 @@ document.getElementById("formCamion").addEventListener("submit", async function 
     }
 });
 
+// ----- Mantenimientos del camion -----
+let camionDeMantenimiento = null; // camion que se esta mirando en la ventana de mantenimientos
+
+async function verMantenimientos(id) {
+    camionDeMantenimiento = buscarPorId(listaCamiones, id);
+    document.getElementById("tituloMantenimientos").textContent = "Mantenimientos del camión " + camionDeMantenimiento.matricula;
+    document.getElementById("formMantenimiento").reset();
+    // La fecha de hoy ya viene puesta
+    document.getElementById("fechaMantenimiento").value = fechaDeHoy();
+    document.getElementById("mantenimientosModal").showModal();
+    await cargarMantenimientos();
+}
+
+async function cargarMantenimientos() {
+    try {
+        const lista = await obtenerMantenimientos(camionDeMantenimiento.id);
+        mostrarTablaMantenimientos(lista, puedeEditar());
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+function cerrarMantenimientos() {
+    document.getElementById("mantenimientosModal").close();
+}
+
+async function borrarMantenimientoElegido(idCamion, nro) {
+    if (!confirm("¿Seguro que quieres borrar este mantenimiento?")) {
+        return;
+    }
+    try {
+        await borrarMantenimiento(idCamion, nro);
+        await cargarMantenimientos();
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+document.getElementById("formMantenimiento").addEventListener("submit", async function (evento) {
+    evento.preventDefault();
+
+    const datos = {
+        id_camion: camionDeMantenimiento.id,
+        tipo: document.getElementById("tipoMantenimiento").value,
+        fecha: document.getElementById("fechaMantenimiento").value,
+        costo: document.getElementById("costoMantenimiento").value,
+        descripcion: document.getElementById("descripcionMantenimiento").value.trim()
+    };
+
+    try {
+        await crearMantenimiento(datos);
+        document.getElementById("costoMantenimiento").value = "";
+        document.getElementById("descripcionMantenimiento").value = "";
+        await cargarMantenimientos();
+    } catch (error) {
+        alert(error.message);
+    }
+});
+
 iniciar();

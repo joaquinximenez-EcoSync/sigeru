@@ -83,3 +83,13 @@ function buscarPorId(lista, id) {
     }
     return null;
 }
+
+// Fecha de hoy como "2026-11-06" (para los campos de fecha de los formularios)
+function fechaDeHoy() {
+    const hoy = new Date();
+    let mes = hoy.getMonth() + 1;
+    let dia = hoy.getDate();
+    if (mes < 10) mes = "0" + mes;
+    if (dia < 10) dia = "0" + dia;
+    return hoy.getFullYear() + "-" + mes + "-" + dia;
+}
